@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通航校园APP架构设计 · 思维导图</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #17161d; color: #e8e6f0;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif; overflow: hidden; }
+  #wrap { display: flex; flex-direction: column; height: 100%; }
+  #bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 14px; background: #1f1e28; border-bottom: 1px solid #34324a; }
+  #bar h1 { font-size: 15px; font-weight: 500; margin: 0 10px 0 0; }
+  #bar button { background: #2c2a3d; color: #cecbf6; border: 1px solid #4a4670; border-radius: 6px;
+    padding: 5px 12px; font-size: 12px; cursor: pointer; }
+  #bar button:hover { background: #3a3765; }
+  #bar button.on { background: #534ab7; border-color: #7f77dd; color: #fff; }
+  #count { font-size: 12px; color: #8887a0; margin-left: auto; }
+  #hint { font-size: 12px; color: #6f6d85; padding: 5px 14px; background: #1b1a23;
+    border-bottom: 1px solid #2a2938; }
+  #stage { flex: 1; position: relative; overflow: hidden; cursor: grab; }
+  #stage.drag { cursor: grabbing; }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .nd { cursor: pointer; }
+  .nd:hover rect.body { filter: brightness(1.3); }
+  .badge { fill: #ffd27a; font-size: 10px; font-family: inherit; }
+  .lk { fill: none; stroke-width: 1.2; opacity: .5; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="bar">
+    <h1>通航校园APP架构设计 · 思维导图</h1>
+    <button data-lv="1">一级</button>
+    <button data-lv="2">二级</button>
+    <button data-lv="3" class="on">三级</button>
+    <button data-lv="4">四级</button>
+    <button id="all">全部展开</button>
+    <button id="fit">重置视图</button>
+    <span id="count"></span>
+  </div>
+  <div id="hint">点击节点展开 / 收起子分支；滚轮缩放，拖拽平移；悬停节点可看完整标题。</div>
+  <div id="stage"><svg id="cv"></svg></div>
+</div>
+<script>
+var DATA = {"t": "通航校园APP架构设计", "c": [{"t": "主界面设计", "c": [{"t": "首页", "c": [{"t": "顶部导航", "c": [{"t": "全局搜索", "c": [{"t": "默认提示", "c": [{"t": "搜索动态、帖子和重点消息", "c": []}]}, {"t": "搜索历史", "c": [{"t": "展示最近搜索，并支持单条删除与全部清空", "c": []}]}, {"t": "热门搜索", "c": [{"t": "展示近期热门动态、帖子和校园话题", "c": []}]}, {"t": "搜索结果", "c": [{"t": "按动态、帖子、重要消息、校园话题分类展示", "c": []}]}]}, {"t": "消息入口", "c": [{"t": "未读状态", "c": [{"t": "展示推送给用户，但用户未读的消息和提到用户的帖子、动态、话题", "c": []}]}, {"t": "点击进入", "c": [{"t": "跳转到消息界面并定位未读的消息", "c": []}]}]}]}, {"t": "快捷服务", "c": [{"t": "二手服务区", "c": [{"t": "二手商品", "c": [{"t": "展示各个卖家发布的二手商品帖子（两栏）", "c": []}]}, {"t": "我的商品", "c": [{"t": "我发布的二手商品帖子", "c": []}]}, {"t": "我的关注", "c": [{"t": "我关注的二手商品", "c": []}]}, {"t": "我的订单", "c": [{"t": "我出售或买入的二手商品订单", "c": []}]}]}, {"t": "搭子服务区", "c": [{"t": "滴搭子帖子", "c": [{"t": "可以筛选不同的爱好，来更快的寻找搭子", "c": []}]}, {"t": "我发布的", "c": [{"t": "我发布的滴搭子帖子", "c": []}]}, {"t": "我收藏的", "c": [{"t": "我收藏的帖子", "c": []}]}, {"t": "我滴过的", "c": [{"t": "我滴成功的搭子", "c": []}]}]}, {"t": "活动服务区", "c": [{"t": "学校、组织、个人发布的活动", "c": [{"t": "可以申请参加、表明意愿", "c": []}]}, {"t": "我发布的", "c": [{"t": "我发布的活动", "c": []}]}, {"t": "我参加的", "c": [{"t": "我参加的活动", "c": []}]}, {"t": "我收藏的", "c": [{"t": "我收藏的活动", "c": []}]}]}, {"t": "竞赛服务区", "c": [{"t": "找竞赛", "c": [{"t": "进入竞赛目录并使用默认推荐筛选", "c": []}]}, {"t": "竞赛日程", "c": [{"t": "按照日历查看报名、初赛、决赛和截止日期", "c": []}]}, {"t": "我的收藏", "c": [{"t": "快速查看已收藏或订阅的竞赛", "c": []}]}]}]}, {"t": "重要消息", "c": [{"t": "活动、商品、服务等待办", "c": [{"t": "即将截止", "c": [{"t": "展示 7 天内截止的活动、帖子、商品、搭子和竞赛", "c": []}]}, {"t": "报名开始", "c": [{"t": "展示已开放报名但未报名的活动、竞赛等", "c": []}]}, {"t": "规则更新", "c": [{"t": "提示报名的活动、竞赛的规则变化和关注、收藏的商品、搭子的规则变化", "c": []}]}]}, {"t": "协作待办", "c": [{"t": "待处理的申请、报名、消息", "c": [{"t": "活动、帖子的发布者查看申请人提交的资料并同意或拒绝", "c": []}]}, {"t": "邀请链接", "c": [{"t": "发布活动、帖子的人邀请你的链接选择同意、拒绝或考虑", "c": []}]}, {"t": "待完善的资料", "c": [{"t": "提示完善简介、申请说明", "c": []}]}]}]}, {"t": "内容推荐", "c": [{"t": "机会推荐", "c": [{"t": "推荐帖子", "c": [{"t": "根据专业、喜好、收藏、浏览记录推荐", "c": []}]}, {"t": "热门帖子", "c": [{"t": "展示近期热度高的活动、帖子、商品、竞赛等", "c": []}]}, {"t": "专业相关", "c": [{"t": "优先展示和本专业相关的帖子、活动、竞赛", "c": []}]}]}, {"t": "信息推荐", "c": [{"t": "官方通知", "c": [{"t": "展示通知标题、来源、发布日期和原文链接", "c": []}]}, {"t": "规则更新", "c": [{"t": "标明变更字段、时间和其他相关规则", "c": []}]}, {"t": "平台公告", "c": [{"t": "展示维护、功能更新与社区治理通知", "c": []}]}]}]}]}, {"t": "动态", "c": [{"t": "顶部分类页签", "c": [{"t": "推荐", "c": [{"t": "推荐规则", "c": [{"t": "优先展示可以报名或申请的活动、帖子、竞赛和关注的内容", "c": []}]}]}, {"t": "关注", "c": [{"t": "关注的内容", "c": [{"t": "只展示已关注的用户、活动、组织和队伍发布的动态", "c": []}]}]}, {"t": "活动与竞赛", "c": [{"t": "活动内容和竞赛内容", "c": [{"t": "展示活动的具体内容、时间、人数、地点和要求，竞赛的主题、时间、地点、联系人和要求", "c": []}]}]}, {"t": "校园", "c": [{"t": "校园内容", "c": [{"t": "展示二手商品、搭子、活动、交友、游戏、社团、竞赛等", "c": []}]}]}]}, {"t": "动态信息流", "c": [{"t": "动态卡片", "c": [{"t": "发布者信息", "c": [{"t": "展示昵称、学校标签、发布时间和关注按钮", "c": []}]}, {"t": "正文内容", "c": [{"t": "展示文字、图片、话题标签和相关内容", "c": []}]}, {"t": "互动数据", "c": [{"t": "展示点赞、评论和收藏数量", "c": []}]}, {"t": "卡片操作", "c": [{"t": "支持点赞、评论、收藏、分享、不感兴趣和举报", "c": []}]}]}, {"t": "二手商品内容", "c": [{"t": "商品信息", "c": [{"t": "展示商品基本信息，长度、宽度、高度、类型、简介等", "c": []}]}, {"t": "图片信息", "c": [{"t": "合规的正面、侧面、背面、上面、下面等展示图", "c": []}]}]}, {"t": "找搭子内容", "c": [{"t": "搭子信息", "c": [{"t": "展示性别、爱好、内容、年龄、性格等", "c": []}]}]}, {"t": "个人内容", "c": [{"t": "经验分享", "c": [{"t": "分享经验、报名、比赛、活动、答辩和作品制作经验等", "c": []}]}, {"t": "学习记录（打卡）", "c": [{"t": "记录课程、技能学习、阶段进展", "c": []}]}, {"t": "组队需求", "c": [{"t": "求招、求邀请、缺人、技能、联系方式等", "c": []}]}]}, {"t": "活动与竞赛内容", "c": [{"t": "竞赛", "c": [{"t": "获奖信息", "c": [{"t": "展示赛事、奖项、队伍、项目简介和成果图片", "c": []}]}, {"t": "备赛过程", "c": [{"t": "分享进度、工具、遇到的问题、阶段成果", "c": []}]}, {"t": "比赛复盘", "c": [{"t": "总结时间、任务分工、得失、建议", "c": []}]}, {"t": "项目展示", "c": [{"t": "展示项目的名称、技术方向、参赛人员等", "c": []}]}]}, {"t": "活动", "c": [{"t": "校园活动", "c": [{"t": "展示主题、时间、地点、条件和规则等", "c": []}]}, {"t": "学术讲座", "c": [{"t": "主讲人、主题、时间、地点、预约方式等", "c": []}]}, {"t": "学术调研", "c": [{"t": "调研内容、调研人、面向群体等", "c": []}]}]}]}]}, {"t": "发布动态", "c": [{"t": "内容编辑", "c": [{"t": "文字", "c": [{"t": "输入正文并支持草稿自动保存", "c": []}]}, {"t": "图片", "c": [{"t": "上传多张图片、预览、排序和删除", "c": []}]}, {"t": "话题", "c": [{"t": "选择商品、找搭子、竞赛、活动、学校、技能、校园话题等", "c": []}]}, {"t": "关联内容", "c": [{"t": "关联活动、学校、竞赛、技能或校园话题", "c": []}]}]}, {"t": "发布设置", "c": [{"t": "可见范围", "c": [{"t": "时间范围、地域范围、隐私范围（公开、私密、仅关注可见）", "c": []}]}, {"t": "评论权限", "c": [{"t": "所有人、关注的人、仅自己、关闭", "c": []}]}, {"t": "发布确认", "c": [{"t": "检查必填项，社区规范、敏感信息提示", "c": []}]}]}]}, {"t": "内容治理", "c": [{"t": "举报", "c": [{"t": "举报原因", "c": [{"t": "虚假信息、诈骗、侵权、违规等", "c": []}]}, {"t": "举报材料", "c": [{"t": "提交问题说明、截图与链接", "c": []}]}]}, {"t": "内容管理", "c": [{"t": "不感兴趣", "c": [{"t": "减少相似内容推荐", "c": []}]}, {"t": "屏蔽用户", "c": [{"t": "不再展示对方内容和互动", "c": []}]}]}]}]}, {"t": "消息", "c": [{"t": "页面顶部", "c": [{"t": "消息分类", "c": [{"t": "全部", "c": [{"t": "按时间展示所有信息", "c": []}]}, {"t": "未读", "c": [{"t": "只展示尚未查看或处理的消息", "c": []}]}, {"t": "分类入口", "c": [{"t": "活动、竞赛、商品、搭子和系统消息", "c": []}]}]}, {"t": "管理操作", "c": [{"t": "全部已读", "c": [{"t": "将当前消息批量标记为已读", "c": []}]}, {"t": "消息设置", "c": [{"t": "进入通知开关和免打扰设置", "c": []}]}]}]}, {"t": "组队协作", "c": [{"t": "申请中心", "c": [{"t": "收到的申请", "c": [{"t": "展示申请人技能、简介、学校及申请理由", "c": []}]}, {"t": "处理申请", "c": [{"t": "支持同意、拒绝、补充询问", "c": []}]}, {"t": "我的申请", "c": [{"t": "查看待处理、已通过、已拒绝和已撤回的状态", "c": []}]}, {"t": "申请详情", "c": [{"t": "展示关联活动、竞赛等", "c": []}]}]}, {"t": "团队会话", "c": [{"t": "私聊", "c": [{"t": "支持文字、图片、文件和关联活动、竞赛、商品等卡片", "c": []}]}, {"t": "队伍群聊", "c": [{"t": "展示活动成员列表或竞赛成员、公告、重要消息", "c": []}]}, {"t": "队伍通知", "c": [{"t": "提示成员加入、退出、角色调整和招募关闭", "c": []}]}, {"t": "会话操作", "c": [{"t": "支持置顶、免打扰、举报和删除本地会话记录", "c": []}]}]}]}, {"t": "内容互动", "c": [{"t": "评论与回复", "c": [{"t": "评论通知", "c": [{"t": "展示评论人、原内容摘要和评论正文", "c": []}]}, {"t": "回复通知", "c": [{"t": "展示回复并可以直接进入讨论位置", "c": []}]}, {"t": "提及通知", "c": [{"t": "展示动态、帖子和评论中的提及内容", "c": []}]}]}, {"t": "点赞与收藏", "c": [{"t": "点赞通知", "c": [{"t": "汇总展示点赞用户和关联内容", "c": []}]}, {"t": "收藏反馈", "c": [{"t": "展示内容被收藏情况并进入内容详情", "c": []}]}, {"t": "新增关注", "c": [{"t": "展示关注者基本资料和关注入口", "c": []}]}]}]}, {"t": "活动与赛事系统", "c": [{"t": "活动与赛事提醒", "c": [{"t": "报名开始", "c": [{"t": "展示活动或赛事名称、开放时间和报名入口", "c": []}]}, {"t": "即将截止", "c": [{"t": "展示剩余时间并进入报名信息页", "c": []}]}, {"t": "赛程与活动提醒", "c": [{"t": "提醒材料提交、开始时间、地点、结束时间", "c": []}]}, {"t": "规则变化", "c": [{"t": "展示变化摘要及官方来源", "c": []}]}]}, {"t": "系统通知", "c": [{"t": "内容审核", "c": [{"t": "展示通过、退回或下架结果及原因", "c": []}]}, {"t": "举报处理", "c": [{"t": "展示处理状态、结果和申诉入口", "c": []}]}, {"t": "账号安全", "c": [{"t": "提示异地登录、密码修改和绑定信息", "c": []}]}, {"t": "平台公告", "c": [{"t": "展示维护时间、版本更新和重要规则", "c": []}]}]}]}]}, {"t": "我的", "c": [{"t": "个人主页头部", "c": [{"t": "个人资料卡", "c": [{"t": "基础信息", "c": [{"t": "展示头像、昵称、学校", "c": []}]}, {"t": "能力信息", "c": [{"t": "展示专业、技能标签、爱好、性格", "c": []}]}, {"t": "数据概览", "c": [{"t": "展示参加的活动、比赛，发布了多少帖子等", "c": []}]}, {"t": "编辑资料", "c": [{"t": "修改头像、昵称、简介、专业、技能", "c": []}]}]}, {"t": "右上角设置图标", "c": [{"t": "点击行为", "c": [{"t": "进入独立的设置中心页面", "c": []}]}, {"t": "状态提示", "c": [{"t": "账号存在安全风险的时候提示标记", "c": []}]}]}]}, {"t": "我的商品、活动、竞赛、搭子", "c": [{"t": "商品", "c": [{"t": "订单信息", "c": [{"t": "交易时间、交易金额、联系方式等", "c": []}]}]}, {"t": "活动", "c": [{"t": "活动记录", "c": [{"t": "进行中", "c": [{"t": "查看当前阶段、下一节点和活动详情", "c": []}]}, {"t": "历史活动", "c": [{"t": "按年份、类别查看活动记录", "c": []}]}]}]}, {"t": "竞赛", "c": [{"t": "参赛记录", "c": [{"t": "进行中", "c": [{"t": "查看当前阶段、下一节点和比赛详情", "c": []}]}, {"t": "历史竞赛", "c": [{"t": "按年份、类别查看活动记录", "c": []}]}]}, {"t": "成果展示", "c": [{"t": "获奖记录", "c": [{"t": "记录赛事、奖项、年度和证明材料", "c": []}]}, {"t": "作品资料", "c": [{"t": "保存项目介绍、演示链接和公开附件", "c": []}]}]}]}]}, {"t": "我的管理", "c": [{"t": "组队管理", "c": [{"t": "我的申请", "c": [{"t": "查看申请状态、撤回待处理申请", "c": []}]}, {"t": "我的队伍", "c": [{"t": "查看成员、分工、公告和活动、事件或比赛进度", "c": []}]}, {"t": "我的招募", "c": [{"t": "编辑条件、处理申请、暂停、或停止招募", "c": []}]}, {"t": "收到的邀请", "c": [{"t": "查看邀请队伍并接受或拒绝", "c": []}]}]}, {"t": "内容管理", "c": [{"t": "我的动态", "c": [{"t": "查看、编辑、删除、设置可见范围", "c": []}]}, {"t": "我的帖子", "c": [{"t": "管理讨论、经验和资料内容", "c": []}]}, {"t": "我的评论", "c": [{"t": "查看评论记录并进入原内容", "c": []}]}, {"t": "我的收藏", "c": [{"t": "按活动、竞赛、帖子、动态等分类查看", "c": []}]}]}, {"t": "个人信息与功能认证", "c": [{"t": "认证状态", "c": [{"t": "未认证", "c": [{"t": "显示仅操作的功能和认证页面", "c": []}]}, {"t": "认证中", "c": [{"t": "预留后端返回处理状态", "c": []}]}, {"t": "已认证", "c": [{"t": "仅展示状态和可使用的功能范围", "c": []}]}, {"t": "未通过", "c": [{"t": "预留原因说明和重新进入入口", "c": []}]}]}, {"t": "认证页面占位", "c": [{"t": "页面内容", "c": [{"t": "说明认证用途、权限变化和隐私边界", "c": []}]}, {"t": "接口预留", "c": [{"t": "只保留状态读取和权限判断字段", "c": []}]}, {"t": "明确边界", "c": [{"t": "不涉及学信网材料输入、授权和审核流程", "c": []}]}]}]}]}, {"t": "设置中心", "c": [{"t": "账号管理", "c": [{"t": "绑定手机号", "c": [{"t": "展示脱敏号码、绑定状态、更换和解除入口", "c": []}]}, {"t": "绑定邮箱", "c": [{"t": "展示脱敏邮箱、验证状态、更换和解除入口", "c": []}]}, {"t": "修改密码", "c": [{"t": "校验当前密码并设置符合规则的新密码", "c": []}]}, {"t": "登录设备", "c": [{"t": "查看设备、最近登录时间和退出其他设备", "c": []}]}, {"t": "账号注销", "c": [{"t": "展示影响说明、冷静期和身份确认入口", "c": []}]}]}, {"t": "消息通知", "c": [{"t": "组队通知", "c": [{"t": "分别控制申请、邀请、成员变化和会话提醒", "c": []}]}, {"t": "活动与比赛通知", "c": [{"t": "分别控制报名、截止、成员变化和会话提醒", "c": []}]}, {"t": "商品通知", "c": [{"t": "分别控制商品状态，卖出中、已卖出等", "c": []}]}, {"t": "搭子通知", "c": [{"t": "分别控制搭子状态，寻找中、已找到等", "c": []}]}, {"t": "互动通知", "c": [{"t": "分别控制评论、回复、点赞、收藏和关注提醒", "c": []}]}, {"t": "系统通知", "c": [{"t": "安全和必要服务通知不可完全关闭", "c": []}]}, {"t": "免打扰", "c": [{"t": "设置开始时间、结束时间和例外会话", "c": []}]}]}, {"t": "隐私设置", "c": [{"t": "资料可见范围", "c": [{"t": "学校、专业、技能或竞赛", "c": []}]}, {"t": "动态可见范围", "c": [{"t": "设置默认可见范围和历史动态权限", "c": []}]}, {"t": "联系权限", "c": [{"t": "控制谁可以私聊、邀请组队和申请加入", "c": []}]}, {"t": "黑名单", "c": [{"t": "查看已屏蔽用户并支持解除屏蔽", "c": []}]}, {"t": "个性化推荐", "c": [{"t": "控制是否使用行为数据进行内容推荐", "c": []}]}]}, {"t": "通用设置", "c": [{"t": "清理缓存", "c": [{"t": "清理展示缓存大小并清理本地临时数据", "c": []}]}, {"t": "字体显示", "c": [{"t": "设置字体大小和深色模式", "c": []}]}, {"t": "语言", "c": [{"t": "首版默认简体中文并预留多语言入口", "c": []}]}, {"t": "关于平台", "c": [{"t": "展示版本号、用户协议、隐私政策和开源许可", "c": []}]}]}, {"t": "帮助与反馈", "c": [{"t": "常见问题", "c": [{"t": "查看账号、活动、赛事、组队消息和内容规则说明", "c": []}]}, {"t": "意见反馈", "c": [{"t": "选择问题类型并提交文字图片和联系方式", "c": []}]}, {"t": "举报记录", "c": [{"t": "查看举报对象、提交时间、进度和处理结果", "c": []}]}, {"t": "联系客服", "c": [{"t": "展示服务时间和官方联系渠道", "c": []}]}]}, {"t": "退出登录", "c": [{"t": "确认弹窗", "c": [{"t": "提示退出后认可使用游客模式浏览公开内容", "c": []}]}, {"t": "退出结果", "c": [{"t": "清除本地会话并返回登录或游客入口", "c": []}]}]}]}]}]}, {"t": "全局导航规则", "c": [{"t": "底部导航栏", "c": [{"t": "首页", "c": [{"t": "默认入口", "c": [{"t": "展示待办和机会推荐", "c": []}]}]}, {"t": "动态", "c": [{"t": "内容入口", "c": [{"t": "浏览和发布内容动态", "c": []}]}]}, {"t": "消息", "c": [{"t": "写作入口", "c": [{"t": "展示未读角标并处理组队信息", "c": []}]}]}, {"t": "我的", "c": [{"t": "个人入口", "c": [{"t": "管理内容、活动、商品等", "c": []}]}]}]}, {"t": "权限规则", "c": [{"t": "游客", "c": [{"t": "仅浏览相关内容，不能进行操作", "c": []}]}, {"t": "登录用户", "c": [{"t": "收藏订阅、管理个人资料，但是不能决定能否发布活动和竞赛组队", "c": []}]}, {"t": "认证用户", "c": [{"t": "可以发布一些活动和竞赛等，进行组队等行为", "c": []}]}]}, {"t": "全局交互", "c": [{"t": "返回规则", "c": [{"t": "页面返回", "c": [{"t": "返回上级页面并保留列表位置和筛选条件", "c": []}]}]}, {"t": "加载状态", "c": [{"t": "网络状态", "c": [{"t": "显示加载、空状态、失败重试和离线提示", "c": []}]}]}, {"t": "发布草稿", "c": [{"t": "草稿保护", "c": [{"t": "页面退出自动保存未发布的内容", "c": []}]}]}, {"t": "安全治理", "c": [{"t": "用户操作", "c": [{"t": "所有用户内容均提供举报、屏蔽和申诉入口", "c": []}]}]}]}]}]};
+var COUNT = 402;
+
+var BOXW = 220, COLGAP = 64, ROW = 46;
+var PURPLE = { s: '#7f77dd', f: '#2b2748' };
+var TEAL = { s: '#5dcaa5', f: '#12362c' };
+var DEF = { s: '#7f77dd', f: '#221f36' };
+
+var root = null, flatNodes = [];
+function prep(n, depth, parent) {
+  n.depth = depth; n.parent = parent; n.children = n.c; n._children = null;
+  n.c.forEach(function (c) { prep(c, depth + 1, n); });
+  return n;
+}
+function collect(n) { flatNodes.push(n); n.c.forEach(collect); }
+function branchOf(n) {
+  var p = n;
+  while (p.parent) p = p.parent;
+  if (p.t === '主界面设计') return PURPLE;
+  if (p.t === '全局导航规则') return TEAL;
+  return DEF;
+}
+function setLevel(maxDepth) {
+  (function rec(n) {
+    if (n.depth < maxDepth) { n.children = n.c; n._children = null; }
+    else { n.children = null; n._children = n.c; }
+    n.c.forEach(rec);
+  })(root);
+}
+function expandAll() {
+  (function rec(n) { n.children = n.c; n._children = null; n.c.forEach(rec); })(root);
+}
+
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function layout() {
+  var slot = 0;
+  (function rec(n) {
+    n.vx = n.depth * (BOXW + COLGAP);
+    if (n.children && n.children.length) {
+      n.children.forEach(rec);
+      n.vy = (n.children[0].vy + n.children[n.children.length - 1].vy) / 2;
+    } else {
+      n.vy = slot * ROW; slot++;
+    }
+  })(root);
+  return slot;
+}
+
+function textLines(n) {
+  var font = n.depth === 0 ? 14 : (n.depth === 1 ? 13 : 12);
+  var cpl = Math.floor((BOXW - 26) / font);
+  var hasBadge = !!n._children;
+  if (hasBadge) cpl -= 3;
+  var t = n.t;
+  if (t.length <= cpl) return { lines: [t], font: font };
+  var l1 = t.slice(0, cpl);
+  var rest = t.slice(cpl);
+  var l2 = rest.length > cpl ? rest.slice(0, cpl - 1) + '…' : rest;
+  return { lines: [l1, l2], font: font };
+}
+
+function render() {
+  var maxSlot = layout();
+  var parts = [];
+  var visible = [];
+  (function rec(n) { visible.push(n); if (n.children) n.children.forEach(rec); })(root);
+
+  var i;
+  for (i = 0; i < visible.length; i++) visible[i].idx = i;
+
+  var edges = [];
+  (function rec(n) {
+    if (n.children) n.children.forEach(function (c) {
+      edges.push({ s: n, t: c });
+      rec(c);
+    });
+  })(root);
+  for (i = 0; i < edges.length; i++) {
+    var e = edges[i];
+    var x0 = e.s.vx + BOXW, y0 = e.s.vy, x1 = e.t.vx, y1 = e.t.vy;
+    var mx = (x0 + x1) / 2;
+    parts.push('<path class="lk" stroke="' + branchOf(e.t).s + '" d="M' + x0 + ',' + y0 +
+      ' C' + mx + ',' + y0 + ' ' + mx + ',' + y1 + ' ' + x1 + ',' + y1 + '"/>');
+  }
+
+  for (i = 0; i < visible.length; i++) {
+    var n = visible[i];
+    var br = branchOf(n);
+    var tl = textLines(n);
+    var two = tl.lines.length === 2;
+    var h = two ? 42 : 28;
+    var bg, bd, fg, fw, fs;
+    if (n.depth === 0) { bg = '#3c3489'; bd = '#cecbf6'; fg = '#cecbf6'; fw = 'font-weight:500'; }
+    else if (n.depth === 1) { bg = br.f; bd = br.s; fg = '#e8e6f0'; fw = 'font-weight:500'; }
+    else { bg = '#221f36'; bd = '#34324a'; fg = (n.children || n._children) ? '#cfcce0' : '#a9a6bd'; fw = 'font-weight:400'; }
+    fs = 'font-size:' + tl.font + 'px';
+    var s = '<g class="nd" data-i="' + n.idx + '" transform="translate(' + n.vx + ',' + n.vy + ')">';
+    s += '<title>' + esc(n.t) + '</title>';
+    s += '<rect class="body" x="-1" y="' + (-h / 2) + '" width="' + (BOXW + 2) + '" height="' + h +
+      '" rx="7" fill="' + bg + '" stroke="' + bd + '" stroke-width="1"/>';
+    if (n.depth >= 2) {
+      s += '<rect x="-1" y="' + (-h / 2 + 3) + '" width="4" height="' + (h - 6) +
+        '" rx="2" fill="' + br.s + '"/>';
+    }
+    if (two) {
+      s += '<text x="12" y="-6" fill="' + fg + '" ' + fs + ' ' + fw + '>' + esc(tl.lines[0]) + '</text>';
+      s += '<text x="12" y="10" fill="' + fg + '" ' + fs + ' ' + fw + '>' + esc(tl.lines[1]) + '</text>';
+    } else {
+      s += '<text x="12" y="4" fill="' + fg + '" ' + fs + ' ' + fw + '>' + esc(tl.lines[0]) + '</text>';
+    }
+    if (n._children) {
+      s += '<text class="badge" x="' + (BOXW - 8) + '" y="' + (h / 2 - 6) + '" text-anchor="end">+' + n._children.length + '</text>';
+    }
+    s += '</g>';
+    parts.push(s);
+  }
+  world.innerHTML = parts.join('');
+}
+
+var k = 1, tx = 0, ty = 0, world = null;
+function apply() {
+  if (world) world.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + k + ')');
+}
+function fit() {
+  var stage = document.getElementById('stage');
+  var rect = stage.getBoundingClientRect();
+  var w = rect.width, h = rect.height;
+  var maxDepth = 0, maxY = 0;
+  (function rec(n) {
+    if (n.children) n.children.forEach(rec);
+    if (n.depth > maxDepth) maxDepth = n.depth;
+    if (n.vy > maxY) maxY = n.vy;
+  })(root);
+  var bw = (maxDepth + 1) * (BOXW + COLGAP) - COLGAP + 40;
+  var bh = maxY + 60;
+  var pad = 40;
+  var kk = Math.min((w - pad * 2) / bw, (h - pad * 2) / bh, 1.1);
+  kk = Math.max(kk, 0.05);
+  k = kk;
+  tx = pad + (w - pad * 2 - bw * kk) / 2;
+  ty = pad + (h - pad * 2 - bh * kk) / 2;
+  apply();
+}
+
+function zoomAt(px, py, factor) {
+  var k2 = Math.min(2.5, Math.max(0.05, k * factor));
+  tx = px - (px - tx) * (k2 / k);
+  ty = py - (py - ty) * (k2 / k);
+  k = k2;
+  apply();
+}
+
+(function init() {
+  root = prep(DATA, 0, null);
+  collect(root);
+  document.getElementById('count').textContent = '共 ' + COUNT + ' 个节点';
+
+  var svg = document.getElementById('cv');
+  var stage = document.getElementById('stage');
+  world = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  svg.appendChild(world);
+
+  function renderWorld() { render(); }
+
+  svg.addEventListener('click', function (e) {
+    if (svg._dragged) { svg._dragged = false; return; }
+    var el = e.target;
+    while (el && el !== world && !el.classList.contains('nd')) el = el.parentNode;
+    if (!el || el === world) return;
+    var n = flatNodes[+el.getAttribute('data-i')];
+    if (!n) return;
+    if (n.children) { n._children = n.children; n.children = null; }
+    else if (n._children) { n.children = n._children; n._children = null; }
+    render();
+  });
+
+  var panning = false, sx = 0, sy = 0, stx = 0, sty = 0;
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return;
+    panning = true; svg._dragged = false;
+    sx = e.clientX; sy = e.clientY; stx = tx; sty = ty;
+    stage.classList.add('drag');
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!panning) return;
+    var dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) + Math.abs(dy) > 4) svg._dragged = true;
+    tx = stx + dx; ty = sty + dy;
+    apply();
+  });
+  window.addEventListener('pointerup', function () {
+    panning = false;
+    stage.classList.remove('drag');
+    setTimeout(function () { svg._dragged = false; }, 0);
+  });
+
+  stage.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var rect = stage.getBoundingClientRect();
+    zoomAt(e.clientX - rect.left, e.clientY - rect.top, e.deltaY < 0 ? 1.15 : 1 / 1.15);
+  }, { passive: false });
+
+  var btns = document.querySelectorAll('#bar button[data-lv]');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function () {
+      document.querySelectorAll('#bar button').forEach(function (b) { b.classList.remove('on'); });
+      this.classList.add('on');
+      setLevel(+this.getAttribute('data-lv'));
+      render(); fit();
+    });
+  }
+  document.getElementById('all').addEventListener('click', function () {
+    document.querySelectorAll('#bar button').forEach(function (b) { b.classList.remove('on'); });
+    this.classList.add('on');
+    expandAll(); render(); fit();
+  });
+  document.getElementById('fit').addEventListener('click', fit);
+
+  setLevel(3);
+  render();
+  fit();
+})();
+</script>
+</body>
+</html>
