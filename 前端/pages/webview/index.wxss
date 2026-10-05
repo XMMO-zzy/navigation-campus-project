@@ -1,0 +1,8 @@
+/* pages/webview/index.wxss */
+page {
+  background: var(--c-bg-page);
+}
+.invalid {
+  min-height: 100vh;
+  background: var(--c-bg-page);
+}

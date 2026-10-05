@@ -1,0 +1,133 @@
+<!-- 混合信息流卡片：六类注册制渲染（《04》动态信息流 /《13》§4 feed 结构） -->
+<view class="fc" bindtap="onTapCard">
+
+  <!-- ============ 通用头部：发布者信息（《04》动态卡片结构第 1 段） ============ -->
+  <view class="fc-head" wx:if="{{cardType !== 'notice' && view.user.nickname}}">
+    <image class="fc-avatar" src="{{view.user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" catchtap="onTapUser" />
+    <view class="fc-head-main">
+      <view class="fc-nickname">
+        <text class="fc-name">{{view.user.nickname}}</text>
+        <text class="fc-school" wx:if="{{view.user.schoolTag}}">{{view.user.schoolTag}}</text>
+      </view>
+      <text class="fc-time">{{timeText}}</text>
+    </view>
+    <view class="fc-more" catchtap="onMore">···</view>
+  </view>
+
+  <!-- ============ 类型 1：动态卡（含个人内容子类） ============ -->
+  <block wx:if="{{cardType === 'post'}}">
+    <view class="fc-body">
+      <text class="fc-text">{{view.text}}</text>
+      <view class="fc-tags" wx:if="{{view.postTypeText || view.topics.length}}">
+        <text class="fc-tag-type" wx:if="{{view.postTypeText}}">{{view.postTypeText}}</text>
+        <text class="fc-tag" wx:for="{{view.topics}}" wx:key="*this">#{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 图片网格 -->
+    <view class="fc-imgs imgs-{{view.imageCount >= 3 ? 3 : view.imageCount}}" wx:if="{{view.imageCount}}">
+      <image wx:for="{{view.images}}" wx:key="*this" src="{{item}}" mode="aspectFill"
+             class="fc-img" data-index="{{index}}" catchtap="onPreviewImage" />
+    </view>
+
+    <!-- 关联内容（link：活动/竞赛/商品/技能/话题）|《13》§4 link 字段 -->
+    <view class="fc-link" wx:if="{{view.link}}">
+      <view class="fc-link-left">
+        <text class="fc-link-title">{{view.link.title}}</text>
+        <text class="fc-link-sub" wx:if="{{view.deadlineText}}">截止剩余 {{view.deadlineText}}</text>
+      </view>
+      <text class="fc-link-arrow">›</text>
+    </view>
+  </block>
+
+  <!-- ============ 类型 2：二手商品卡（两栏瀑布流卡片） ============ -->
+  <block wx:elif="{{cardType === 'goods'}}">
+    <view class="fc-goods">
+      <image class="fc-goods-img" src="{{view.image || (view.images[0] || '')}}" mode="aspectFill" />
+      <view class="fc-goods-main">
+        <text class="fc-goods-title ellipsis-2">{{view.title}}</text>
+        <view class="fc-goods-meta">
+          <text class="fc-price">{{view.priceText}}</text>
+          <text class="fc-cond" wx:if="{{view.condText}}">{{view.condText}}</text>
+        </view>
+        <view class="fc-goods-foot">
+          <text class="fc-time">{{timeText}}</text>
+          <text class="fc-fav">{{view.favoriteText}} 人收藏</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 类型 3：找搭子卡（《04》搭子信息：性别/爱好/年龄/性格） ============ -->
+  <block wx:elif="{{cardType === 'buddy'}}">
+    <view class="fc-body">
+      <view class="fc-buddy-head">
+        <text class="fc-buddy-type">{{view.buddyTypeText || '找搭子'}}</text>
+        <text class="fc-buddy-limit" wx:if="{{view.genderLimit === 1}}">仅限女生</text>
+      </view>
+      <text class="fc-text">{{view.desc || view.text}}</text>
+      <view class="fc-tags" wx:if="{{view.tags.length || view.tagList}}">
+        <text class="fc-tag" wx:for="{{view.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="fc-buddy-info" wx:if="{{view.genderText || view.age}}">
+        <text class="fc-buddy-item" wx:if="{{view.genderText}}">{{view.genderText}}</text>
+        <text class="fc-buddy-item" wx:if="{{view.age}}">{{view.age}}岁</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 类型 4/5：活动与竞赛卡 ============ -->
+  <block wx:elif="{{cardType === 'activity' || cardType === 'competition'}}">
+    <view class="fc-body">
+      <view class="fc-event-head">
+        <text class="fc-event-badge {{cardType}}">{{cardType === 'activity' ? '活动' : '竞赛'}}</text>
+        <text class="fc-event-title">{{view.title}}</text>
+      </view>
+      <view class="fc-event-meta">
+        <text class="fc-event-item" wx:if="{{view.place}}">📍 {{view.place}}</text>
+        <text class="fc-event-item" wx:if="{{view.startAt}}">🕐 {{view.startAtText}}</text>
+        <text class="fc-event-item" wx:if="{{view.organizer}}">🏛 {{view.organizer}}</text>
+        <text class="fc-event-item" wx:if="{{view.levelText}}">🏆 {{view.levelText}}</text>
+      </view>
+      <view class="fc-deadline" wx:if="{{view.deadlineText}}">
+        <text class="fc-deadline-text">距离截止还有 {{view.deadlineText}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 类型 6：校园 / 官方通知卡 ============ -->
+  <block wx:elif="{{cardType === 'notice'}}">
+    <view class="fc-body">
+      <view class="fc-notice-head">
+        <text class="fc-notice-badge">公告</text>
+        <text class="fc-notice-title">{{view.title}}</text>
+      </view>
+      <text class="fc-text ellipsis-2">{{view.content || view.text}}</text>
+      <view class="fc-notice-foot">
+        <text class="fc-time" wx:if="{{view.source}}">{{view.source}}</text>
+        <text class="fc-time">{{timeText}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 互动数据 + 操作栏（《04》卡片结构第 3、4 段） ============ -->
+  <view class="fc-actions" wx:if="{{showActions && cardType !== 'notice'}}">
+    <view class="fc-act" catchtap="onLike">
+      <text class="fc-act-icon">{{view.liked ? '❤️' : '🤍'}}</text>
+      <text class="fc-act-text">{{view.likeText}}</text>
+    </view>
+    <view class="fc-act" catchtap="onComment">
+      <text class="fc-act-icon">💬</text>
+      <text class="fc-act-text">{{view.commentText}}</text>
+    </view>
+    <view class="fc-act" catchtap="onFavorite">
+      <text class="fc-act-icon">{{view.favorited ? '⭐' : '☆'}}</text>
+      <text class="fc-act-text">{{view.favoriteText}}</text>
+    </view>
+    <view class="fc-act" catchtap="onShare">
+      <text class="fc-act-icon">↗</text>
+      <text class="fc-act-text">分享</text>
+    </view>
+  </view>
+
+</view>

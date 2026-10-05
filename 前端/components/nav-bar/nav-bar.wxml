@@ -1,0 +1,15 @@
+<view class="nb nb-{{theme}} {{border ? 'nb-border' : ''}}" style="padding-top:{{statusBarHeight}}px;">
+  <view class="nb-inner">
+    <view class="nb-left">
+      <view class="nb-back" wx:if="{{back}}" bindtap="onBack">
+        <text class="nb-back-icon">‹</text>
+      </view>
+    </view>
+    <view class="nb-title">{{title}}</view>
+    <view class="nb-right" style="width:{{rightWidth ? rightWidth + 'rpx' : 'auto'}}">
+      <slot name="right"></slot>
+    </view>
+  </view>
+</view>
+<!-- 占位：避免内容被固定导航栏遮挡 -->
+<view class="nb-holder" style="height:{{statusBarHeight + 44}}px;"></view>

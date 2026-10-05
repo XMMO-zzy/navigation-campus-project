@@ -1,0 +1,9 @@
+@import "../../styles/setting-common.wxss";
+
+/* pages/me/setting-privacy.wxss — 隐私设置 */
+.note--link {
+  color: var(--c-primary);
+}
+.note:last-of-type {
+  padding-bottom: 40rpx;
+}

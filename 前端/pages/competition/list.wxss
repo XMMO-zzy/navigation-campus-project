@@ -1,0 +1,90 @@
+@import "../../styles/list-common.wxss";
+
+/* ==========================================================================
+   pages/competition/list —— 竞赛列表
+   ========================================================================== */
+
+/* ---- 搜索 ---- */
+.search-bar { background: #FFFFFF; padding: 16rpx 24rpx; }
+.search-box {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: #F4F6FA;
+  border-radius: 36rpx;
+}
+.search-box__icon { font-size: 28rpx; margin-right: 12rpx; }
+.search-box__input { flex: 1; font-size: 27rpx; color: var(--c-text-1); }
+.search-box__clear {
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 40rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #FFFFFF;
+  background: #C9D3E0;
+  border-radius: 50%;
+}
+.ph { color: #A9B4C4; }
+
+/* 筛选栏 picker 内联 */
+.filter-bar picker { display: flex; align-items: center; }
+
+/* ---- 竞赛卡片 ---- */
+.cmp-card {
+  display: flex;
+  margin-bottom: 20rpx;
+  padding: 22rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+.cmp-card__left { position: relative; flex-shrink: 0; }
+.cmp-card__cover {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  background: #F0F3F7;
+}
+.cmp-card__level {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 12rpx 0 12rpx 0;
+  height: 40rpx;
+  line-height: 40rpx;
+}
+.cmp-card__right { flex: 1; margin-left: 20rpx; min-width: 0; display: flex; flex-direction: column; }
+.cmp-card__top { display: flex; margin-bottom: 10rpx; }
+.cmp-card__title {
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--c-text-1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cmp-card__meta {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--c-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cmp-card__foot { display: flex; margin-top: auto; padding-top: 12rpx; }
+.cmp-card__foot-item {
+  display: flex;
+  align-items: center;
+  margin-right: 24rpx;
+  font-size: 23rpx;
+  color: var(--c-text-2);
+}
+.cmp-card__ico { margin-right: 6rpx; font-size: 22rpx; }
+.cmp-card__deadline {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--c-warning);
+}

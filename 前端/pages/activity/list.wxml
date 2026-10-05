@@ -1,0 +1,101 @@
+<!-- pages/activity/list.wxml — 校园活动列表 -->
+<view class="page-wrap">
+
+  <nav-bar title="校园活动" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapPublish">
+      <text class="nav-act-text">发布</text>
+    </view>
+  </nav-bar>
+
+  <!-- 搜索 -->
+  <view class="search-bar">
+    <view class="search-box">
+      <text class="search-box__icon">🔍</text>
+      <input
+        class="search-box__input"
+        placeholder="搜索活动名称、主办方"
+        placeholder-class="ph"
+        value="{{keyword}}"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <text wx:if="{{keyword}}" class="search-box__clear" bindtap="onClearKeyword">×</text>
+    </view>
+  </view>
+
+  <!-- 分类页签 -->
+  <scroll-view class="scroll-tabs" scroll-x enable-flex>
+    <view
+      wx:for="{{categories}}"
+      wx:key="value"
+      class="scroll-tabs__item {{activeCategory === item.value ? 'scroll-tabs__item--on' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onPickCategory"
+    >{{item.label}}</view>
+  </scroll-view>
+
+  <!-- 排序栏 -->
+  <view class="filter-bar">
+    <view
+      wx:for="{{sorts}}"
+      wx:key="key"
+      class="filter-item {{activeSort === item.key ? 'on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onPickSort"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <skeleton wx:if="{{loading}}" type="list" rows="{{5}}" />
+
+    <block wx:elif="{{error}}">
+      <empty state="error" icon="⚠️" text="加载失败" desc="请检查网络后重试" action-text="重新加载" bind:action="onRetry" />
+    </block>
+
+    <block wx:elif="{{!list.length}}">
+      <empty icon="🎪" text="暂无活动" desc="当前筛选条件下还没有活动，换个条件试试" action-text="发布活动" bind:action="onTapPublish" />
+    </block>
+
+    <block wx:else>
+      <view
+        class="act-card"
+        wx:for="{{list}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onTapItem"
+      >
+        <view class="act-card__head">
+          <view class="tag tag--{{item.statusTag}}">{{item.statusText}}</view>
+          <view class="act-card__cat">{{item.categoryText}}</view>
+        </view>
+        <view class="act-card__title">{{item.title}}</view>
+        <view class="act-card__body">
+          <image class="act-card__cover" src="{{item.cover}}" mode="aspectFill" />
+          <view class="act-card__meta">
+            <view class="act-card__row">
+              <text class="act-card__ico">🕐</text>
+              <text class="act-card__txt">{{item.startText || '待定'}}</text>
+            </view>
+            <view class="act-card__row">
+              <text class="act-card__ico">📍</text>
+              <text class="act-card__txt">{{item.place || '地点待定'}}</text>
+            </view>
+            <view class="act-card__row" wx:if="{{item.enrollText}}">
+              <text class="act-card__ico">👥</text>
+              <text class="act-card__txt">{{item.enrollText}}</text>
+            </view>
+            <view class="act-card__row" wx:if="{{item.deadlineText}}">
+              <text class="act-card__ico">⏳</text>
+              <text class="act-card__txt act-card__txt--warn">{{item.deadlineText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

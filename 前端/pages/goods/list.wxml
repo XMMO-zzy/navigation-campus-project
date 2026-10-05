@@ -1,0 +1,112 @@
+<!-- 二手商品列表：两栏瀑布流 + 筛选（《04》1.2 二手服务区 / FR-M4-02） -->
+<view class="page-wrap">
+
+  <nav-bar title="二手服务区" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapPublish">
+      <text class="nav-act-text">发布</text>
+    </view>
+  </nav-bar>
+
+  <!-- 视图页签（二手商品 / 我的商品 / 我的关注 / 我的订单） -->
+  <view class="view-tabs">
+    <view class="view-tab {{view === item.key ? 'active' : ''}}"
+          wx:for="{{viewTabs}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="onSwitchView">{{item.label}}</view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-item {{filters.category ? 'on' : ''}}" bindtap="onToggleFilter">
+      {{filters.category ? '品类 · 已选' : '品类'}} ▾
+    </view>
+    <view class="filter-item {{filters.cond ? 'on' : ''}}" bindtap="onToggleFilter">
+      {{filters.cond ? '成色 · 已选' : '成色'}} ▾
+    </view>
+    <view class="filter-item {{(filters.min || filters.max) ? 'on' : ''}}" bindtap="onToggleFilter">
+      价格 ▾
+    </view>
+    <view class="filter-reset" wx:if="{{filters.category || filters.cond || filters.min || filters.max}}"
+          bindtap="onResetFilter">重置</view>
+  </view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-panel" wx:if="{{filterVisible}}">
+    <view class="filter-group">
+      <text class="filter-label">品类</text>
+      <view class="filter-chips">
+        <view class="chip {{filters.category === item.value ? 'on' : ''}}"
+              wx:for="{{categories}}" wx:key="value"
+              data-value="{{item.value}}" bindtap="onPickCategory">{{item.label}}</view>
+      </view>
+    </view>
+    <view class="filter-group">
+      <text class="filter-label">成色</text>
+      <view class="filter-chips">
+        <view class="chip {{filters.cond === item.value ? 'on' : ''}}"
+              wx:for="{{conds}}" wx:key="value"
+              data-value="{{item.value}}" bindtap="onPickCond">{{item.label}}</view>
+      </view>
+    </view>
+    <view class="filter-group">
+      <text class="filter-label">价格区间</text>
+      <view class="price-range">
+        <input class="price-input" type="digit" placeholder="最低价" placeholder-class="placeholder"
+               value="{{filters.min}}" data-field="min" bindinput="onPriceInput" />
+        <text class="price-sep">—</text>
+        <input class="price-input" type="digit" placeholder="最高价" placeholder-class="placeholder"
+               value="{{filters.max}}" data-field="max" bindinput="onPriceInput" />
+      </view>
+    </view>
+    <view class="filter-actions">
+      <view class="btn btn-plain flex-1" bindtap="onResetFilter">重置</view>
+      <view class="btn btn-primary flex-1" bindtap="onApplyFilter">确定</view>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="goods-body">
+    <!-- 我的视图未登录 -->
+    <block wx:if="{{view && !isLogin}}">
+      <empty icon="🔐" text="登录后查看" desc="我的商品、关注与订单需要登录后查看"
+             action-text="立即登录" bind:action="onLogin" />
+    </block>
+
+    <block wx:else>
+      <skeleton wx:if="{{loading}}" type="grid" rows="{{4}}" />
+
+      <block wx:elif="{{error}}">
+        <empty state="error" icon="⚠️" text="加载失败" desc="请检查网络后重试"
+               action-text="重新加载" bind:action="onRetry" />
+      </block>
+
+      <block wx:elif="{{!list.length}}">
+        <empty icon="🛍" text="还没有商品" desc="把闲置物品发布出来，让它找到新主人"
+               action-text="去发布" bind:action="onTapPublish" />
+      </block>
+
+      <block wx:else>
+        <!-- 两栏瀑布流（FR-M4-02） -->
+        <view class="waterfall">
+          <view class="goods-card" wx:for="{{list}}" wx:key="id"
+                data-id="{{item.id}}" bindtap="onTapItem">
+            <image class="goods-img" src="{{item.image || '/static/placeholder.png'}}" mode="aspectFill" />
+            <view class="goods-info">
+              <text class="goods-title ellipsis-2">{{item.title}}</text>
+              <view class="goods-price-row">
+                <text class="goods-price">{{item.priceText}}</text>
+                <text class="goods-orig" wx:if="{{item.origPriceText}}">{{item.origPriceText}}</text>
+              </view>
+              <view class="goods-foot">
+                <text class="goods-cond" wx:if="{{item.condText}}">{{item.condText}}</text>
+                <text class="goods-time">{{item.timeText}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+      </block>
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

@@ -1,0 +1,102 @@
+@import "../../styles/list-common.wxss";
+@import "../../styles/detail-common.wxss";
+
+/* ==========================================================================
+   pages/team/apply-center —— 组队申请中心
+   ========================================================================== */
+
+/* ---- 申请卡片 ---- */
+.apply-card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+.apply-card__head { display: flex; align-items: center; }
+.apply-card__avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #EDF1F7;
+}
+.apply-card__person { flex: 1; margin-left: 18rpx; min-width: 0; }
+.apply-card__name {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.apply-card__meta { margin-top: 6rpx; font-size: 23rpx; color: var(--c-text-3); }
+
+/* ---- 队伍行 ---- */
+.apply-card__team {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  background: #F4F7FC;
+  border-radius: 12rpx;
+}
+.apply-card__team-ico { font-size: 26rpx; margin-right: 12rpx; }
+.apply-card__team-name {
+  font-size: 27rpx;
+  font-weight: 500;
+  color: var(--c-text-1);
+  max-width: 320rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.apply-card__team-role { font-size: 23rpx; color: var(--c-text-3); }
+.apply-card__arrow { margin-left: auto; font-size: 34rpx; color: var(--c-text-3); }
+
+/* ---- 说明 ---- */
+.apply-card__msg {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.65;
+  color: var(--c-text-2);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.apply-card__ask {
+  margin-top: 12rpx;
+  padding: 16rpx 20rpx;
+  background: #FFF9EC;
+  border-radius: 12rpx;
+  font-size: 25rpx;
+  line-height: 1.6;
+  color: #8A5B00;
+}
+.apply-card__ask-label { font-weight: 600; }
+
+/* ---- 底部 ---- */
+.apply-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+.apply-card__time { font-size: 22rpx; color: var(--c-text-3); }
+.apply-card__acts { display: flex; align-items: center; }
+.ap-btn {
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 28rpx;
+  margin-left: 12rpx;
+  border-radius: 30rpx;
+  font-size: 25rpx;
+}
+.ap-btn--primary { background: var(--c-primary); color: #FFFFFF; font-weight: 500; }
+.ap-btn--ghost {
+  background: #FFFFFF;
+  color: var(--c-text-2);
+  border: 2rpx solid #DCE3EC;
+}
+.ap-btn--disabled { background: #F0F3F7; color: var(--c-text-3); }

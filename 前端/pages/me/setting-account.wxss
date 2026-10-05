@@ -1,0 +1,105 @@
+/* pages/me/setting-account.wxss — 账号管理 */
+page {
+  background: var(--c-bg-page);
+}
+.group {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 0 26rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.cell--last {
+  border-bottom: none;
+}
+.cell__label {
+  flex: 1;
+  font-size: 29rpx;
+  color: var(--c-text-1);
+}
+.cell__value {
+  font-size: 27rpx;
+  color: var(--c-text-3);
+  margin-right: 10rpx;
+}
+.cell__arrow {
+  font-size: 34rpx;
+  color: #C0CAD8;
+}
+
+/* 编辑表单 */
+.edit-form {
+  padding: 26rpx;
+}
+.edit-form__title {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+  margin-bottom: 18rpx;
+}
+.edit-form__row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.edit-form__row--code {
+  justify-content: space-between;
+}
+.edit-form__input {
+  flex: 1;
+  height: 56rpx;
+  font-size: 30rpx;
+  color: var(--c-text-1);
+}
+.edit-form__code {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+  padding: 10rpx 24rpx;
+  font-size: 25rpx;
+  color: var(--c-primary);
+  border: 1rpx solid var(--c-primary);
+  border-radius: 999rpx;
+}
+.edit-form__code.disabled {
+  color: var(--c-text-3);
+  border-color: #DCE3EC;
+}
+.edit-form__actions {
+  display: flex;
+  margin-top: 30rpx;
+}
+.edit-form__btn {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 42rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.edit-form__btn--ghost {
+  flex: 0 0 220rpx;
+  margin-right: 20rpx;
+  background: #FFFFFF;
+  color: var(--c-text-2);
+  border: 2rpx solid #DCE3EC;
+}
+
+.tip {
+  margin: 24rpx 32rpx 0;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--c-text-3);
+}
+.ph {
+  color: #A9B4C4;
+}

@@ -1,0 +1,94 @@
+<!-- pages/buddy/list.wxml — 找搭子 -->
+<view class="page">
+  <nav-bar title="找搭子" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapPublish">
+      <text class="nav-act-text">发布</text>
+    </view>
+  </nav-bar>
+
+  <!-- 视图页签 -->
+  <view class="view-tabs">
+    <view
+      wx:for="{{viewTabs}}"
+      wx:key="key"
+      class="view-tab {{view === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onSwitchView"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker mode="selector" range="{{types}}" range-key="label" bindchange="onPickType">
+      <view class="filter-item {{activeType ? 'on' : ''}}">{{activeTypeText}} ▾</view>
+    </picker>
+    <view class="filter-spacer"></view>
+    <view class="switch-item">
+      <text class="switch-item__label">女性模式</text>
+      <switch checked="{{femaleMode}}" color="#7A5AF8" bindchange="onToggleFemaleMode" />
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <block wx:if="{{view && !loading && !list.length && !error}}">
+    <empty
+      icon="🤝"
+      text="还没有搭子"
+      desc="发布一条搭子帖，找到志同道合的伙伴"
+      action-text="发布搭子"
+      bind:action="onTapPublish"
+    />
+  </block>
+
+  <block wx:else>
+    <skeleton wx:if="{{loading}}" type="list" rows="{{4}}" />
+    <empty
+      wx:elif="{{error}}"
+      state="error"
+      icon="⚠️"
+      text="加载失败"
+      desc="请检查网络后重试"
+      action-text="重新加载"
+      bind:action="onRetry"
+    />
+    <empty
+      wx:elif="{{loaded && !list.length}}"
+      icon="🤝"
+      text="还没有搭子帖"
+      desc="成为第一个发起搭子的人吧"
+      action-text="发布搭子"
+      bind:action="onTapPublish"
+    />
+    <block wx:else>
+      <view class="list">
+        <view class="buddy" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapItem">
+          <view class="buddy__head">
+            <view class="buddy__type">{{item.typeText}}</view>
+            <view class="buddy__gender">{{item.genderText}}</view>
+            <view wx:if="{{item.status === 2}}" class="buddy__closed">已结束</view>
+          </view>
+          <view class="buddy__title">{{item.title}}</view>
+          <view wx:if="{{item.content}}" class="buddy__content">{{item.content}}</view>
+          <view class="buddy__meta">
+            <text class="buddy__meta-item">📍 {{item.place || '校内'}}</text>
+            <text class="buddy__meta-item">🕐 {{item.timeDesc || item.schedule || '待定'}}</text>
+            <text class="buddy__meta-item">💰 {{item.feeText}}</text>
+          </view>
+          <view class="buddy__foot">
+            <view class="buddy__author">
+              <image class="buddy__avatar" src="{{item.user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+              <text class="buddy__name">{{item.user.nickname || '匿名用户'}}</text>
+            </view>
+            <view class="buddy__quota">
+              <text class="buddy__quota-num">{{item.joined}}/{{item.quota}}</text>
+              <text class="buddy__quota-label">已加入</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

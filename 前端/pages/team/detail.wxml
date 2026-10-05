@@ -1,0 +1,158 @@
+<!-- pages/team/detail.wxml — 队伍详情 -->
+<view class="page">
+  <nav-bar title="队伍详情" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapApplyCenter">
+      <text class="nav-act-text">申请中心</text>
+    </view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="队伍不存在或已解散"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <block wx:elif="{{team}}">
+    <!-- 队伍头部 -->
+    <view class="team-hero">
+      <view class="team-hero__avatar">{{team.name ? team.name[0] : '队'}}</view>
+      <view class="team-hero__main">
+        <view class="team-hero__name">{{team.name}}</view>
+        <view class="team-hero__meta">
+          <text class="tag tag--info">{{team.typeText}}</text>
+          <text class="team-hero__member">{{team.memberText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="card">
+      <view class="card__title">队伍信息</view>
+      <view class="info-row" wx:if="{{team.bizTitle}}">
+        <text class="info-row__label">关联项目</text>
+        <text class="info-row__value">{{team.bizTitle}}</text>
+      </view>
+      <view class="info-row" wx:if="{{team.slogan}}">
+        <text class="info-row__label">队伍宣言</text>
+        <text class="info-row__value">{{team.slogan}}</text>
+      </view>
+      <view class="info-row" wx:if="{{team.direction}}">
+        <text class="info-row__label">参赛方向</text>
+        <text class="info-row__value">{{team.direction}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">创建时间</text>
+        <text class="info-row__value">{{team.createdAtText || '—'}}</text>
+      </view>
+      <view class="info-row" wx:if="{{team.contact}}">
+        <text class="info-row__label">联系方式</text>
+        <text class="info-row__value">{{team.contact}}</text>
+      </view>
+    </view>
+
+    <!-- 队伍公告 -->
+    <view class="card">
+      <view class="card__title card__title--plain notice-head">
+        <text>队伍公告</text>
+        <text wx:if="{{isLeader}}" class="notice-edit" bindtap="onEditNotice">编辑</text>
+      </view>
+      <view wx:if="{{team.notice}}" class="rich">{{team.notice}}</view>
+      <view wx:else class="notice-empty">{{isLeader ? '点击右上角"编辑"发布队伍公告' : '队长暂未发布公告'}}</view>
+    </view>
+
+    <!-- 成员与分工 -->
+    <view class="card">
+      <view class="card__title">成员与分工（{{members.length}}）</view>
+      <view
+        class="member"
+        wx:for="{{members}}"
+        wx:key="index"
+        data-uid="{{item.userId || item.id}}"
+        bindtap="{{isLeader && !item.isMe ? 'onManageMember' : 'onTapMember'}}"
+      >
+        <image class="member__avatar" src="{{item.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+        <view class="member__main">
+          <view class="member__name">
+            {{item.nickname || '成员'}}
+            <text wx:if="{{item.isMe}}" class="member__me">我</text>
+          </view>
+          <view class="member__duty">{{item.duty || item.major || '分工待分配'}}</view>
+        </view>
+        <view class="member__role tag {{item.role === 1 ? 'tag--warning' : (item.role === 2 ? 'tag--info' : 'tag--gray')}}">
+          {{item.roleText}}
+        </view>
+        <view wx:if="{{isLeader && !item.isMe}}" class="member__manage">⋯</view>
+      </view>
+      <view wx:if="{{!members.length}}" class="notice-empty">暂无成员信息</view>
+    </view>
+
+    <!-- 进度 -->
+    <view class="card" wx:if="{{team.progress}}">
+      <view class="card__title">项目进度</view>
+      <view class="rich">{{team.progress}}</view>
+    </view>
+
+    <view style="height: 160rpx;"></view>
+
+    <!-- 底部操作 -->
+    <view class="footer-bar">
+      <view class="footer-bar__icon" bindtap="onTapApplyCenter">
+        <text class="footer-bar__glyph">📨</text>
+        <text class="footer-bar__label">申请中心</text>
+      </view>
+      <view
+        class="footer-bar__main {{isMember ? 'footer-bar__main--done' : (applied ? 'footer-bar__main--done' : '')}}"
+        bindtap="onOpenApply"
+      >
+        {{isMember ? (isLeader ? '我是队长' : '我已在队伍中') : (applied ? '申请已提交' : '申请加入队伍')}}
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 申请弹层 -->
+<view wx:if="{{showApply}}" class="mask" bindtap="onCloseApply">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">申请加入队伍</text>
+      <text class="sheet__close" bindtap="onCloseApply">×</text>
+    </view>
+    <textarea
+      class="sheet__textarea"
+      placeholder="介绍你的技能、可投入时间与相关经历，通过率更高"
+      placeholder-class="ph"
+      maxlength="200"
+      value="{{applyMessage}}"
+      bindinput="onApplyInput"
+    />
+    <view class="sheet__count">{{applyMessage.length}}/200</view>
+    <view class="sheet__submit {{applying ? 'sheet__submit--disabled' : ''}}" bindtap="onSubmitApply">
+      {{applying ? '提交中…' : '提交申请'}}
+    </view>
+  </view>
+</view>
+
+<!-- 公告编辑弹层 -->
+<view wx:if="{{showNotice}}" class="mask" bindtap="onCloseNotice">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">编辑队伍公告</text>
+      <text class="sheet__close" bindtap="onCloseNotice">×</text>
+    </view>
+    <textarea
+      class="sheet__textarea"
+      placeholder="发布集合时间、任务安排等通知"
+      placeholder-class="ph"
+      maxlength="300"
+      value="{{noticeDraft}}"
+      bindinput="onNoticeInput"
+    />
+    <view class="sheet__count">{{noticeDraft.length}}/300</view>
+    <view class="sheet__submit" bindtap="onSubmitNotice">保存公告</view>
+  </view>
+</view>

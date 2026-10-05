@@ -1,0 +1,125 @@
+<!-- 首页：顶部导航 / 快捷服务 / 重要消息 / 内容推荐（《04》一、1） -->
+<view class="page-wrap">
+
+  <!-- ==================== 区块 1：顶部导航 ==================== -->
+  <nav-bar title="" back="{{false}}" border="{{false}}" theme="primary" right-width="90">
+    <view slot="right" class="msg-entry" bindtap="onTapMessage">
+      <text class="msg-icon">🔔</text>
+      <view class="badge msg-badge" wx:if="{{unread > 0}}">{{unread > 99 ? '99+' : unread}}</view>
+    </view>
+  </nav-bar>
+
+  <!-- 蓝色头部：问候 + 全局搜索入口（覆盖在导航栏下方） -->
+  <view class="hero">
+    <view class="hero-greet">{{greeting}}，欢迎来到通航校园</view>
+    <view class="search-bar" bindtap="onTapSearch">
+      <text class="search-icon">🔍</text>
+      <text class="search-ph">搜索动态、帖子和重要消息</text>
+    </view>
+  </view>
+
+  <!-- ==================== 区块 2：快捷服务四宫格 ==================== -->
+  <view class="quick-card">
+    <view class="quick-item" wx:for="{{quickServices}}" wx:key="key" data-url="{{item.url}}" bindtap="onTapQuick">
+      <view class="quick-icon" style="background-color:{{item.color}}1A;color:{{item.color}}">{{item.icon}}</view>
+      <text class="quick-label">{{item.label}}</text>
+      <text class="quick-desc">{{item.desc}}</text>
+    </view>
+  </view>
+
+  <!-- ==================== 区块 3：重要消息（待办中心） ==================== -->
+  <view class="section todo-section">
+    <view class="row-between todo-head">
+      <view class="section-title">重要消息</view>
+      <text class="todo-more" bindtap="onTapTodoMore">全部 ›</text>
+    </view>
+
+    <!-- 分类页签：即将截止 / 报名开始 / 规则更新 / 协作待办 -->
+    <scroll-view class="todo-tabs" scroll-x enable-flex>
+      <view class="todo-tab {{todoActiveTab === 'deadline' ? 'active' : ''}}"
+            data-key="deadline" bindtap="onSwitchTodoTab">
+        即将截止<text class="todo-count" wx:if="{{todos.deadline.length}}">{{todos.deadline.length}}</text>
+      </view>
+      <view class="todo-tab {{todoActiveTab === 'enrollStart' ? 'active' : ''}}"
+            data-key="enrollStart" bindtap="onSwitchTodoTab">
+        报名开始<text class="todo-count" wx:if="{{todos.enrollStart.length}}">{{todos.enrollStart.length}}</text>
+      </view>
+      <view class="todo-tab {{todoActiveTab === 'ruleUpdate' ? 'active' : ''}}"
+            data-key="ruleUpdate" bindtap="onSwitchTodoTab">
+        规则更新<text class="todo-count" wx:if="{{todos.ruleUpdate.length}}">{{todos.ruleUpdate.length}}</text>
+      </view>
+      <view class="todo-tab {{todoActiveTab === 'collab' ? 'active' : ''}}"
+            data-key="collab" bindtap="onSwitchTodoTab">
+        协作待办<text class="todo-count" wx:if="{{todos.collab.length}}">{{todos.collab.length}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 骨架 -->
+    <view class="todo-skeleton" wx:if="{{todoLoading}}">
+      <view class="todo-sk-line" wx:for="{{[1,2]}}" wx:key="*this"></view>
+    </view>
+
+    <!-- 待办列表（四个页签共用渲染） -->
+    <block wx:else>
+      <view class="todo-list"
+            wx:if="{{(todoActiveTab === 'deadline' && todos.deadline.length) ||
+                     (todoActiveTab === 'enrollStart' && todos.enrollStart.length) ||
+                     (todoActiveTab === 'ruleUpdate' && todos.ruleUpdate.length) ||
+                     (todoActiveTab === 'collab' && todos.collab.length)}}">
+        <view class="todo-item"
+              wx:for="{{todoActiveTab === 'deadline' ? todos.deadline : (todoActiveTab === 'enrollStart' ? todos.enrollStart : (todoActiveTab === 'ruleUpdate' ? todos.ruleUpdate : todos.collab))}}"
+              wx:key="index"
+              data-item="{{item}}"
+              bindtap="onTapTodo">
+          <view class="todo-dot todo-dot-{{item.level || 1}}"></view>
+          <view class="todo-main">
+            <text class="todo-title">{{item.title}}</text>
+            <text class="todo-sub" wx:if="{{item.desc || item.subTitle}}">{{item.desc || item.subTitle}}</text>
+          </view>
+          <view class="todo-right">
+            <text class="todo-time" wx:if="{{item.deadlineLeft}}">{{item.deadlineLeft}}</text>
+            <text class="todo-arrow">›</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空态（《H》§4.4：空态引导） -->
+      <view class="todo-empty" wx:else>
+        <text class="todo-empty-icon">✅</text>
+        <text class="todo-empty-text">{{todoActiveTab === 'collab' ? '暂无待处理的协作事项' : '暂无相关提醒，保持关注'}}</text>
+      </view>
+    </block>
+  </view>
+
+  <!-- ==================== 区块 4：内容推荐 ==================== -->
+  <view class="section feed-section">
+    <view class="row-between todo-head">
+      <view class="section-title">为你推荐</view>
+      <text class="feed-hint">基于专业与浏览记录</text>
+    </view>
+  </view>
+
+  <view class="feed-list">
+    <skeleton wx:if="{{feedLoading}}" type="list" rows="{{3}}" />
+
+    <block wx:elif="{{feedError}}">
+      <empty state="error" icon="⚠️" text="推荐加载失败" desc="请检查网络后重试"
+             action-text="重新加载" bind:action="reloadFeeds" />
+    </block>
+
+    <block wx:elif="{{!feeds.length}}">
+      <empty icon="📭" text="还没有推荐内容" desc="去动态页逛逛，或发布一条你的内容"
+             action-text="去逛逛" bind:action="onFeedEmptyAction" />
+    </block>
+
+    <block wx:else>
+      <feed-card wx:for="{{feeds}}" wx:key="contentId"
+                 item="{{item}}"
+                 bind:tapcard="onTapCard"
+                 bind:action="onCardAction" />
+      <load-more status="{{loadStatus}}" bind:retry="onRetryFeed" />
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

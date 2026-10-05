@@ -1,0 +1,118 @@
+<!-- pages/me/setting.wxml — 设置中心 -->
+<view class="page">
+  <nav-bar title="设置" back="{{true}}" />
+
+  <view class="tabs">
+    <view class="tabs__item {{tab === 'general' ? 'tabs__item--on' : ''}}" data-tab="general" bindtap="onSwitchTab">通用设置</view>
+    <view class="tabs__item {{tab === 'help' ? 'tabs__item--on' : ''}}" data-tab="help" bindtap="onSwitchTab">帮助与反馈</view>
+  </view>
+
+  <!-- 通用设置 -->
+  <block wx:if="{{tab === 'general'}}">
+    <view class="group">
+      <view class="cell" bindtap="onClearCache">
+        <text class="cell__label">清理缓存</text>
+        <text class="cell__value">{{cacheSize}}</text>
+        <text class="cell__arrow">›</text>
+      </view>
+      <view class="cell" bindtap="onOpenAgreement">
+        <text class="cell__label">用户协议</text>
+        <text class="cell__arrow">›</text>
+      </view>
+      <view class="cell" bindtap="onOpenPrivacy">
+        <text class="cell__label">隐私政策</text>
+        <text class="cell__arrow">›</text>
+      </view>
+      <view class="cell cell--last">
+        <text class="cell__label">当前版本</text>
+        <text class="cell__value">v{{appVersion}}</text>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="cell" bindtap="onGoReports">
+        <text class="cell__label">我的举报与申诉</text>
+        <text class="cell__arrow">›</text>
+      </view>
+      <view class="cell cell--last" bindtap="onOpenPrivacy">
+        <text class="cell__label">个性化推荐设置</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="cell cell--last cell--danger" bindtap="onDeactivate">
+        <text class="cell__label">账号注销</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </view>
+
+    <view class="logout" bindtap="onLogout">退出登录</view>
+    <view class="version">通航校园 v{{appVersion}}</view>
+  </block>
+
+  <!-- 帮助与反馈 -->
+  <block wx:else>
+    <view class="group">
+      <view class="cell" bindtap="onHelpDoc">
+        <text class="cell__label">使用帮助</text>
+        <text class="cell__arrow">›</text>
+      </view>
+      <view class="cell cell--last" bindtap="onMyFeedback">
+        <text class="cell__label">我的反馈</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form">
+      <view class="form__title">提交反馈</view>
+
+      <view class="form__row">
+        <text class="form__label">反馈类型</text>
+        <picker
+          class="form__picker"
+          mode="selector"
+          range="{{feedbackTypes}}"
+          range-key="label"
+          bindchange="onFbTypeChange"
+        >
+          <view class="form__picker-value">
+            <text>{{fbTypeText}}</text>
+            <text class="form__picker-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="form__field">
+        <textarea
+          class="form__textarea"
+          placeholder="请描述你遇到的问题或建议（至少 5 个字）"
+          placeholder-class="ph"
+          maxlength="500"
+          value="{{fbContent}}"
+          data-field="fbContent"
+          bindinput="onFbInput"
+        />
+        <view class="form__count">{{fbContent.length}}/500</view>
+      </view>
+
+      <view class="form__field">
+        <input
+          class="form__input"
+          placeholder="联系方式（选填，便于我们联系你）"
+          placeholder-class="ph"
+          maxlength="50"
+          value="{{fbContact}}"
+          data-field="fbContact"
+          bindinput="onFbInput"
+        />
+      </view>
+
+      <view class="form__submit {{submitting ? 'form__submit--disabled' : ''}}" bindtap="onSubmitFeedback">
+        {{submitting ? '提交中…' : '提交反馈'}}
+      </view>
+    </view>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

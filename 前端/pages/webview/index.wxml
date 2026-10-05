@@ -1,0 +1,15 @@
+<!-- pages/webview/index.wxml — 内嵌网页 -->
+<view class="page">
+  <web-view wx:if="{{url}}" src="{{url}}" binderror="onError" />
+
+  <view wx:if="{{invalid}}" class="invalid">
+    <nav-bar title="{{title || '页面'}}" back="{{true}}" />
+    <empty
+      icon="🔒"
+      text="无法打开该页面"
+      desc="链接不在平台白名单内或已失效"
+      action-text="返回"
+      bind:action="onBack"
+    />
+  </view>
+</view>

@@ -1,0 +1,91 @@
+@import "../../styles/list-common.wxss";
+
+/* ==========================================================================
+   pages/activity/list —— 校园活动列表
+   ========================================================================== */
+
+/* ---- 搜索 ---- */
+.search-bar { background: #FFFFFF; padding: 16rpx 24rpx; }
+.search-box {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: #F4F6FA;
+  border-radius: 36rpx;
+}
+.search-box__icon { font-size: 28rpx; margin-right: 12rpx; color: var(--c-text-3); }
+.search-box__input { flex: 1; font-size: 27rpx; color: var(--c-text-1); }
+.search-box__clear {
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 40rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #FFFFFF;
+  background: #C9D3E0;
+  border-radius: 50%;
+}
+.ph { color: #A9B4C4; }
+
+/* ---- 活动卡片 ---- */
+.act-card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+}
+.act-card__head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14rpx;
+}
+.act-card__cat {
+  margin-left: 14rpx;
+  font-size: 22rpx;
+  color: var(--c-text-3);
+}
+.act-card__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--c-text-1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.act-card__body {
+  display: flex;
+  margin-top: 18rpx;
+}
+.act-card__cover {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: #F0F3F7;
+}
+.act-card__meta {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.act-card__row {
+  display: flex;
+  align-items: center;
+  padding: 6rpx 0;
+}
+.act-card__ico { width: 40rpx; font-size: 24rpx; flex-shrink: 0; }
+.act-card__txt {
+  flex: 1;
+  font-size: 25rpx;
+  color: var(--c-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.act-card__txt--warn { color: var(--c-warning); }

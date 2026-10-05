@@ -1,0 +1,174 @@
+/* 登录页 —— 蓝主色 + 白底 */
+.login-page {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  padding: 0 56rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 40rpx);
+  left: 40rpx;
+  width: 68rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #F5F7FA;
+}
+.close-btn:active { background-color: #EEF1F5; }
+.close-icon { font-size: 30rpx; color: #8C96A5; }
+
+/* ---- 品牌区 ---- */
+.brand {
+  padding-top: 180rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 36rpx;
+  background: linear-gradient(135deg, #1E6FE8 0%, #4A93F5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12rpx 32rpx rgba(30, 111, 232, 0.28);
+}
+.logo-text {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 2rpx;
+}
+.brand-name {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1A2233;
+  margin-top: 28rpx;
+  letter-spacing: 2rpx;
+}
+.brand-slogan {
+  font-size: 25rpx;
+  color: #8C96A5;
+  margin-top: 14rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ---- 说明区 ---- */
+.intro {
+  margin-top: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.intro-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1A2233;
+}
+.intro-desc {
+  font-size: 24rpx;
+  color: #8C96A5;
+  margin-top: 14rpx;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ---- 登录操作 ---- */
+.login-actions { margin-top: 64rpx; }
+
+.wx-icon { margin-right: 12rpx; font-size: 32rpx; }
+
+.phone-toggle {
+  text-align: center;
+  font-size: 25rpx;
+  color: #1E6FE8;
+  padding: 32rpx 0 8rpx;
+}
+
+.phone-form {
+  background-color: #F7F9FC;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-top: 20rpx;
+}
+.phone-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  height: 92rpx;
+  margin-bottom: 18rpx;
+}
+.phone-field:last-of-type { margin-bottom: 0; }
+.phone-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1A2233;
+  height: 92rpx;
+}
+.code-btn {
+  font-size: 25rpx;
+  color: #1E6FE8;
+  padding-left: 24rpx;
+  border-left: 1rpx solid #EEF1F5;
+  flex-shrink: 0;
+}
+.code-btn.disabled { color: #B4BCCA; }
+
+.guest-btn {
+  text-align: center;
+  font-size: 27rpx;
+  color: #8C96A5;
+  padding: 36rpx 0;
+  margin-top: 16rpx;
+}
+.guest-btn:active { color: #4A5468; }
+
+/* ---- 协议 ---- */
+.agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 20rpx;
+  margin-top: auto;
+}
+.agree-check {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 2rpx solid #D5DBE5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+  margin-top: 4rpx;
+}
+.agree-check.checked {
+  background-color: #1E6FE8;
+  border-color: #1E6FE8;
+}
+.agree-icon { font-size: 20rpx; color: #FFFFFF; line-height: 1; }
+.agree-text {
+  font-size: 22rpx;
+  color: #8C96A5;
+  line-height: 1.6;
+  flex: 1;
+}
+.agree-link { color: #1E6FE8; }
+
+.guest-tip {
+  text-align: center;
+  font-size: 21rpx;
+  color: #B4BCCA;
+  padding: 24rpx 0 calc(env(safe-area-inset-bottom) + 40rpx);
+}

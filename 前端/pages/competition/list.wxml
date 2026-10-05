@@ -1,0 +1,80 @@
+<!-- pages/competition/list.wxml — 竞赛列表 -->
+<view class="page-wrap">
+
+  <nav-bar title="学科竞赛" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapCalendar">
+      <text class="nav-act-text">日程</text>
+    </view>
+  </nav-bar>
+
+  <!-- 搜索 -->
+  <view class="search-bar">
+    <view class="search-box">
+      <text class="search-box__icon">🔍</text>
+      <input class="search-box__input" placeholder="搜索竞赛名称、主办单位"
+             placeholder-class="ph" value="{{keyword}}" confirm-type="search"
+             bindinput="onSearchInput" bindconfirm="onSearchConfirm" />
+      <text wx:if="{{keyword}}" class="search-box__clear" bindtap="onClearKeyword">×</text>
+    </view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker mode="selector" range="{{levels}}" range-key="label" bindchange="onPickLevel">
+      <view class="filter-item {{activeLevel !== '' ? 'on' : ''}}">{{levelText}} ▾</view>
+    </picker>
+    <picker mode="selector" range="{{statuses}}" range-key="label" bindchange="onPickStatus">
+      <view class="filter-item {{activeStatus !== '' ? 'on' : ''}}">{{statusText}} ▾</view>
+    </picker>
+    <view class="filter-spacer"></view>
+    <view class="filter-item {{activeSort ? 'on' : ''}}" data-key="{{activeSort === 'deadline' ? '' : 'deadline'}}" bindtap="onPickSort">
+      {{activeSort === 'deadline' ? '即将截止' : '即将截止'}}
+    </view>
+    <view wx:if="{{activeLevel !== '' || activeStatus !== '' || keyword}}" class="filter-reset" bindtap="onResetFilter">重置</view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <skeleton wx:if="{{loading}}" type="list" rows="{{5}}" />
+
+    <block wx:elif="{{error}}">
+      <empty state="error" icon="⚠️" text="加载失败" desc="请检查网络后重试" action-text="重新加载" bind:action="onRetry" />
+    </block>
+
+    <block wx:elif="{{!list.length}}">
+      <empty icon="🏆" text="暂无竞赛" desc="当前筛选条件下还没有竞赛，换个条件试试" action-text="发布竞赛" bind:action="onTapPublish" />
+    </block>
+
+    <block wx:else>
+      <view class="cmp-card" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapItem">
+        <view class="cmp-card__left">
+          <image class="cmp-card__cover" src="{{item.cover}}" mode="aspectFill" />
+          <view class="cmp-card__level tag tag--purple">{{item.levelText}}</view>
+        </view>
+        <view class="cmp-card__right">
+          <view class="cmp-card__top">
+            <view class="tag tag--{{item.statusTag}}">{{item.statusText}}</view>
+          </view>
+          <view class="cmp-card__title">{{item.title}}</view>
+          <view class="cmp-card__meta">{{item.organizer || '主办单位待定'}}</view>
+          <view class="cmp-card__foot">
+            <view class="cmp-card__foot-item">
+              <text class="cmp-card__ico">🗓</text>
+              <text>{{item.startText || '待定'}}</text>
+            </view>
+            <view class="cmp-card__foot-item" wx:if="{{item.enrollText}}">
+              <text class="cmp-card__ico">👥</text>
+              <text>{{item.enrollText}}</text>
+            </view>
+          </view>
+          <view wx:if="{{item.deadlineText}}" class="cmp-card__deadline">
+            报名截止 {{item.deadlineText}}
+          </view>
+        </view>
+      </view>
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

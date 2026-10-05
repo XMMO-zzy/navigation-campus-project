@@ -1,0 +1,39 @@
+<!-- 骨架屏：list（信息流）/ grid（两栏）/ detail（详情） -->
+<view class="sk">
+
+  <block wx:if="{{type === 'list'}}">
+    <view class="sk-card" wx:for="{{items}}" wx:key="index">
+      <view class="sk-row">
+        <view class="sk-circle"></view>
+        <view class="sk-col">
+          <view class="sk-line w40"></view>
+          <view class="sk-line w25 h16"></view>
+        </view>
+      </view>
+      <view class="sk-line w100"></view>
+      <view class="sk-line w80"></view>
+      <view class="sk-img"></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{type === 'grid'}}">
+    <view class="sk-grid">
+      <view class="sk-grid-item" wx:for="{{items}}" wx:key="index">
+        <view class="sk-block"></view>
+        <view class="sk-line w90"></view>
+        <view class="sk-line w50 h16"></view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="sk-card">
+      <view class="sk-line w60 h28"></view>
+      <view class="sk-line w100"></view>
+      <view class="sk-line w100"></view>
+      <view class="sk-line w70"></view>
+      <view class="sk-img tall"></view>
+    </view>
+  </block>
+
+</view>

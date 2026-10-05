@@ -1,0 +1,200 @@
+/* 首页 —— 蓝色主色 + 白底，四区块自下而上堆叠 */
+.page-wrap { background-color: #F5F7FA; min-height: 100vh; }
+
+/* ---- 顶部导航（蓝底） ---- */
+.msg-entry {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.msg-icon { font-size: 38rpx; line-height: 1; }
+.msg-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -6rpx;
+}
+
+/* ---- 蓝色 Hero 区（问候 + 搜索） ---- */
+.hero {
+  background-color: #1E6FE8;
+  padding: 8rpx 32rpx 56rpx;
+  border-bottom-left-radius: 32rpx;
+  border-bottom-right-radius: 32rpx;
+}
+.hero-greet {
+  font-size: 30rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 22rpx;
+}
+.search-bar {
+  height: 76rpx;
+  background-color: #FFFFFF;
+  border-radius: 999rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+.search-icon { font-size: 28rpx; margin-right: 14rpx; }
+.search-ph { font-size: 27rpx; color: #B4BCCA; }
+
+/* ---- 快捷服务四宫格 ---- */
+.quick-card {
+  display: flex;
+  flex-direction: row;
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  margin: -36rpx 24rpx 0;
+  padding: 28rpx 12rpx;
+  box-shadow: 0 4rpx 20rpx rgba(30, 111, 232, 0.08);
+  position: relative;
+  z-index: 2;
+}
+.quick-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.quick-item:active { opacity: 0.7; }
+.quick-icon {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  margin-bottom: 12rpx;
+}
+.quick-label {
+  font-size: 27rpx;
+  color: #1A2233;
+  font-weight: 500;
+}
+.quick-desc {
+  font-size: 21rpx;
+  color: #8C96A5;
+  margin-top: 2rpx;
+}
+
+/* ---- 重要消息（待办） ---- */
+.todo-section { margin-top: 24rpx; }
+.todo-head { margin-bottom: 18rpx; }
+.todo-more { font-size: 25rpx; color: #8C96A5; }
+
+.todo-tabs {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  margin-bottom: 16rpx;
+}
+.todo-tab {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  /* ⚠️ 必须给确定高度：scroll-view 开了 enable-flex 后是 flex 行容器，
+     默认 align-items: stretch，没有高度的子项会被拉伸到容器高度（曾把蓝色标签撑成整屏色块） */
+  height: 56rpx;
+  box-sizing: border-box;
+  font-size: 25rpx;
+  color: #4A5468;
+  background-color: #F2F4F8;
+  border-radius: 999rpx;
+  padding: 0 22rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+.todo-tab.active {
+  background-color: #1E6FE8;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+.todo-count {
+  font-size: 20rpx;
+  background-color: #F04438;
+  color: #FFFFFF;
+  border-radius: 999rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  padding: 0 6rpx;
+  margin-left: 8rpx;
+}
+.todo-tab.active .todo-count { background-color: rgba(255,255,255,0.3); }
+
+.todo-skeleton { padding: 10rpx 0; }
+.todo-sk-line {
+  height: 64rpx;
+  border-radius: 10rpx;
+  margin-bottom: 12rpx;
+  background: linear-gradient(90deg, #EEF1F5 25%, #F7F9FC 37%, #EEF1F5 63%);
+  background-size: 400% 100%;
+  animation: home-sk 1.4s ease infinite;
+}
+@keyframes home-sk {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.todo-list { padding-top: 4rpx; }
+.todo-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F2F4F8;
+}
+.todo-item:last-child { border-bottom: none; }
+.todo-item:active { background-color: #FAFBFC; }
+.todo-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background-color: #F79009;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+}
+.todo-dot-2 { background-color: #F04438; }
+.todo-dot-3 { background-color: #1E6FE8; }
+.todo-main { flex: 1; min-width: 0; }
+.todo-title {
+  font-size: 27rpx;
+  color: #1A2233;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.todo-sub {
+  font-size: 22rpx;
+  color: #8C96A5;
+  display: block;
+  margin-top: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.todo-right { display: flex; flex-direction: row; align-items: center; flex-shrink: 0; }
+.todo-time { font-size: 23rpx; color: #F79009; font-weight: 500; }
+.todo-arrow { font-size: 32rpx; color: #B4BCCA; margin-left: 10rpx; }
+
+.todo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 0 40rpx;
+}
+.todo-empty-icon { font-size: 56rpx; opacity: 0.5; margin-bottom: 12rpx; }
+.todo-empty-text { font-size: 25rpx; color: #8C96A5; }
+
+/* ---- 内容推荐 ---- */
+.feed-section { margin-top: 24rpx; margin-bottom: 0; background-color: transparent; padding-bottom: 0; }
+.feed-hint { font-size: 22rpx; color: #B4BCCA; }
+.feed-list { padding: 0 24rpx; }

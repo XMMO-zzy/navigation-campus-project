@@ -1,0 +1,178 @@
+<!-- pages/competition/detail.wxml — 竞赛详情 -->
+<view class="page">
+  <nav-bar title="竞赛详情" back="{{true}}">
+    <view slot="right" class="nav-act" bindtap="onTapApplyCenter">
+      <text class="nav-act-text">申请中心</text>
+    </view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="竞赛不存在或已下架"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <block wx:elif="{{cmp}}">
+    <!-- 封面 -->
+    <view class="cover" bindtap="onPreviewCover">
+      <image class="cover__img" src="{{cmp.cover}}" mode="aspectFill" />
+      <view class="cover__status tag tag--{{cmp.statusTag}}">{{cmp.statusText}}</view>
+    </view>
+
+    <!-- 标题区 -->
+    <view class="head">
+      <view class="head__title">{{cmp.title}}</view>
+      <view class="head__tags">
+        <view class="tag tag--purple">{{cmp.levelText}}</view>
+        <view wx:if="{{cmp.categoryText}}" class="tag tag--info">{{cmp.categoryText}}</view>
+      </view>
+      <view class="head__organizer">{{cmp.organizer || '主办单位待定'}}</view>
+    </view>
+
+    <!-- 报名状态卡 -->
+    <view wx:if="{{myEnroll}}" class="my-enroll">
+      <view class="my-enroll__left">
+        <view class="my-enroll__label">我的参赛状态</view>
+        <view class="my-enroll__status">{{enrollStatusText}}</view>
+      </view>
+      <view class="my-enroll__right">
+        <view wx:if="{{resultText && resultText !== '无'}}" class="tag tag--success">{{resultText}}</view>
+        <view class="my-enroll__btn" bindtap="onSubmitResult">提交成果</view>
+      </view>
+    </view>
+
+    <!-- 关键信息 -->
+    <view class="card">
+      <view class="card__title">赛事信息</view>
+      <view class="info-row">
+        <text class="info-row__label">报名截止</text>
+        <text class="info-row__value info-row__value--hl">{{cmp.deadlineText || '不设截止'}}</text>
+      </view>
+      <view class="info-row" wx:if="{{cmp.leftText}}">
+        <text class="info-row__label">剩余时间</text>
+        <text class="info-row__value">{{cmp.leftText}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">比赛时间</text>
+        <text class="info-row__value">{{cmp.startText}}{{cmp.endText ? ' 至 ' + cmp.endText : ''}}</text>
+      </view>
+      <view class="info-row" wx:if="{{cmp.place}}">
+        <text class="info-row__label">比赛地点</text>
+        <text class="info-row__value">{{cmp.place}}</text>
+      </view>
+      <view class="info-row" wx:if="{{cmp.quota}}">
+        <text class="info-row__label">名额</text>
+        <text class="info-row__value">{{cmp.enrolledCount || 0}}/{{cmp.quota}}</text>
+      </view>
+      <view class="info-row" wx:if="{{cmp.contact}}">
+        <text class="info-row__label">联系方式</text>
+        <text class="info-row__value">{{cmp.contact}}</text>
+      </view>
+    </view>
+
+    <!-- 竞赛介绍 -->
+    <view class="card" wx:if="{{cmp.content || cmp.description}}">
+      <view class="card__title">竞赛介绍</view>
+      <view class="rich">{{cmp.content || cmp.description}}</view>
+    </view>
+
+    <!-- 参赛要求 -->
+    <view class="card" wx:if="{{cmp.requirement}}">
+      <view class="card__title">参赛要求</view>
+      <view class="rich">{{cmp.requirement}}</view>
+    </view>
+
+    <!-- 奖项设置 -->
+    <view class="card" wx:if="{{cmp.awards}}">
+      <view class="card__title">奖项设置</view>
+      <view class="rich">{{cmp.awards}}</view>
+    </view>
+
+    <!-- 赛程规则 -->
+    <view class="card" wx:if="{{cmp.rule}}">
+      <view class="card__title">赛程与规则</view>
+      <view class="rich">{{cmp.rule}}</view>
+    </view>
+
+    <!-- 组队入口 -->
+    <view class="card team-entry" bindtap="onTapApplyCenter">
+      <view class="team-entry__main">
+        <view class="team-entry__title">组队参赛</view>
+        <view class="team-entry__desc">创建队伍、邀请队友、管理分工与申请</view>
+      </view>
+      <view class="team-entry__arrow">›</view>
+    </view>
+
+    <!-- 发布者 -->
+    <view class="author" bindtap="onTapOwner">
+      <image class="author__avatar" src="{{cmp.creator.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="author__main">
+        <view class="author__name">{{cmp.creator.nickname || cmp.organizer || '竞赛发布方'}}</view>
+        <view class="author__meta">{{cmp.creator.major || '竞赛组织方'}}</view>
+      </view>
+      <view class="author__arrow">›</view>
+    </view>
+
+    <view class="tips">
+      <view class="tips__title">参赛提示</view>
+      <view class="tips__item">· 请仔细阅读赛程规则，确认时间安排后再报名</view>
+      <view class="tips__item">· 团队参赛请在报名时关联已创建且审核通过的队伍</view>
+    </view>
+
+    <view style="height: 160rpx;"></view>
+
+    <!-- 底部操作 -->
+    <view class="footer-bar">
+      <view class="footer-bar__icon" bindtap="onReport">
+        <text class="footer-bar__glyph">⚠</text>
+        <text class="footer-bar__label">举报</text>
+      </view>
+      <view
+        class="footer-bar__main {{isOwner ? 'footer-bar__main--ghost' : (myEnroll ? 'footer-bar__main--done' : '')}}"
+        bindtap="onOpenEnroll"
+      >
+        {{isOwner ? '我发布的' : (myEnroll ? ('已报名 · ' + enrollStatusText) : '立即报名')}}
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 报名弹层 -->
+<view wx:if="{{showEnroll}}" class="mask" bindtap="onCloseEnroll">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">竞赛报名</text>
+      <text class="sheet__close" bindtap="onCloseEnroll">×</text>
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">真实姓名<text class="req">*</text></view>
+      <input class="sheet-field__input" placeholder="用于赛事方核实身份" placeholder-class="ph"
+             maxlength="20" value="{{enrollForm.name}}" data-field="name" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">手机号<text class="req">*</text></view>
+      <input class="sheet-field__input" type="number" placeholder="用于赛事通知" placeholder-class="ph"
+             maxlength="11" value="{{enrollForm.phone}}" data-field="phone" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">参赛方式</view>
+      <picker mode="selector" range="{{teamLabels}}" value="{{teamIndex}}" bindchange="onPickTeam">
+        <view class="sheet-field__picker">{{teamLabels[teamIndex]}}<text class="sheet-field__arrow">›</text></view>
+      </picker>
+      <view class="sheet-field__hint">如已在平台创建队伍，可选择以团队身份参赛</view>
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">备注（选填）</view>
+      <textarea class="sheet-field__textarea" placeholder="如：参赛经历、作品方向等" placeholder-class="ph"
+                maxlength="200" value="{{enrollForm.remark}}" data-field="remark" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet__submit {{enrolling ? 'sheet__submit--disabled' : ''}}" bindtap="onSubmitEnroll">
+      {{enrolling ? '提交中…' : '确认报名'}}
+    </view>
+  </view>
+</view>

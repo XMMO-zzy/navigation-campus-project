@@ -1,0 +1,156 @@
+<!-- pages/post/detail.wxml — 动态详情 -->
+<view class="page">
+  <nav-bar title="{{post.typeText || '动态详情'}}" back="{{true}}">
+    <view slot="right" class="nav-more" bindtap="onMore">···</view>
+  </nav-bar>
+
+  <block wx:if="{{loading}}">
+    <skeleton type="detail" />
+  </block>
+
+  <block wx:elif="{{error}}">
+    <empty state="error" icon="⚠️" text="内容不存在或已删除" desc="请检查网络后重试"
+           action-text="重新加载" bind:action="onRetry" />
+  </block>
+
+  <block wx:elif="{{post}}">
+    <!-- 正文 -->
+    <view class="article">
+      <view class="author" bindtap="onTapUser">
+        <image class="author__avatar" src="{{post.user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+        <view class="author__info">
+          <view class="author__name">
+            <text>{{post.user.nickname || '匿名用户'}}</text>
+            <text wx:if="{{post.user.verifiedType === 2}}" class="author__badge">已认证</text>
+          </view>
+          <view class="author__meta">{{post.timeText}}{{post.user.schoolTag ? ' · ' + post.user.schoolTag : ''}}</view>
+        </view>
+        <view wx:if="{{!isOwner}}" class="author__follow" catchtap="onFollow">关注</view>
+      </view>
+
+      <view wx:if="{{post.title}}" class="article__title">{{post.title}}</view>
+      <view class="article__content">{{post.content}}</view>
+
+      <!-- 图片九宫格 -->
+      <view wx:if="{{post.images.length}}" class="grid grid--{{post.images.length >= 3 ? '3' : post.images.length}}">
+        <image
+          wx:for="{{post.images}}"
+          wx:key="*this"
+          class="grid__img"
+          src="{{item}}"
+          mode="aspectFill"
+          data-index="{{index}}"
+          bindtap="onPreviewImage"
+        />
+      </view>
+
+      <!-- 话题 -->
+      <view wx:if="{{post.topics.length}}" class="topics">
+        <text wx:for="{{post.topics}}" wx:key="*this" class="topic-chip">#{{item}}</text>
+      </view>
+
+      <!-- 关联卡片（活动/竞赛/商品/搭子） -->
+      <view wx:if="{{post.link}}" class="link-card" bindtap="onTapLink">
+        <view class="link-card__tag">{{post.link.title ? '关联内容' : '相关'}}</view>
+        <view class="link-card__body">
+          <view class="link-card__title">{{post.link.title || '查看详情'}}</view>
+          <view wx:if="{{post.link.deadlineLeft}}" class="link-card__sub">截止还有 {{post.link.deadlineLeft}}</view>
+        </view>
+        <view class="link-card__arrow">›</view>
+      </view>
+
+      <view class="article__foot">
+        <text>{{post.timeText}} 发布</text>
+        <text wx:if="{{post.viewCount}}"> · {{post.viewCount}} 次浏览</text>
+      </view>
+    </view>
+
+    <!-- 评论区 -->
+    <view class="comments">
+      <view class="comments__head">
+        <text class="comments__title">评论</text>
+        <text class="comments__count">{{commentTotal}}</text>
+      </view>
+
+      <block wx:if="{{comments.length}}">
+        <view class="comment" wx:for="{{comments}}" wx:key="id">
+          <image class="comment__avatar" src="{{item.avatar}}" mode="aspectFill" />
+          <view class="comment__main">
+            <view class="comment__name">{{item.nickname}}</view>
+            <view class="comment__text">
+              <text wx:if="{{item.parentNickname}}" class="comment__reply-to">回复 {{item.parentNickname}}：</text>{{item.content}}
+            </view>
+            <view class="comment__foot">
+              <text class="comment__time">{{item.timeText}}</text>
+              <text class="comment__action" data-id="{{item.id}}" data-nickname="{{item.nickname}}" bindtap="onReply">回复</text>
+            </view>
+          </view>
+        </view>
+        <load-more status="{{commentLoading ? 'loading' : (hasMoreComments ? 'more' : 'nomore')}}" bind:retry="onRetry" />
+      </block>
+
+      <view wx:else class="comments__empty">
+        <text>还没有评论，来说点什么吧</text>
+      </view>
+    </view>
+
+    <view style="height: 140rpx;"></view>
+  </block>
+
+  <!-- 底部互动栏 -->
+  <view wx:if="{{post}}" class="action-bar">
+    <view class="action-bar__input" bindtap="onCommentFocus">
+      <text class="action-bar__placeholder">说点什么…</text>
+    </view>
+    <view class="action-bar__btn {{post.liked ? 'action-bar__btn--on' : ''}}" bindtap="onToggleLike">
+      <text class="action-bar__glyph">{{post.liked ? '❤' : '♡'}}</text>
+      <text class="action-bar__num">{{post.likeText}}</text>
+    </view>
+    <view class="action-bar__btn {{post.favorited ? 'action-bar__btn--on' : ''}}" bindtap="onToggleFavorite">
+      <text class="action-bar__glyph">{{post.favorited ? '★' : '☆'}}</text>
+      <text class="action-bar__num">{{post.favoriteCount}}</text>
+    </view>
+    <button class="action-bar__share" open-type="share">
+      <text class="action-bar__glyph">↗</text>
+    </button>
+  </view>
+
+  <!-- 评论输入浮层 -->
+  <view wx:if="{{commentFocus}}" class="comment-mask" bindtap="onCommentBlur">
+    <view class="comment-input-bar" catchtap="noop">
+      <view wx:if="{{replyTo}}" class="comment-input-bar__reply">
+        <text>回复 {{replyTo.nickname}}</text>
+        <text class="comment-input-bar__cancel" bindtap="onCancelReply">×</text>
+      </view>
+      <view class="comment-input-bar__row">
+        <input
+          class="comment-input-bar__input"
+          focus="{{commentFocus}}"
+          placeholder="{{replyTo ? '回复 ' + replyTo.nickname : '说点什么…'}}"
+          placeholder-class="ph"
+          maxlength="200"
+          value="{{commentText}}"
+          bindinput="onCommentInput"
+          confirm-type="send"
+          bindconfirm="onSubmitComment"
+        />
+        <view
+          class="comment-input-bar__send {{commentText ? 'on' : ''}}"
+          bindtap="onSubmitComment"
+        >发送</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 更多操作 -->
+  <view wx:if="{{showMore}}" class="mask" bindtap="onCloseMore">
+    <view class="sheet" catchtap="noop">
+      <view wx:if="{{isOwner}}" class="sheet__item" bindtap="onEditPost">编辑动态</view>
+      <view wx:if="{{isOwner}}" class="sheet__item sheet__item--danger" bindtap="onDeletePost">删除动态</view>
+      <view wx:if="{{!isOwner}}" class="sheet__item" bindtap="onDislike">不感兴趣</view>
+      <view wx:if="{{!isOwner}}" class="sheet__item sheet__item--danger" bindtap="onReport">举报</view>
+      <view wx:if="{{!isOwner}}" class="sheet__item" bindtap="onFollow">关注作者</view>
+      <view class="sheet__item sheet__item--cancel" bindtap="onCloseMore">取消</view>
+    </view>
+  </view>
+</view>

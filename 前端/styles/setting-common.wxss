@@ -1,0 +1,134 @@
+/* ==========================================================================
+   设置类页面公共样式（供 pages/me/setting-* 通过 @import 引用）
+   来源：《H-设计-体验与设计系统》§3 设计系统基线
+   ========================================================================== */
+
+page {
+  background: var(--c-bg-page);
+}
+
+/* 分组卡片 */
+.group {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+.group__title {
+  padding: 24rpx 26rpx 12rpx;
+  font-size: 24rpx;
+  color: var(--c-text-3);
+}
+.group__hint {
+  padding: 0 26rpx 16rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--c-text-3);
+}
+
+/* 单元格 */
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 18rpx 26rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.cell--last {
+  border-bottom: none;
+}
+.cell__main {
+  flex: 1;
+  min-width: 0;
+}
+.cell__label {
+  font-size: 29rpx;
+  color: var(--c-text-1);
+  display: block;
+}
+.cell__desc {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--c-text-3);
+  display: block;
+}
+.cell__value {
+  font-size: 27rpx;
+  color: var(--c-text-3);
+  margin-right: 10rpx;
+}
+.cell__arrow {
+  font-size: 34rpx;
+  color: #C0CAD8;
+}
+.cell__time {
+  font-size: 28rpx;
+  color: var(--c-primary);
+}
+.cell--danger .cell__label {
+  color: var(--c-danger);
+}
+
+/* 提示行 */
+.note {
+  margin: 24rpx 32rpx 0;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--c-text-3);
+}
+
+/* 输入类 */
+.field {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.field:last-child {
+  border-bottom: none;
+}
+.field__label {
+  font-size: 26rpx;
+  color: var(--c-text-2);
+  margin-bottom: 12rpx;
+}
+.field__input {
+  width: 100%;
+  height: 56rpx;
+  font-size: 30rpx;
+  color: var(--c-text-1);
+}
+.field__textarea {
+  width: 100%;
+  height: 180rpx;
+  font-size: 29rpx;
+  line-height: 1.65;
+  color: var(--c-text-1);
+}
+.ph {
+  color: #A9B4C4;
+}
+
+/* 底部主按钮 */
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  border-top: 1rpx solid var(--c-border);
+}
+.footer__btn {
+  height: 90rpx;
+  line-height: 90rpx;
+  text-align: center;
+  border-radius: 45rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.footer__btn--disabled {
+  background: #C6D4E8;
+}

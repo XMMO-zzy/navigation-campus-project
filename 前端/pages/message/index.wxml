@@ -1,0 +1,117 @@
+<!-- 消息页：页面顶部 / 组队协作 / 内容互动 / 活动与赛事系统（《04》一、3） -->
+<view class="page-wrap">
+
+  <nav-bar title="消息" back="{{false}}" border="{{false}}">
+    <view slot="right" class="nav-act" bindtap="onTapSetting">
+      <text class="nav-act-icon">⚙</text>
+    </view>
+  </nav-bar>
+
+  <!-- ==================== ① 页面顶部：全部/未读 + 五类入口 + 管理操作 ==================== -->
+  <view class="msg-top">
+    <view class="box-switch">
+      <view class="box-item {{box === 'all' ? 'active' : ''}}" data-box="all" bindtap="onSwitchBox">全部</view>
+      <view class="box-item {{box === 'unread' ? 'active' : ''}}" data-box="unread" bindtap="onSwitchBox">
+        未读<text class="box-dot" wx:if="{{badge.total > 0}}"></text>
+      </view>
+    </view>
+    <view class="read-all" bindtap="onReadAll">
+      <text class="read-all-icon">✓</text>
+      <text>全部已读</text>
+    </view>
+  </view>
+
+  <!-- 分类入口（活动/竞赛/商品/搭子/系统） -->
+  <scroll-view class="biz-tabs" scroll-x enable-flex>
+    <view class="biz-tab {{activeBiz === item.key ? 'active' : ''}}"
+          wx:for="{{bizTabs}}" wx:key="key"
+          data-biz="{{item.key}}"
+          bindtap="onSwitchBiz">{{item.label}}</view>
+  </scroll-view>
+
+  <!-- ==================== ② 组队协作：申请中心入口 ==================== -->
+  <block wx:if="{{isLogin && applySummary && applySummary.total}}">
+    <view class="section collab-section">
+      <view class="row-between" bindtap="onTapApplyCenter">
+        <view class="section-title">组队协作</view>
+        <text class="collab-more">申请中心 ›</text>
+      </view>
+      <view class="apply-summary" bindtap="onTapApplyCenter">
+        <view class="apply-badge">
+          <text class="apply-badge-num">{{applySummary.pending}}</text>
+          <text class="apply-badge-text">待处理申请</text>
+        </view>
+        <view class="apply-list">
+          <view class="apply-item" wx:for="{{applySummary.top}}" wx:key="id">
+            <image class="apply-avatar" src="{{item.user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+            <view class="apply-main">
+              <text class="apply-name">{{item.user.nickname || '同学'}}</text>
+              <text class="apply-team ellipsis">{{item.team.name || '队伍'}}</text>
+            </view>
+            <text class="tag {{item.status === 0 ? 'tag-warning' : 'tag-success'}}">
+              {{item.status === 0 ? '待处理' : '已处理'}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 私信 / 群聊入口（TIM，P1 预留） -->
+  <view class="section chat-section" wx:if="{{isLogin}}">
+    <view class="row-between" bindtap="onTapChat">
+      <view class="row">
+        <text class="chat-icon">💬</text>
+        <text class="chat-title">私信与队伍群聊</text>
+      </view>
+      <text class="collab-more">进入 ›</text>
+    </view>
+  </view>
+
+  <!-- ==================== ③④ 消息列表（内容互动 + 活动与赛事系统） ==================== -->
+  <view class="msg-list">
+
+    <!-- 未登录引导 -->
+    <block wx:if="{{!isLogin}}">
+      <empty icon="🔔" text="登录后查看消息"
+             desc="活动提醒、组队申请、内容互动都会在这里通知你"
+             action-text="立即登录" bind:action="onLogin" />
+    </block>
+
+    <block wx:else>
+      <skeleton wx:if="{{loading}}" type="list" rows="{{3}}" />
+
+      <block wx:elif="{{error}}">
+        <empty state="error" icon="⚠️" text="消息加载失败" desc="请检查网络后重试"
+               action-text="重新加载" bind:action="onRetry" />
+      </block>
+
+      <block wx:elif="{{!list.length}}">
+        <empty icon="📭" text="{{box === 'unread' ? '没有未读消息' : '暂无消息'}}"
+               desc="有新的互动或提醒时会第一时间通知你" />
+      </block>
+
+      <block wx:else>
+        <view class="msg-item" wx:for="{{list}}" wx:key="id"
+              data-item="{{item}}" bindtap="onTapMessage">
+          <view class="msg-item-left">
+            <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
+          </view>
+          <view class="msg-item-main">
+            <view class="msg-item-head">
+              <text class="msg-title">{{item.title}}</text>
+              <text class="msg-time">{{item.createdAtText}}</text>
+            </view>
+            <text class="msg-content ellipsis-2">{{item.content}}</text>
+            <view class="msg-item-foot">
+              <text class="tag tag-gray" wx:if="{{item.bizTypeText}}">{{item.bizTypeText}}</text>
+            </view>
+          </view>
+        </view>
+        <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+      </block>
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

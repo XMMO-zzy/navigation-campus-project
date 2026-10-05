@@ -1,0 +1,311 @@
+/* 混合信息流卡片 —— 白底卡片 + 蓝色主色交互 */
+.fc {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+.fc:active { background-color: #FCFDFF; }
+
+/* ---- 头部：发布者信息 ---- */
+.fc-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.fc-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background-color: #E8F1FE;
+  flex-shrink: 0;
+}
+.fc-head-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+}
+.fc-nickname {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.fc-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1A2233;
+  max-width: 300rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fc-school {
+  font-size: 20rpx;
+  color: #1E6FE8;
+  background-color: #F4F8FF;
+  border-radius: 6rpx;
+  padding: 2rpx 10rpx;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+.fc-time {
+  font-size: 22rpx;
+  color: #8C96A5;
+  display: block;
+  margin-top: 4rpx;
+}
+.fc-more {
+  color: #B4BCCA;
+  font-size: 32rpx;
+  padding: 0 8rpx;
+  letter-spacing: 2rpx;
+  line-height: 1;
+}
+
+/* ---- 正文 ---- */
+.fc-body { margin-bottom: 12rpx; }
+.fc-text {
+  font-size: 28rpx;
+  color: #1A2233;
+  line-height: 1.6;
+  word-break: break-all;
+}
+.fc-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 14rpx;
+  gap: 12rpx;
+}
+.fc-tag {
+  font-size: 22rpx;
+  color: #1E6FE8;
+  background-color: #F4F8FF;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+}
+.fc-tag-type {
+  font-size: 22rpx;
+  color: #F79009;
+  background-color: #FEF4E6;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+}
+
+/* ---- 图片 ---- */
+.fc-imgs {
+  display: grid;
+  gap: 8rpx;
+  margin-top: 18rpx;
+}
+.fc-imgs.imgs-1 { grid-template-columns: 1fr; }
+.fc-imgs.imgs-2 { grid-template-columns: repeat(2, 1fr); }
+.fc-imgs.imgs-3 { grid-template-columns: repeat(3, 1fr); }
+.fc-img {
+  width: 100%;
+  height: 210rpx;
+  border-radius: 12rpx;
+  background-color: #F2F4F8;
+}
+.fc-imgs.imgs-1 .fc-img { height: 380rpx; }
+.fc-imgs.imgs-2 .fc-img { height: 260rpx; }
+
+/* ---- 关联内容条 ---- */
+.fc-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F7F9FC;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  margin-top: 18rpx;
+}
+.fc-link-left { flex: 1; min-width: 0; }
+.fc-link-title {
+  font-size: 26rpx;
+  color: #1A2233;
+  font-weight: 500;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fc-link-sub {
+  font-size: 22rpx;
+  color: #F79009;
+  display: block;
+  margin-top: 6rpx;
+}
+.fc-link-arrow { color: #B4BCCA; font-size: 32rpx; margin-left: 12rpx; }
+
+/* ---- 二手商品卡 ---- */
+.fc-goods { display: flex; flex-direction: row; }
+.fc-goods-img {
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 12rpx;
+  background-color: #F2F4F8;
+  flex-shrink: 0;
+}
+.fc-goods-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.fc-goods-title {
+  font-size: 28rpx;
+  color: #1A2233;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.fc-goods-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin-top: 12rpx;
+}
+.fc-price {
+  font-size: 34rpx;
+  color: #F04438;
+  font-weight: 700;
+}
+.fc-cond {
+  font-size: 22rpx;
+  color: #8C96A5;
+  background-color: #F2F4F8;
+  border-radius: 6rpx;
+  padding: 2rpx 10rpx;
+  margin-left: 12rpx;
+}
+.fc-goods-foot {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+.fc-fav { font-size: 22rpx; color: #8C96A5; }
+
+/* ---- 搭子卡 ---- */
+.fc-buddy-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.fc-buddy-type {
+  font-size: 22rpx;
+  color: #12B76A;
+  background-color: #E7F8F0;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+}
+.fc-buddy-limit {
+  font-size: 22rpx;
+  color: #7A5AF8;
+  background-color: #F1EDFE;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+  margin-left: 12rpx;
+}
+.fc-buddy-info {
+  display: flex;
+  flex-direction: row;
+  margin-top: 14rpx;
+  gap: 20rpx;
+}
+.fc-buddy-item { font-size: 22rpx; color: #8C96A5; }
+
+/* ---- 活动 / 竞赛卡 ---- */
+.fc-event-head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.fc-event-badge {
+  font-size: 22rpx;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+}
+.fc-event-badge.activity { color: #F79009; background-color: #FEF4E6; }
+.fc-event-badge.competition { color: #7A5AF8; background-color: #F1EDFE; }
+.fc-event-title {
+  flex: 1;
+  font-size: 30rpx;
+  color: #1A2233;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.fc-event-meta {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 14rpx;
+  gap: 8rpx 24rpx;
+}
+.fc-event-item { font-size: 24rpx; color: #4A5468; }
+.fc-deadline {
+  margin-top: 16rpx;
+  background-color: #FEF4E6;
+  border-radius: 10rpx;
+  padding: 12rpx 18rpx;
+}
+.fc-deadline-text { font-size: 24rpx; color: #F79009; font-weight: 500; }
+
+/* ---- 通知卡 ---- */
+.fc-notice-head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+.fc-notice-badge {
+  font-size: 22rpx;
+  color: #1E6FE8;
+  background-color: #F4F8FF;
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+}
+.fc-notice-title {
+  flex: 1;
+  font-size: 30rpx;
+  color: #1A2233;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.fc-notice-foot {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 14rpx;
+}
+
+/* ---- 操作栏 ---- */
+.fc-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1rpx solid #F2F4F8;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+}
+.fc-act {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+}
+.fc-act:active { background-color: #F5F7FA; }
+.fc-act-icon { font-size: 28rpx; margin-right: 8rpx; }
+.fc-act-text { font-size: 24rpx; color: #4A5468; }

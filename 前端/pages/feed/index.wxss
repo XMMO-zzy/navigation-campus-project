@@ -1,0 +1,87 @@
+/* 动态页 —— 四页签 + 信息流 */
+.page-wrap { background-color: #F5F7FA; min-height: 100vh; }
+
+.pub-entry {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pub-icon {
+  font-size: 44rpx;
+  color: #1E6FE8;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* ---- 顶部分类页签 ---- */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  background-color: #FFFFFF;
+  padding: 0 16rpx;
+  border-bottom: 1rpx solid #EEF1F5;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tab {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.tab-text {
+  font-size: 28rpx;
+  color: #4A5468;
+}
+.tab.active .tab-text {
+  color: #1E6FE8;
+  font-weight: 600;
+  font-size: 30rpx;
+}
+.tab-line {
+  position: absolute;
+  bottom: 8rpx;
+  width: 44rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background-color: #1E6FE8;
+}
+
+/* ---- 信息流 ---- */
+.feed-list { padding: 20rpx 24rpx 0; }
+.list-end {
+  text-align: center;
+  font-size: 23rpx;
+  color: #B4BCCA;
+  padding: 24rpx 0 8rpx;
+}
+
+/* ---- 悬浮发布按钮 ---- */
+.fab {
+  position: fixed;
+  right: 36rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 56rpx);
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 50%;
+  background-color: #1E6FE8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 28rpx rgba(30, 111, 232, 0.35);
+  z-index: 90;
+}
+.fab:active { background-color: #1457C4; transform: scale(0.96); }
+.fab-icon {
+  font-size: 56rpx;
+  color: #FFFFFF;
+  font-weight: 300;
+  line-height: 1;
+  margin-top: -4rpx;
+}

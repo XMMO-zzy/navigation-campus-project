@@ -1,0 +1,104 @@
+/* ==========================================================================
+   列表类页面公共样式（供多页 @import 引用）
+   来源：《H-设计-体验与设计系统》§3 设计系统基线；页签/筛选交互见《A》《B》
+   ========================================================================== */
+
+/* ---- 页面容器 ---- */
+.page,
+.page-wrap {
+  min-height: 100vh;
+  background-color: var(--c-bg-page);
+}
+
+/* ---- 导航右侧操作 ---- */
+.nav-act { padding: 10rpx 20rpx; }
+.nav-act-text { font-size: 27rpx; color: #FFFFFF; font-weight: 500; }
+.nav-act-text--primary { color: var(--c-primary); }
+
+/* ---- 视图/一级页签 ---- */
+.view-tabs {
+  display: flex;
+  flex-direction: row;
+  background-color: #FFFFFF;
+  padding: 0 16rpx;
+  border-bottom: 1rpx solid var(--c-border);
+}
+.view-tab {
+  flex: 1;
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: var(--c-text-2);
+  position: relative;
+}
+.view-tab.active { color: var(--c-primary); font-weight: 600; }
+.view-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 6rpx;
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background-color: var(--c-primary);
+}
+
+/* ---- 横向滚动页签 ---- */
+.scroll-tabs {
+  white-space: nowrap;
+  background: #FFFFFF;
+  padding: 18rpx 16rpx;
+  border-bottom: 1rpx solid var(--c-border);
+}
+.scroll-tabs__item {
+  display: inline-block;
+  padding: 12rpx 30rpx;
+  margin: 0 8rpx;
+  font-size: 26rpx;
+  color: var(--c-text-2);
+  background: #F4F6FA;
+  border-radius: 999rpx;
+}
+.scroll-tabs__item--on {
+  background: var(--c-primary-light);
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* ---- 筛选栏 ---- */
+.filter-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #FFFFFF;
+  padding: 18rpx 24rpx;
+  border-bottom: 1rpx solid var(--c-border);
+}
+.filter-item {
+  font-size: 25rpx;
+  color: var(--c-text-2);
+  padding: 8rpx 24rpx 8rpx 0;
+}
+.filter-item.on { color: var(--c-primary); font-weight: 500; }
+.filter-spacer { flex: 1; }
+.filter-reset {
+  margin-left: auto;
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  padding: 8rpx 16rpx;
+}
+.switch-item {
+  display: flex;
+  align-items: center;
+}
+.switch-item__label {
+  font-size: 25rpx;
+  color: var(--c-text-2);
+  margin-right: 10rpx;
+}
+
+/* ---- 卡片容器 ---- */
+.list {
+  padding: 20rpx 24rpx 0;
+}

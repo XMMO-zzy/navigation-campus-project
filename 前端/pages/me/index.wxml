@@ -1,0 +1,145 @@
+<!-- 我的：个人主页头部 / 记录区 / 管理区 / 设置中心（《04》一、4） -->
+<view class="page-wrap">
+
+  <!-- ==================== ① 个人主页头部 ==================== -->
+  <view class="profile-hero">
+    <nav-bar title="" back="{{false}}" border="{{false}}" theme="primary" right-width="90">
+      <view slot="right" class="setting-entry" bindtap="onTapSetting">
+        <text class="setting-icon">⚙</text>
+        <view class="risk-dot" wx:if="{{hasSecurityRisk}}"></view>
+      </view>
+    </nav-bar>
+
+    <!-- 未登录 -->
+    <view class="profile-card" wx:if="{{!isLogin}}">
+      <image class="profile-avatar" src="/static/default-avatar.png" mode="aspectFill" />
+      <view class="profile-main">
+        <text class="profile-name">未登录</text>
+        <text class="profile-sub">登录后可发布内容、管理你的校园资产</text>
+      </view>
+      <view class="login-btn" bindtap="onTapLogin">登录</view>
+    </view>
+
+    <!-- 已登录：资料卡（基础/能力/数据概览） -->
+    <view class="profile-card" wx:elif="{{user}}">
+      <image class="profile-avatar" src="{{user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="profile-main">
+        <view class="profile-name-row">
+          <text class="profile-name">{{user.nickname || '同学'}}</text>
+          <text class="verify-tag {{verifyStatus === 2 ? 'ok' : (verifyStatus === 1 ? 'ing' : 'none')}}"
+                bindtap="onTapVerify">{{verifyText}}</text>
+        </view>
+        <text class="profile-sub" wx:if="{{user.major || user.grade}}">
+          {{user.major || ''}}{{user.major && user.grade ? ' · ' : ''}}{{user.grade || ''}}
+        </text>
+        <text class="profile-sub" wx:else>点击完善专业与年级信息</text>
+      </view>
+    </view>
+
+    <view class="profile-card skeleton-card" wx:else>
+      <view class="sk-avatar"></view>
+      <view class="profile-main">
+        <view class="sk-line w50"></view>
+        <view class="sk-line w30"></view>
+      </view>
+    </view>
+
+    <!-- 数据概览（《04》4.1 资料卡·数据概览） -->
+    <view class="stats-row" wx:if="{{isLogin}}">
+      <view class="stat-item" bindtap="onTapMyActivity">
+        <text class="stat-num">{{stats.activityCount}}</text>
+        <text class="stat-label">参与活动</text>
+      </view>
+      <view class="stat-item" bindtap="onTapMyCompetition">
+        <text class="stat-num">{{stats.competitionCount}}</text>
+        <text class="stat-label">参赛次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{stats.postCount}}</text>
+        <text class="stat-label">发布帖子</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 能力信息（专业/技能/爱好/性格） -->
+  <view class="section ability" wx:if="{{isLogin && (user.skillTags || user.hobbyTags)}}">
+    <view class="ability-row" wx:if="{{user.skillTags && user.skillTags.length}}">
+      <text class="ability-label">技能</text>
+      <view class="ability-tags">
+        <text class="tag" wx:for="{{user.skillTags}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+    <view class="ability-row" wx:if="{{user.hobbyTags && user.hobbyTags.length}}">
+      <text class="ability-label">爱好</text>
+      <view class="ability-tags">
+        <text class="tag tag-success" wx:for="{{user.hobbyTags}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+    <view class="edit-entry" bindtap="onTapEditProfile">编辑资料 ›</view>
+  </view>
+
+  <!-- ==================== ② 记录区：我的商品 / 活动 / 竞赛 / 搭子 ==================== -->
+  <view class="section" wx:if="{{isLogin}}">
+    <view class="section-title">我的记录</view>
+    <view class="record-grid">
+      <view class="record-item" bindtap="onTapMyGoods">
+        <text class="record-icon">🛍</text>
+        <text class="record-label">我的商品</text>
+      </view>
+      <view class="record-item" bindtap="onTapOrders" data-role="buyer">
+        <text class="record-icon">📦</text>
+        <text class="record-label">我买到的</text>
+      </view>
+      <view class="record-item" bindtap="onTapOrders" data-role="seller">
+        <text class="record-icon">💰</text>
+        <text class="record-label">我卖出的</text>
+      </view>
+      <view class="record-item" bindtap="onTapMyBuddy">
+        <text class="record-icon">🤝</text>
+        <text class="record-label">我的搭子</text>
+      </view>
+      <view class="record-item" bindtap="onTapMyActivity">
+        <text class="record-icon">🎪</text>
+        <text class="record-label">活动记录</text>
+      </view>
+      <view class="record-item" bindtap="onTapMyCompetition">
+        <text class="record-icon">🏆</text>
+        <text class="record-label">参赛与成果</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== ③ 管理区 ==================== -->
+  <view class="section" wx:if="{{isLogin}}">
+    <view class="section-title">我的管理</view>
+    <view class="entry-list">
+      <view class="entry-item" wx:for="{{manageEntries}}" wx:key="key"
+            data-url="{{item.url}}" bindtap="onTapEntry">
+        <text class="entry-icon">{{item.icon}}</text>
+        <text class="entry-label">{{item.label}}</text>
+        <text class="entry-arrow">›</text>
+      </view>
+      <view class="entry-item" bindtap="onTapReports">
+        <text class="entry-icon">🚩</text>
+        <text class="entry-label">举报记录</text>
+        <text class="entry-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== ④ 设置中心 ==================== -->
+  <view class="section">
+    <view class="section-title">设置</view>
+    <view class="entry-list">
+      <view class="entry-item" wx:for="{{settingEntries}}" wx:key="key"
+            data-url="{{item.url}}" bindtap="onTapEntry">
+        <text class="entry-icon">{{item.icon}}</text>
+        <text class="entry-label">{{item.label}}</text>
+        <text class="entry-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="version-info">通航校园 v1.0.0 · 单校试点版</view>
+  <view class="safe-bottom"></view>
+</view>

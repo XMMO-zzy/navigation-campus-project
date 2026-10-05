@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  campus-content —— M2 内容与信息流
+  来源：《11-系统概要设计文档》§1.1 模块划分
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tonghang</groupId>
+    <artifactId>campus-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>campus-content</artifactId>
+  <name>campus-content</name>
+  <description>M2 内容与信息流：动态 / 评论 / 点赞收藏 / 搜索 / 官方通知</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-account</artifactId>
+    </dependency>
+  </dependencies>
+</project>

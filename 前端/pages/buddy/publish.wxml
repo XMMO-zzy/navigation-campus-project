@@ -1,0 +1,179 @@
+<!-- pages/buddy/publish.wxml — 发布 / 编辑搭子帖 -->
+<view class="page">
+  <nav-bar title="{{isEdit ? '编辑搭子' : '发布搭子'}}" back="{{true}}" />
+
+  <!-- 类型 -->
+  <view class="panel">
+    <view class="panel__title">搭子类型<text class="req">*</text></view>
+    <view class="chips">
+      <view
+        wx:for="{{types}}"
+        wx:key="value"
+        class="chip {{form.type === item.value ? 'chip--on' : ''}}"
+        data-field="type"
+        data-index="{{index}}"
+        bindtap="onPickChip"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">标题<text class="req">*</text></view>
+      <input
+        class="field__input"
+        placeholder="如：周日下午图书馆自习搭子"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{form.title}}"
+        data-field="title"
+        bindinput="onInput"
+      />
+      <view class="field__count">{{form.title.length}}/40</view>
+    </view>
+
+    <view class="field">
+      <view class="field__label">搭子说明<text class="req">*</text></view>
+      <textarea
+        class="field__textarea"
+        placeholder="说明你想一起做什么、期望的节奏与时间，写得越具体越容易匹配"
+        placeholder-class="ph"
+        maxlength="500"
+        value="{{form.content}}"
+        data-field="content"
+        bindinput="onInput"
+      />
+      <view class="field__count">{{form.content.length}}/500</view>
+    </view>
+  </view>
+
+  <!-- 标签 -->
+  <view class="panel">
+    <view class="panel__title">兴趣标签（最多 5 个）</view>
+    <view class="chips">
+      <view
+        wx:for="{{tagOptions}}"
+        wx:key="*this"
+        class="chip {{tagOn[item] ? 'chip--on' : ''}}"
+        data-tag="{{item}}"
+        bindtap="onToggleTag"
+      >{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 时间地点人数 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">活动地点<text class="req">*</text></view>
+      <input
+        class="field__input"
+        placeholder="如：南校区图书馆三楼自习区"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{form.place}}"
+        data-field="place"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="field">
+      <view class="field__label">时间安排<text class="req">*</text></view>
+      <input
+        class="field__input"
+        placeholder="如：本周日 14:00 - 18:00"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{form.timeDesc}}"
+        data-field="timeDesc"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+    <view class="switch-row">
+      <view class="switch-row__label">招募人数</view>
+      <view class="stepper">
+        <view class="stepper__btn {{form.memberLimit <= 2 ? 'stepper__btn--off' : ''}}" data-delta="-1" bindtap="onStepMember">−</view>
+        <view class="stepper__val">{{form.memberLimit}}</view>
+        <view class="stepper__btn {{form.memberLimit >= 20 ? 'stepper__btn--off' : ''}}" data-delta="1" bindtap="onStepMember">＋</view>
+      </view>
+    </view>
+
+    <picker mode="selector" range="{{feeLabels}}" data-field="feeMode" bindchange="onPicker">
+      <view class="picker-row">
+        <view class="picker-row__label">费用方式</view>
+        <view class="picker-row__value">{{feeText}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+
+    <view class="divider"></view>
+    <picker mode="selector" range="{{genderLabels}}" data-field="genderLimit" bindchange="onPicker">
+      <view class="picker-row">
+        <view class="picker-row__label">性别限制</view>
+        <view class="picker-row__value">{{genderText}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 补充 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">对搭子的要求（选填）</view>
+      <textarea
+        class="field__textarea field__textarea--short"
+        placeholder="如：希望有基础骑行经验，自备车辆"
+        placeholder-class="ph"
+        maxlength="200"
+        value="{{form.requirement}}"
+        data-field="requirement"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="field">
+      <view class="field__label">联系方式<text class="req">*</text></view>
+      <input
+        class="field__input"
+        placeholder="手机号或微信号（仅通过申请后可见）"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{form.contact}}"
+        data-field="contact"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="panel__hint panel__hint--warn">
+      联系方式仅在对方申请通过后展示；请勿在标题或说明中直接填写，避免被骚扰。
+    </view>
+  </view>
+
+  <!-- 图片 -->
+  <view class="panel">
+    <view class="panel__title">活动图片（选填，最多 3 张）</view>
+    <view class="uploader">
+      <view class="uploader__item" wx:for="{{form.images}}" wx:key="index">
+        <image class="uploader__img" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="onPreviewImage" />
+        <view class="uploader__del" data-index="{{index}}" catchtap="onDeleteImage">×</view>
+      </view>
+      <view wx:if="{{form.images.length < 3}}" class="uploader__add" bindtap="onChooseImage">
+        <view class="uploader__add-icon">＋</view>
+        <view class="uploader__add-text">{{form.images.length}}/3</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="panel panel--plain">
+    <view class="panel__title">发布须知</view>
+    <view class="notice-item">1. 请如实填写活动信息，虚假信息将被下架并影响账号信用。</view>
+    <view class="notice-item">2. 首次线下见面建议选择校内公共场所，并告知同学或家人。</view>
+    <view class="notice-item">3. 涉及费用请当面确认，平台不承担任何资金代管责任。</view>
+  </view>
+
+  <view class="footer">
+    <view class="footer__btn {{submitting ? 'footer__btn--disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '提交中…' : (isEdit ? '保存修改' : '发布搭子')}}
+    </view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

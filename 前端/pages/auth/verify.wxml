@@ -1,0 +1,118 @@
+<!-- pages/auth/verify.wxml — 学号认证 -->
+<view class="page">
+  <nav-bar title="学号认证" back="{{true}}" />
+
+  <!-- 未认证：表单 -->
+  <block wx:if="{{status === 0}}">
+    <view class="hero">
+      <view class="hero__glyph">🎓</view>
+      <view class="hero__title">完成学号认证</view>
+      <view class="hero__desc">认证后即可发布商品、报名活动竞赛、发起组队与完整互动</view>
+    </view>
+
+    <view class="form">
+      <view class="field">
+        <view class="field__label">真实姓名<text class="req">*</text></view>
+        <input
+          class="field__input"
+          placeholder="请输入与校园卡一致的姓名"
+          placeholder-class="ph"
+          maxlength="20"
+          value="{{realName}}"
+          data-field="realName"
+          bindinput="onInput"
+        />
+      </view>
+
+      <view class="field">
+        <view class="field__label">学号<text class="req">*</text></view>
+        <input
+          class="field__input"
+          placeholder="请输入学号（4~20 位字母或数字）"
+          placeholder-class="ph"
+          maxlength="20"
+          value="{{studentNo}}"
+          data-field="studentNo"
+          bindinput="onInput"
+        />
+      </view>
+
+      <view class="field">
+        <view class="field__label">校园卡 / 学生证照片<text class="req">*</text></view>
+        <view class="upload">
+          <view wx:if="{{cardImage}}" class="upload__preview">
+            <image class="upload__img" src="{{cardImage}}" mode="aspectFill" bindtap="onPreviewCard" />
+            <view class="upload__del" bindtap="onChooseCard">更换</view>
+          </view>
+          <view wx:else class="upload__add" bindtap="onChooseCard">
+            <view class="upload__add-icon">＋</view>
+            <view class="upload__add-text">上传照片</view>
+          </view>
+        </view>
+        <view class="field__tip">请确保照片中姓名、学号清晰可辨，仅用于身份核验，平台加密存储。</view>
+      </view>
+    </view>
+
+    <view class="notice">
+      <view class="notice__title">温馨提示</view>
+      <view class="notice__item">1. 认证信息仅用于校园身份核验，不会公开展示。</view>
+      <view class="notice__item">2. 提交后进入人工审核，通常 1 个工作日内完成。</view>
+      <view class="notice__item">3. 请勿冒用他人身份，一经发现将永久封禁账号。</view>
+    </view>
+
+    <view class="footer">
+      <view class="footer__btn {{submitting ? 'footer__btn--disabled' : ''}}" bindtap="onSubmit">
+        {{submitting ? '提交中…' : '提交认证'}}
+      </view>
+    </view>
+    <view style="height: 160rpx;"></view>
+  </block>
+
+  <!-- 审核中：状态 -->
+  <block wx:elif="{{status === 1}}">
+    <view class="state">
+      <view class="state__icon state__icon--pending">⏳</view>
+      <view class="state__title">认证审核中</view>
+      <view class="state__desc">你的认证申请已提交，工作人员将在 1 个工作日内完成审核</view>
+      <view class="state__steps">
+        <view class="state-step state-step--done">
+          <view class="state-step__dot">✓</view>
+          <view class="state-step__text">提交申请</view>
+        </view>
+        <view class="state-step state-step--active">
+          <view class="state-step__dot">2</view>
+          <view class="state-step__text">人工审核</view>
+        </view>
+        <view class="state-step">
+          <view class="state-step__dot">3</view>
+          <view class="state-step__text">认证完成</view>
+        </view>
+      </view>
+      <view class="state__btn" bindtap="onBack">先去逛逛</view>
+    </view>
+  </block>
+
+  <!-- 已认证 -->
+  <block wx:elif="{{status === 2}}">
+    <view class="state">
+      <view class="state__icon state__icon--pass">✓</view>
+      <view class="state__title">已完成认证</view>
+      <view class="state__desc">你已通过校园身份认证，可享受全部功能</view>
+      <view class="benefit" bindtap="onTapBenefit">
+        <text>查看认证权益</text>
+        <text class="benefit__arrow">›</text>
+      </view>
+      <view class="state__btn" bindtap="onBack">返回</view>
+    </view>
+  </block>
+
+  <!-- 已驳回 -->
+  <block wx:elif="{{status === 3}}">
+    <view class="state">
+      <view class="state__icon state__icon--reject">!</view>
+      <view class="state__title">认证未通过</view>
+      <view class="state__desc">{{reason || '提交的信息与校园卡不一致，请核对后重新提交'}}</view>
+      <view class="state__btn" bindtap="onReapply">重新提交</view>
+    </view>
+  </block>
+</view>

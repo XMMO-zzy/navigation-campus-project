@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "empty": "/components/empty/empty",
+    "skeleton": "/components/skeleton/skeleton",
+    "load-more": "/components/load-more/load-more"
+  }
+}

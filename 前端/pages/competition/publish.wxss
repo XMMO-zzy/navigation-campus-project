@@ -1,0 +1,24 @@
+@import "../../styles/publish-common.wxss";
+
+/* ==========================================================================
+   pages/competition/publish —— 发布竞赛（复用 publish-common）
+   ========================================================================== */
+
+.uploader__add--wide { width: 100%; height: 280rpx; margin: 10rpx 0 0; }
+.uploader__item--wide { width: 100%; height: 280rpx; }
+
+.dt-row { display: flex; margin-bottom: 16rpx; }
+.dt-row:last-child { margin-bottom: 0; }
+.dt-pick {
+  min-width: 240rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 24rpx;
+  margin-right: 16rpx;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 27rpx;
+  color: var(--c-text-1);
+  text-align: center;
+}
+.dt-row .dt-pick:last-child { margin-right: 0; flex: 1; }

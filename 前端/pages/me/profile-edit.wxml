@@ -1,0 +1,188 @@
+<!-- pages/me/profile-edit.wxml — 编辑资料 / 他人主页 -->
+<view class="page">
+  <nav-bar title="{{isSelf ? '编辑资料' : '个人主页'}}" back="{{true}}">
+    <view wx:if="{{isSelf}}" slot="right" class="nav-save {{dirty ? 'on' : ''}}" bindtap="onSave">保存</view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="加载失败"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <block wx:elif="{{isSelf}}">
+    <!-- 头像 -->
+    <view class="block">
+      <view class="avatar-row" bindtap="onChooseAvatar">
+        <text class="avatar-row__label">头像</text>
+        <image class="avatar-row__img" src="{{form.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+        <text class="avatar-row__arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 基础资料 -->
+    <view class="block">
+      <view class="field">
+        <view class="field__label">昵称</view>
+        <input
+          class="field__input"
+          placeholder="请输入昵称"
+          placeholder-class="ph"
+          maxlength="20"
+          value="{{form.nickname}}"
+          data-field="nickname"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="field">
+        <view class="field__label">专业</view>
+        <input
+          class="field__input"
+          placeholder="如：飞行器制造工程"
+          placeholder-class="ph"
+          maxlength="30"
+          value="{{form.major}}"
+          data-field="major"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="field">
+        <view class="field__label">年级</view>
+        <input
+          class="field__input"
+          placeholder="如：2024 级"
+          placeholder-class="ph"
+          maxlength="20"
+          value="{{form.grade}}"
+          data-field="grade"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="field field--last">
+        <view class="field__label">个人简介</view>
+        <textarea
+          class="field__textarea"
+          placeholder="介绍一下自己吧"
+          placeholder-class="ph"
+          maxlength="100"
+          value="{{form.bio}}"
+          data-field="bio"
+          bindinput="onInput"
+        />
+        <view class="field__count">{{form.bio.length}}/100</view>
+      </view>
+    </view>
+
+    <!-- 技能 -->
+    <view class="block">
+      <view class="block__head">
+        <text class="block__title">技能标签</text>
+        <text class="block__action" data-field="skills" bindtap="onAddCustom">+ 自定义</text>
+      </view>
+      <view class="chips">
+        <view
+          wx:for="{{skillSuggest}}"
+          wx:key="*this"
+          class="chip {{skillOn[item] ? 'chip--on' : ''}}"
+          data-value="{{item}}"
+          bindtap="onToggleSkill"
+        >{{item}}</view>
+      </view>
+      <view wx:if="{{form.skills.length}}" class="chips chips--selected">
+        <view
+          wx:for="{{form.skills}}"
+          wx:key="*this"
+          class="chip chip--on"
+          data-value="{{item}}"
+          bindtap="onToggleSkill"
+        >{{item}} ×</view>
+      </view>
+    </view>
+
+    <!-- 爱好 -->
+    <view class="block">
+      <view class="block__head">
+        <text class="block__title">兴趣爱好</text>
+        <text class="block__action" data-field="hobbies" bindtap="onAddCustom">+ 自定义</text>
+      </view>
+      <view class="chips">
+        <view
+          wx:for="{{hobbySuggest}}"
+          wx:key="*this"
+          class="chip {{hobbyOn[item] ? 'chip--on' : ''}}"
+          data-value="{{item}}"
+          bindtap="onToggleHobby"
+        >{{item}}</view>
+      </view>
+      <view wx:if="{{form.hobbies.length}}" class="chips chips--selected">
+        <view
+          wx:for="{{form.hobbies}}"
+          wx:key="*this"
+          class="chip chip--on"
+          data-value="{{item}}"
+          bindtap="onToggleHobby"
+        >{{item}} ×</view>
+      </view>
+    </view>
+
+    <view class="tip">技能与爱好将用于为你推荐合适的活动、竞赛与搭子</view>
+    <view style="height: 160rpx;"></view>
+
+    <view class="footer">
+      <view class="footer__btn {{saving ? 'footer__btn--disabled' : ''}}" bindtap="onSave">
+        {{saving ? '保存中…' : '保存'}}
+      </view>
+    </view>
+  </block>
+
+  <!-- 他人主页（只读） -->
+  <block wx:else>
+    <view class="hero">
+      <image class="hero__avatar" src="{{user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="hero__name">
+        <text>{{user.nickname || '匿名用户'}}</text>
+        <text wx:if="{{user.userType === 2}}" class="hero__badge">已认证</text>
+      </view>
+      <view class="hero__meta">
+        <text wx:if="{{user.major}}">{{user.major}}</text>
+        <text wx:if="{{user.grade}}"> · {{user.grade}}</text>
+      </view>
+      <view wx:if="{{user.bio}}" class="hero__bio">{{user.bio}}</view>
+    </view>
+
+    <view wx:if="{{user.skills.length}}" class="block">
+      <view class="block__head"><text class="block__title">技能</text></view>
+      <view class="chips">
+        <view class="chip chip--on" wx:for="{{user.skills}}" wx:key="*this">{{item}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{user.hobbies.length}}" class="block">
+      <view class="block__head"><text class="block__title">兴趣爱好</text></view>
+      <view class="chips">
+        <view class="chip chip--on" wx:for="{{user.hobbies}}" wx:key="*this">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="block">
+      <view class="row" bindtap="onTapMessage">
+        <text class="row__label">💬 私信</text>
+        <text class="row__arrow">›</text>
+      </view>
+      <view class="row" bindtap="onBlock">
+        <text class="row__label">🚫 屏蔽该用户</text>
+        <text class="row__arrow">›</text>
+      </view>
+      <view class="row" bindtap="onReport">
+        <text class="row__label">⚠️ 举报</text>
+        <text class="row__arrow">›</text>
+      </view>
+    </view>
+  </block>
+</view>

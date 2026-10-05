@@ -1,0 +1,69 @@
+<!-- 登录页 / 登录引导浮层（FR-M1-01/02/03） -->
+<view class="login-page">
+
+  <!-- 关闭（游客模式继续浏览，FR-M1-03） -->
+  <view class="close-btn" bindtap="onClose">
+    <text class="close-icon">✕</text>
+  </view>
+
+  <!-- 品牌区 -->
+  <view class="brand">
+    <view class="logo">
+      <text class="logo-text">通航</text>
+    </view>
+    <text class="brand-name">通航校园</text>
+    <text class="brand-slogan">二手 · 搭子 · 活动 · 竞赛</text>
+  </view>
+
+  <!-- 说明区 -->
+  <view class="intro">
+    <text class="intro-title">{{title}}</text>
+    <text class="intro-desc">{{desc}}</text>
+  </view>
+
+  <!-- 微信一键授权登录 -->
+  <view class="login-actions">
+    <view class="btn btn-primary btn-lg btn-block {{loading ? 'btn-disabled' : ''}}" bindtap="onWxLogin">
+      <text class="wx-icon">💬</text>
+      <text>{{loading ? '登录中…' : '微信一键登录'}}</text>
+    </view>
+
+    <view class="phone-toggle" bindtap="onTogglePhoneLogin">
+      {{showPhoneLogin ? '收起手机号登录' : '使用手机号登录'}}
+    </view>
+
+    <!-- 手机号登录（备用通道） -->
+    <view class="phone-form" wx:if="{{showPhoneLogin}}">
+      <view class="phone-field">
+        <input class="phone-input" type="number" maxlength="11" placeholder="请输入手机号"
+               placeholder-class="placeholder" value="{{phone}}" bindinput="onPhoneInput" />
+      </view>
+      <view class="phone-field">
+        <input class="phone-input" type="number" maxlength="6" placeholder="请输入验证码"
+               placeholder-class="placeholder" value="{{smsCode}}" bindinput="onCodeInput" />
+        <view class="code-btn {{countdown > 0 ? 'disabled' : ''}}" bindtap="onSendCode">
+          {{countdown > 0 ? countdown + 's' : '获取验证码'}}
+        </view>
+      </view>
+      <view class="btn btn-ghost btn-block mt-md" bindtap="onPhoneLogin">手机号登录</view>
+    </view>
+
+    <!-- 游客模式 -->
+    <view class="guest-btn" bindtap="onBrowseAsGuest">先逛逛（游客模式）</view>
+  </view>
+
+  <!-- 协议 -->
+  <view class="agreement">
+    <view class="agree-check {{agreed ? 'checked' : ''}}" bindtap="onToggleAgree">
+      <text class="agree-icon">{{agreed ? '✓' : ''}}</text>
+    </view>
+    <view class="agree-text">
+      我已阅读并同意
+      <text class="agree-link" catchtap="onOpenAgreement">《用户协议》</text>
+      与
+      <text class="agree-link" catchtap="onOpenPrivacy">《隐私政策》</text>
+    </view>
+  </view>
+
+  <view class="guest-tip">游客模式下仅可浏览公开内容，任何操作会提示登录</view>
+</view>

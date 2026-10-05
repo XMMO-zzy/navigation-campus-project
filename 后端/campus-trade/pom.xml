@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  campus-trade —— M4 二手交易
+  来源：《11-系统概要设计文档》§1.1 模块划分
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tonghang</groupId>
+    <artifactId>campus-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>campus-trade</artifactId>
+  <name>campus-trade</name>
+  <description>M4 二手交易：商品 / 求购 / 订单状态机（含面交双向确认）</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-account</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-content</artifactId>
+    </dependency>
+    <!--
+      注意：不依赖 campus-message。
+      订单通知通过 campus-common 的 NotifySender 契约发送（实现由 message 模块提供），
+      避免 trade → message 硬依赖（《11》§2.1）。
+    -->
+  </dependencies>
+</project>

@@ -1,0 +1,362 @@
+/* ==========================================================================
+   通航校园APP · 全局样式（app.wxss）
+   设计规范：蓝色为主色 + 白色为底色，简洁统一
+   来源：《H-设计-体验与设计系统》§3 设计系统基线（主色=教育蓝；WeUI 为底）
+   实现说明：Figma 设计稿未随仓库交付，按交付要求（蓝主色/白底）落地为下述 Token
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 设计 Token（全局颜色 / 字号 / 间距 / 圆角）
+   -------------------------------------------------------------------------- */
+page {
+  /* --- 主色：教育蓝 --- */
+  --c-primary: #1E6FE8;
+  --c-primary-dark: #1457C4;
+  --c-primary-light: #E8F1FE;
+  --c-primary-lighter: #F4F8FF;
+
+  /* --- 语义色（H 文档：信任绿=确认类；警示红=危险提示） --- */
+  --c-success: #12B76A;
+  --c-success-light: #E7F8F0;
+  --c-warning: #F79009;
+  --c-warning-light: #FEF4E6;
+  --c-danger: #F04438;
+  --c-danger-light: #FEECEB;
+  /* 涨跌色：遵循中国股市红涨绿跌语境（本项目不涉及行情，仅预留） */
+  --c-up: #F04438;
+  --c-down: #12B76A;
+
+  /* --- 中性色（白底体系） --- */
+  --c-bg: #F5F7FA;
+  --c-bg-white: #FFFFFF;
+  --c-border: #EEF1F5;
+  --c-border-strong: #E3E8F0;
+  --c-divider: #F2F4F8;
+  /* --- 别名（页面样式中使用的语义化命名，与上方保持同源） --- */
+  --c-bg-page: #F5F7FA;
+  --c-border-light: #F0F3F7;
+
+  --c-text-1: #1A2233;
+  --c-text-2: #4A5468;
+  --c-text-3: #8C96A5;
+  --c-text-4: #B4BCCA;
+
+  /* --- 业务四域识别色（H 文档：二手/搭子/活动/竞赛各一识别色） --- */
+  --c-dom-good: #1E6FE8;
+  --c-dom-buddy: #12B76A;
+  --c-dom-activity: #F79009;
+  --c-dom-competition: #7A5AF8;
+
+  /* --- 字号（H 文档：正文 28rpx / 辅助 24rpx） --- */
+  --fs-xs: 22rpx;
+  --fs-sm: 24rpx;
+  --fs-base: 28rpx;
+  --fs-md: 30rpx;
+  --fs-lg: 34rpx;
+  --fs-xl: 40rpx;
+
+  /* --- 圆角 / 间距 --- */
+  --r-sm: 8rpx;
+  --r-md: 16rpx;
+  --r-lg: 24rpx;
+  --r-full: 999rpx;
+  --sp-xs: 8rpx;
+  --sp-sm: 16rpx;
+  --sp-md: 24rpx;
+  --sp-lg: 32rpx;
+  --sp-xl: 48rpx;
+
+  /* --- 阴影 --- */
+  --sh-card: 0 2rpx 12rpx rgba(26, 34, 51, 0.04);
+  --sh-float: 0 8rpx 32rpx rgba(30, 111, 232, 0.16);
+
+  background-color: var(--c-bg);
+  color: var(--c-text-1);
+  font-size: var(--fs-base);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, scroll-view, navigator, button, input, textarea, image, swiper, swiper-item, form, label {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   2. 布局工具类
+   -------------------------------------------------------------------------- */
+.row { display: flex; flex-direction: row; align-items: center; }
+.row-between { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+.row-center { display: flex; flex-direction: row; align-items: center; justify-content: center; }
+.col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; min-width: 0; }
+.wrap { flex-wrap: wrap; }
+
+.mt-xs { margin-top: var(--sp-xs); }
+.mt-sm { margin-top: var(--sp-sm); }
+.mt-md { margin-top: var(--sp-md); }
+.mt-lg { margin-top: var(--sp-lg); }
+.mb-sm { margin-bottom: var(--sp-sm); }
+.mb-md { margin-bottom: var(--sp-md); }
+.ml-sm { margin-left: var(--sp-sm); }
+.ml-xs { margin-left: var(--sp-xs); }
+.mr-sm { margin-right: var(--sp-sm); }
+
+.page-wrap { min-height: 100vh; background-color: var(--c-bg); }
+.page-pad { padding: var(--sp-md); }
+.safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx); }
+
+/* --------------------------------------------------------------------------
+   3. 文本工具类
+   -------------------------------------------------------------------------- */
+.t-1 { color: var(--c-text-1); }
+.t-2 { color: var(--c-text-2); }
+.t-3 { color: var(--c-text-3); }
+.t-4 { color: var(--c-text-4); }
+.t-primary { color: var(--c-primary); }
+.t-danger { color: var(--c-danger); }
+.t-success { color: var(--c-success); }
+.t-warning { color: var(--c-warning); }
+
+.fs-xs { font-size: var(--fs-xs); }
+.fs-sm { font-size: var(--fs-sm); }
+.fs-base { font-size: var(--fs-base); }
+.fs-md { font-size: var(--fs-md); }
+.fs-lg { font-size: var(--fs-lg); }
+.fs-xl { font-size: var(--fs-xl); }
+.fw-bold { font-weight: 600; }
+.fw-heavy { font-weight: 700; }
+
+.ellipsis { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ellipsis-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.ellipsis-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* --------------------------------------------------------------------------
+   4. 卡片 / 容器
+   -------------------------------------------------------------------------- */
+.card {
+  background-color: var(--c-bg-white);
+  border-radius: var(--r-md);
+  padding: var(--sp-md);
+  box-shadow: var(--sh-card);
+}
+.card-flat {
+  background-color: var(--c-bg-white);
+  border-radius: var(--r-md);
+  padding: var(--sp-md);
+}
+.card + .card { margin-top: var(--sp-sm); }
+
+.section {
+  background-color: var(--c-bg-white);
+  border-radius: var(--r-md);
+  margin: var(--sp-sm) var(--sp-md);
+  padding: var(--sp-md);
+}
+.section-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-text-1);
+  display: flex;
+  align-items: center;
+}
+.section-title::before {
+  content: "";
+  width: 6rpx;
+  height: 28rpx;
+  background-color: var(--c-primary);
+  border-radius: var(--r-full);
+  margin-right: 12rpx;
+}
+
+/* --------------------------------------------------------------------------
+   5. 按钮（与小程序原生 button 冲突的属性已显式重置）
+   -------------------------------------------------------------------------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: var(--r-full);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  line-height: 1;
+  padding: 0 var(--sp-lg);
+  border: none;
+  margin: 0;
+}
+.btn::after { border: none; }
+.btn-primary { background-color: var(--c-primary); color: #FFFFFF; }
+.btn-primary:active { background-color: var(--c-primary-dark); }
+.btn-ghost {
+  background-color: var(--c-primary-light);
+  color: var(--c-primary);
+}
+.btn-ghost:active { background-color: #DCEAFC; }
+.btn-plain {
+  background-color: var(--c-bg-white);
+  color: var(--c-text-2);
+  border: 1rpx solid var(--c-border-strong);
+}
+.btn-danger { background-color: var(--c-danger-light); color: var(--c-danger); }
+.btn-block { width: 100%; }
+.btn-sm { height: 60rpx; font-size: var(--fs-sm); padding: 0 var(--sp-md); }
+.btn-lg { height: 96rpx; font-size: var(--fs-lg); }
+.btn-disabled { background-color: #DCE1E8 !important; color: #FFFFFF !important; }
+
+/* --------------------------------------------------------------------------
+   6. 标签 / 徽标 / 状态
+   -------------------------------------------------------------------------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 14rpx;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  background-color: var(--c-primary-lighter);
+  color: var(--c-primary);
+}
+.tag-gray { background-color: var(--c-divider); color: var(--c-text-3); }
+.tag-success { background-color: var(--c-success-light); color: var(--c-success); }
+.tag-warning { background-color: var(--c-warning-light); color: var(--c-warning); }
+.tag-danger { background-color: var(--c-danger-light); color: var(--c-danger); }
+.tag-purple { background-color: #F1EDFE; color: var(--c-dom-competition); }
+.tag-info { background-color: var(--c-primary-lighter); color: var(--c-primary); }
+
+/* 变体命名空间：.tag--{variant}（与 constants.js 的 *_TAG 取值对齐） */
+.tag--gray { background-color: var(--c-divider); color: var(--c-text-3); }
+.tag--success { background-color: var(--c-success-light); color: var(--c-success); }
+.tag--warning { background-color: var(--c-warning-light); color: var(--c-warning); }
+.tag--danger { background-color: var(--c-danger-light); color: var(--c-danger); }
+.tag--purple { background-color: #F1EDFE; color: var(--c-dom-competition); }
+.tag--info { background-color: var(--c-primary-lighter); color: var(--c-primary); }
+
+.badge {
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 8rpx;
+  border-radius: var(--r-full);
+  background-color: var(--c-danger);
+  color: #FFFFFF;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.badge-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background-color: var(--c-danger);
+}
+
+/* --------------------------------------------------------------------------
+   7. 表单
+   -------------------------------------------------------------------------- */
+.field {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  padding: var(--sp-sm) 0;
+  border-bottom: 1rpx solid var(--c-divider);
+}
+.field:last-child { border-bottom: none; }
+.field-label {
+  width: 160rpx;
+  font-size: var(--fs-base);
+  color: var(--c-text-2);
+  flex-shrink: 0;
+}
+.field-input {
+  flex: 1;
+  font-size: var(--fs-base);
+  color: var(--c-text-1);
+  min-height: 60rpx;
+}
+.field-textarea {
+  width: 100%;
+  min-height: 220rpx;
+  font-size: var(--fs-base);
+  color: var(--c-text-1);
+  padding: var(--sp-sm) 0;
+  line-height: 1.6;
+}
+.field-arrow { color: var(--c-text-4); font-size: var(--fs-base); margin-left: var(--sp-xs); }
+.placeholder { color: var(--c-text-4); }
+
+/* --------------------------------------------------------------------------
+   8. 列表项 / 单元格
+   -------------------------------------------------------------------------- */
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 0 var(--sp-md);
+  background-color: var(--c-bg-white);
+  border-bottom: 1rpx solid var(--c-divider);
+}
+.cell:last-child { border-bottom: none; }
+.cell:active { background-color: #FAFBFC; }
+.cell-title { flex: 1; font-size: var(--fs-base); color: var(--c-text-1); }
+.cell-value { font-size: var(--fs-sm); color: var(--c-text-3); }
+.cell-arrow { color: var(--c-text-4); margin-left: var(--sp-xs); }
+
+/* --------------------------------------------------------------------------
+   9. 头像
+   -------------------------------------------------------------------------- */
+.avatar {
+  border-radius: 50%;
+  background-color: var(--c-primary-light);
+  flex-shrink: 0;
+}
+.avatar-sm { width: 56rpx; height: 56rpx; }
+.avatar-md { width: 80rpx; height: 80rpx; }
+.avatar-lg { width: 120rpx; height: 120rpx; }
+
+/* --------------------------------------------------------------------------
+   10. 分割线 / 间距
+   -------------------------------------------------------------------------- */
+.divider { height: 1rpx; background-color: var(--c-divider); }
+.gap-8 { height: 8rpx; }
+.gap-16 { height: 16rpx; }
+.gap-24 { height: 24rpx; }
+
+/* --------------------------------------------------------------------------
+   11. 图片
+   -------------------------------------------------------------------------- */
+.img-cover {
+  background-color: var(--c-divider);
+  border-radius: var(--r-sm);
+}
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8rpx; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-sm); }
+
+/* --------------------------------------------------------------------------
+   12. 底部悬浮操作条
+   -------------------------------------------------------------------------- */
+.footer-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--c-bg-white);
+  border-top: 1rpx solid var(--c-border);
+  padding: var(--sp-sm) var(--sp-md) calc(env(safe-area-inset-bottom) + 16rpx);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  z-index: 100;
+}
+.footer-placeholder { height: 140rpx; }

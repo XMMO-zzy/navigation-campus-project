@@ -1,0 +1,109 @@
+<!-- pages/search/index.wxml — 全局搜索 -->
+<view class="page">
+  <!-- 搜索栏 -->
+  <nav-bar title="搜索" back="{{true}}" />
+  <view class="search-bar">
+    <view class="search-bar__box">
+      <text class="search-bar__icon">🔍</text>
+      <input
+        class="search-bar__input"
+        placeholder="搜索动态、话题、公告"
+        placeholder-class="ph"
+        confirm-type="search"
+        value="{{kw}}"
+        bindinput="onInput"
+        bindconfirm="onConfirm"
+        focus="{{true}}"
+      />
+      <text wx:if="{{kw}}" class="search-bar__clear" bindtap="onClearInput">×</text>
+    </view>
+    <view class="search-bar__btn" bindtap="onConfirm">搜索</view>
+  </view>
+
+  <!-- 未搜索：历史 + 热门 -->
+  <block wx:if="{{!searched}}">
+    <view wx:if="{{history.length}}" class="section">
+      <view class="section__head">
+        <text class="section__title">搜索历史</text>
+        <text class="section__action" bindtap="onClearHistory">清空</text>
+      </view>
+      <view class="chips">
+        <view class="chip" wx:for="{{history}}" wx:key="index">
+          <text data-kw="{{item.kw}}" bindtap="onTapKeyword">{{item.kw}}</text>
+          <text class="chip__close" data-id="{{item.id}}" data-kw="{{item.kw}}" catchtap="onRemoveHistory">×</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{hot.length}}" class="section">
+      <view class="section__head">
+        <text class="section__title">热门搜索</text>
+      </view>
+      <view class="chips">
+        <view
+          class="chip chip--hot"
+          wx:for="{{hot}}"
+          wx:key="*this"
+          data-kw="{{item}}"
+          bindtap="onTapKeyword"
+        >
+          <text class="chip__rank">{{index + 1}}</text>{{item}}
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!history.length && !hot.length}}" class="search-tip">
+      <view class="search-tip__glyph">🔍</view>
+      <view class="search-tip__text">输入关键词开始搜索</view>
+    </view>
+  </block>
+
+  <!-- 搜索结果 -->
+  <block wx:else>
+    <scroll-view class="tabs" scroll-x enable-flex>
+      <view
+        wx:for="{{typeTabs}}"
+        wx:key="key"
+        class="tabs__item {{activeType === item.key ? 'tabs__item--on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onSwitchType"
+      >{{item.label}}</view>
+    </scroll-view>
+
+    <skeleton wx:if="{{loading && !results.length}}" type="list" rows="{{4}}" />
+
+    <empty
+      wx:elif="{{error}}"
+      state="error"
+      icon="⚠️"
+      text="搜索失败"
+      desc="请检查网络后重试"
+      action-text="重新搜索"
+      bind:action="onRetry"
+    />
+
+    <empty
+      wx:elif="{{!results.length}}"
+      icon="🔍"
+      text="没有找到相关内容"
+      desc="换个关键词试试吧"
+    />
+
+    <block wx:else>
+      <view class="result-count">共找到 {{total}} 条结果</view>
+      <view class="list">
+        <view class="result" wx:for="{{results}}" wx:key="index" data-item="{{item}}" bindtap="onTapResult">
+          <view class="result__head">
+            <view class="result__tag">{{item.typeText || '动态'}}</view>
+            <view class="result__time">{{item.timeText}}</view>
+          </view>
+          <view class="result__title">{{item.title}}</view>
+          <view wx:if="{{item.summary}}" class="result__summary">{{item.summary}}</view>
+        </view>
+      </view>
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

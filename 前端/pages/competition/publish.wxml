@@ -1,0 +1,146 @@
+<!-- pages/competition/publish.wxml — 发布竞赛 -->
+<view class="page">
+  <nav-bar title="发布竞赛" back="{{true}}" />
+
+  <!-- 基本信息 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">竞赛名称<text class="req">*</text></view>
+      <input class="field__input" placeholder="如：全国大学生数学建模竞赛（校内选拔）"
+             placeholder-class="ph" maxlength="60" value="{{form.title}}"
+             data-field="title" bindinput="onInput" />
+      <view class="field__count">{{form.title.length}}/60</view>
+    </view>
+
+    <picker mode="selector" range="{{levelLabels}}" bindchange="onPickerLevel">
+      <view class="picker-row">
+        <view class="picker-row__label">竞赛级别<text class="req">*</text></view>
+        <view class="picker-row__value {{levelText ? '' : 'ph'}}">{{levelText || '请选择'}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">主办单位<text class="req">*</text></view>
+      <input class="field__input" placeholder="如：通航学院教务处"
+             placeholder-class="ph" maxlength="60" value="{{form.organizer}}"
+             data-field="organizer" bindinput="onInput" />
+    </view>
+  </view>
+
+  <!-- 封面 -->
+  <view class="panel">
+    <view class="panel__title">竞赛封面<text class="req">*</text></view>
+    <view class="panel__hint">建议尺寸 750×400，用于列表与详情页展示</view>
+    <view class="uploader">
+      <view wx:if="{{form.cover}}" class="uploader__item uploader__item--wide">
+        <image class="uploader__img" src="{{form.cover}}" mode="aspectFill" bindtap="onChooseCover" />
+        <view class="uploader__del" catchtap="onRemoveCover">×</view>
+      </view>
+      <view wx:else class="uploader__add uploader__add--wide" bindtap="onChooseCover">
+        <view class="uploader__add-icon">＋</view>
+        <view class="uploader__add-text">上传封面</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 竞赛介绍 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">竞赛介绍<text class="req">*</text></view>
+      <textarea class="field__textarea" placeholder="介绍竞赛背景、赛制、组别与参赛价值，不少于 20 字"
+                placeholder-class="ph" maxlength="1000" value="{{form.content}}"
+                data-field="content" bindinput="onInput" />
+      <view class="field__count">{{form.content.length}}/1000</view>
+    </view>
+  </view>
+
+  <!-- 时间地点 -->
+  <view class="panel">
+    <view class="field__label" style="margin-bottom:16rpx;">比赛时间<text class="req">*</text></view>
+    <view class="dt-row">
+      <picker mode="date" value="{{form.startDate}}" start="{{minDate}}" data-field="startDate" bindchange="onDateChange">
+        <view class="dt-pick {{form.startDate ? '' : 'ph'}}">{{form.startDate || '开始日期'}}</view>
+      </picker>
+      <picker mode="time" value="{{form.startTime}}" data-field="startTime" bindchange="onTimeChange">
+        <view class="dt-pick {{form.startTime ? '' : 'ph'}}">{{form.startTime || '开始时间'}}</view>
+      </picker>
+    </view>
+    <view class="dt-row">
+      <picker mode="date" value="{{form.endDate}}" start="{{minDate}}" data-field="endDate" bindchange="onDateChange">
+        <view class="dt-pick {{form.endDate ? '' : 'ph'}}">{{form.endDate || '结束日期'}}</view>
+      </picker>
+      <picker mode="time" value="{{form.endTime}}" data-field="endTime" bindchange="onTimeChange">
+        <view class="dt-pick {{form.endTime ? '' : 'ph'}}">{{form.endTime || '结束时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="divider"></view>
+    <picker mode="date" value="{{form.enrollDeadline}}" start="{{minDate}}" data-field="enrollDeadline" bindchange="onDateChange">
+      <view class="picker-row">
+        <view class="picker-row__label">报名截止</view>
+        <view class="picker-row__value {{form.enrollDeadline ? '' : 'ph'}}">{{form.enrollDeadline || '不设截止'}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">比赛地点（选填）</view>
+      <input class="field__input" placeholder="如：通航学院实验楼 A301"
+             placeholder-class="ph" maxlength="60" value="{{form.place}}"
+             data-field="place" bindinput="onInput" />
+    </view>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">名额上限（选填，留空表示不限）</view>
+      <input class="field__input" type="number" placeholder="如：200"
+             placeholder-class="ph" maxlength="5" value="{{form.quota}}"
+             data-field="quota" bindinput="onInput" />
+    </view>
+  </view>
+
+  <!-- 要求 / 奖项 / 规则 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">参赛要求（选填）</view>
+      <textarea class="field__textarea field__textarea--short" placeholder="如：限本校在读本科生，3 人一组"
+                placeholder-class="ph" maxlength="300" value="{{form.requirement}}"
+                data-field="requirement" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field__label">奖项设置（选填）</view>
+      <textarea class="field__textarea field__textarea--short" placeholder="如：一等奖 1 组、二等奖 3 组、三等奖 6 组"
+                placeholder-class="ph" maxlength="300" value="{{form.awards}}"
+                data-field="awards" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field__label">赛程与规则（选填）</view>
+      <textarea class="field__textarea field__textarea--short" placeholder="如：初赛线上提交作品，决赛现场答辩"
+                placeholder-class="ph" maxlength="500" value="{{form.rule}}"
+                data-field="rule" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field__label">联系方式<text class="req">*</text></view>
+      <input class="field__input" placeholder="手机号或微信号，报名者可见"
+             placeholder-class="ph" maxlength="40" value="{{form.contact}}"
+             data-field="contact" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="panel panel--plain">
+    <view class="panel__title">发布须知</view>
+    <view class="notice-item">1. 仅认证用户可发布竞赛，发布后需经过内容审核。</view>
+    <view class="notice-item">2. 请准确填写级别与时间节点，日程将同步至竞赛日历。</view>
+    <view class="notice-item">3. 平台不参与竞赛组织与评审，请勿借发布之名进行商业推广。</view>
+  </view>
+
+  <view class="footer">
+    <view class="footer__btn {{submitting ? 'footer__btn--disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '提交中…' : '发布竞赛'}}
+    </view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

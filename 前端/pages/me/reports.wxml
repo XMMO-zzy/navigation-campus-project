@@ -1,0 +1,119 @@
+<!-- pages/me/reports.wxml — 举报中心 -->
+<view class="page">
+  <nav-bar title="{{mode === 'create' ? '举报' : '我的举报'}}" back="{{true}}" />
+
+  <!-- 举报表单 -->
+  <block wx:if="{{mode === 'create'}}">
+    <view class="target">
+      <text class="target__label">举报对象</text>
+      <text class="target__value">{{targetTypeText}}</text>
+    </view>
+
+    <view class="block">
+      <view class="block__title">请选择举报原因<text class="req">*</text></view>
+      <view class="reasons">
+        <view
+          wx:for="{{reasons}}"
+          wx:key="value"
+          class="reason {{reasonIndex === index ? 'reason--on' : ''}}"
+          data-index="{{index}}"
+          bindtap="onPickReason"
+        >
+          <text>{{item.label}}</text>
+          <text class="reason__check">✓</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="block">
+      <view class="block__title">补充说明</view>
+      <textarea
+        class="block__textarea"
+        placeholder="请描述具体情况，便于我们更快核实（选填，最多 300 字）"
+        placeholder-class="ph"
+        maxlength="300"
+        value="{{description}}"
+        bindinput="onDescInput"
+      />
+      <view class="block__count">{{description.length}}/300</view>
+    </view>
+
+    <view class="block">
+      <view class="block__title">证据材料</view>
+      <view class="block__hint">最多 6 张截图（选填）</view>
+      <view class="evidence">
+        <view class="evidence__item" wx:for="{{evidences}}" wx:key="*this">
+          <image class="evidence__img" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="onPreviewEvidence" />
+          <view class="evidence__del" data-index="{{index}}" catchtap="onDeleteEvidence">×</view>
+        </view>
+        <view wx:if="{{evidences.length < 6}}" class="evidence__add" bindtap="onAddEvidence">
+          <view class="evidence__add-icon">＋</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="notice">
+      <view class="notice__item">· 请如实举报，恶意举报可能导致你的账号受限</view>
+      <view class="notice__item">· 我们会在核实后通过站内消息告知处理结果</view>
+      <view class="notice__item">· 你的举报信息对其他用户保密</view>
+    </view>
+
+    <view class="footer">
+      <view class="footer__btn {{submitting ? 'footer__btn--disabled' : ''}}" bindtap="onSubmit">
+        {{submitting ? '提交中…' : '提交举报'}}
+      </view>
+    </view>
+    <view style="height: 160rpx;"></view>
+  </block>
+
+  <!-- 举报记录 -->
+  <block wx:else>
+    <skeleton wx:if="{{!loaded}}" type="list" rows="{{3}}" />
+
+    <empty
+      wx:elif="{{error}}"
+      state="error"
+      icon="⚠️"
+      text="加载失败"
+      desc="请检查网络后重试"
+      action-text="重新加载"
+      bind:action="onRetry"
+    />
+
+    <empty
+      wx:elif="{{!list.length}}"
+      icon="🛡"
+      text="暂无举报记录"
+      desc="发现违规内容时可在内容详情页发起举报"
+      action-text="去逛逛"
+      bind:action="onGoHome"
+    />
+
+    <block wx:else>
+      <view class="list">
+        <view class="report" wx:for="{{list}}" wx:key="id" data-item="{{item}}" bindtap="onTapRecord">
+          <view class="report__head">
+            <view class="report__type">{{item.typeText}}</view>
+            <view class="report__status tag tag--{{item.status === 2 ? 'success' : (item.status === 3 ? 'danger' : 'warning')}}">{{item.statusText}}</view>
+          </view>
+          <view class="report__row">
+            <text class="report__label">举报原因</text>
+            <text class="report__value">{{item.reasonText}}</text>
+          </view>
+          <view wx:if="{{item.description}}" class="report__row">
+            <text class="report__label">补充说明</text>
+            <text class="report__value">{{item.description}}</text>
+          </view>
+          <view wx:if="{{item.handleResult}}" class="report__result">处理结果：{{item.handleResult}}</view>
+          <view class="report__foot">
+            <text class="report__time">{{item.timeText}}</text>
+            <text wx:if="{{item.status === 3}}" class="report__appeal">申诉 ›</text>
+          </view>
+        </view>
+      </view>
+      <load-more status="{{loading ? 'loading' : (hasMore ? 'more' : 'nomore')}}" bind:retry="onRetry" />
+    </block>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

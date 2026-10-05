@@ -1,0 +1,54 @@
+/* 空态组件 —— 蓝色主色 + 白底体系 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+}
+.empty-icon {
+  font-size: 96rpx;
+  line-height: 1;
+  opacity: 0.55;
+  margin-bottom: 28rpx;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: #4A5468;
+  font-weight: 500;
+  text-align: center;
+}
+.empty-desc {
+  font-size: 24rpx;
+  color: #8C96A5;
+  text-align: center;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+.empty-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 40rpx;
+  gap: 20rpx;
+}
+.empty-btn {
+  min-width: 200rpx;
+  height: 68rpx;
+  padding: 0 36rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  background-color: #FFFFFF;
+  color: #4A5468;
+  border: 1rpx solid #E3E8F0;
+}
+.empty-btn.primary {
+  background-color: #1E6FE8;
+  color: #FFFFFF;
+  border: none;
+}
+.empty-btn.primary:active { background-color: #1457C4; }
+.empty-btn:active { background-color: #F5F7FA; }

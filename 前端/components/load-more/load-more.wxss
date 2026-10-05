@@ -1,0 +1,38 @@
+.lm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx 0 48rpx;
+}
+.lm-loading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.lm-spinner {
+  width: 28rpx;
+  height: 28rpx;
+  border: 3rpx solid #E3E8F0;
+  border-top-color: #1E6FE8;
+  border-radius: 50%;
+  animation: lm-spin 0.8s linear infinite;
+  margin-right: 14rpx;
+}
+@keyframes lm-spin {
+  to { transform: rotate(360deg); }
+}
+.lm-text {
+  font-size: 24rpx;
+  color: #8C96A5;
+}
+.lm-error {
+  padding: 10rpx 30rpx;
+  border-radius: 999rpx;
+  background-color: #FFFFFF;
+  border: 1rpx solid #E3E8F0;
+}
+.lm-error:active { background-color: #F5F7FA; }
+.lm-error-text {
+  font-size: 24rpx;
+  color: #1E6FE8;
+}

@@ -1,0 +1,121 @@
+<!-- 商品详情（《13》§3.4 GET /goods/{id} / FR-M4-02/04） -->
+<view class="page-wrap">
+
+  <nav-bar title="商品详情" back="{{true}}">
+    <view slot="right" class="nav-act" wx:if="{{isOwner}}" bindtap="onManage">
+      <text class="nav-act-text">管理</text>
+    </view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+
+  <block wx:elif="{{error}}">
+    <empty state="error" icon="⚠️" text="商品不存在或已下架"
+           desc="可能已被卖家删除或下架" action-text="重新加载" bind:action="onRetry" />
+  </block>
+
+  <block wx:elif="{{goods}}">
+    <!-- 图片轮播 -->
+    <view class="gallery">
+      <swiper class="gallery-swiper" circular indicator-dots="{{false}}" bindchange="onSwiperChange">
+        <swiper-item wx:for="{{images}}" wx:key="*this">
+          <image class="gallery-img" src="{{item}}" mode="aspectFill"
+                 data-index="{{index}}" bindtap="onPreviewImage" />
+        </swiper-item>
+      </swiper>
+      <view class="gallery-indicator" wx:if="{{images.length > 1}}">
+        {{current + 1}} / {{images.length}}
+      </view>
+    </view>
+
+    <!-- 价格与标题 -->
+    <view class="section price-section">
+      <view class="price-row">
+        <text class="price">{{goods.priceText}}</text>
+        <text class="orig-price" wx:if="{{goods.origPriceText}}">{{goods.origPriceText}}</text>
+        <text class="tag tag-gray ml-sm" wx:if="{{goods.condText}}">{{goods.condText}}</text>
+      </view>
+      <text class="title">{{goods.title}}</text>
+      <view class="meta-row">
+        <text class="meta" wx:if="{{goods.categoryText}}">{{goods.categoryText}}</text>
+        <text class="meta" wx:if="{{goods.viewCnt}}">{{goods.viewCnt}} 次浏览</text>
+        <text class="meta">{{goods.timeText}}</text>
+      </view>
+    </view>
+
+    <!-- 商品信息（长度/宽度/高度/类型/简介，《04》2.2 商品信息） -->
+    <view class="section">
+      <view class="section-title">商品信息</view>
+      <view class="info-row" wx:if="{{goods.dims}}">
+        <text class="info-label">尺寸</text>
+        <text class="info-value">{{goods.dims}}</text>
+      </view>
+      <view class="info-row" wx:if="{{goods.condText}}">
+        <text class="info-label">成色</text>
+        <text class="info-value">{{goods.condText}}</text>
+      </view>
+      <view class="info-row" wx:if="{{goods.categoryText}}">
+        <text class="info-label">品类</text>
+        <text class="info-value">{{goods.categoryText}}</text>
+      </view>
+      <view class="desc-block" wx:if="{{goods.description}}">
+        <text class="desc-label">商品简介</text>
+        <text class="desc-text">{{goods.description}}</text>
+      </view>
+    </view>
+
+    <!-- 卖家信息 -->
+    <view class="section seller-section" bindtap="onTapSeller">
+      <image class="seller-avatar" src="{{goods.seller.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="seller-main">
+        <text class="seller-name">{{goods.seller.nickname || '卖家'}}</text>
+        <text class="seller-sub" wx:if="{{goods.seller.schoolTag}}">{{goods.seller.schoolTag}}</text>
+      </view>
+      <text class="seller-arrow">›</text>
+    </view>
+
+    <!-- 安全提示（《17》§5 防诈提示常驻 /《H》§4.5；平台仅提供信息撮合） -->
+    <view class="section safety-section">
+      <view class="safety-head">
+        <text class="safety-icon">🛡</text>
+        <text class="safety-title">交易安全提示</text>
+      </view>
+      <view class="safety-item">· 付款前请勿脱离平台私聊转账，谨防场外诈骗</view>
+      <view class="safety-item">· 建议选择白天、人多的校内地点当面交易</view>
+      <view class="safety-item">· 商品与描述不符，请在订单完成前拒绝确认并发起举报</view>
+      <view class="safety-item">· 平台仅提供信息撮合，不代收任何资金</view>
+    </view>
+
+    <!-- 联系方式解锁状态（《H》§4.3 安全可视） -->
+    <view class="section contact-section">
+      <view class="contact-row">
+        <text class="contact-icon">{{contactUnlocked ? '📞' : '🔒'}}</text>
+        <view class="contact-main">
+          <text class="contact-title">{{contactUnlocked ? '联系方式已解锁' : '联系方式未解锁'}}</text>
+          <text class="contact-desc">
+            {{contactUnlocked ? '点击可复制卖家联系方式' : '卖家确认订单后可见，用于防骚扰'}}
+          </text>
+        </view>
+        <text class="contact-action" bindtap="onContact">{{contactUnlocked ? '查看' : '了解'}}</text>
+      </view>
+    </view>
+
+    <view class="footer-placeholder"></view>
+
+    <!-- 底部操作条 -->
+    <view class="footer-bar">
+      <view class="bar-icon-btn" bindtap="onToggleFavorite">
+        <text class="bar-icon">{{favorited ? '⭐' : '☆'}}</text>
+        <text class="bar-icon-text">{{favorited ? '已收藏' : '收藏'}}</text>
+      </view>
+      <view class="bar-icon-btn" bindtap="onReport">
+        <text class="bar-icon">🚩</text>
+        <text class="bar-icon-text">举报</text>
+      </view>
+      <view class="btn btn-primary flex-1 {{submitting ? 'btn-disabled' : ''}}" bindtap="onTapOrder">
+        {{isOwner ? '这是我发布的商品' : '我想要'}}
+      </view>
+    </view>
+  </block>
+
+</view>

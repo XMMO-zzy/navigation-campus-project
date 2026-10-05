@@ -1,0 +1,190 @@
+/* ==========================================================================
+   详情类页面公共样式（供 @import 引用）
+   来源：《H-设计-体验与设计系统》§3 设计系统基线
+   ========================================================================== */
+
+/* ---- 状态横幅 ---- */
+.banner {
+  padding: 34rpx 32rpx;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #1E6FE8 0%, #4E93F5 100%);
+}
+.banner--success { background: linear-gradient(135deg, #12B76A 0%, #34D399 100%); }
+.banner--warning { background: linear-gradient(135deg, #F79009 0%, #FBBF24 100%); }
+.banner--danger { background: linear-gradient(135deg, #F04438 0%, #F97066 100%); }
+.banner--purple { background: linear-gradient(135deg, #7A5AF8 0%, #9B7BFB 100%); }
+.banner--gray { background: linear-gradient(135deg, #667085 0%, #98A2B3 100%); }
+.banner__status { font-size: 40rpx; font-weight: 700; letter-spacing: 1rpx; }
+.banner__desc { margin-top: 12rpx; font-size: 26rpx; opacity: .92; line-height: 1.55; }
+
+/* ---- 内容卡片 ---- */
+.card {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 26rpx 24rpx;
+}
+.card__title {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+.card__title::before {
+  content: '';
+  width: 6rpx;
+  height: 28rpx;
+  border-radius: 4rpx;
+  background: var(--c-primary);
+  margin-right: 14rpx;
+}
+.card__title--plain::before {
+  display: none;
+}
+
+/* ---- 信息行 ---- */
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 12rpx 0;
+  font-size: 27rpx;
+}
+.info-row__label {
+  width: 170rpx;
+  flex-shrink: 0;
+  color: var(--c-text-3);
+}
+.info-row__value {
+  flex: 1;
+  color: var(--c-text-1);
+  line-height: 1.55;
+  word-break: break-all;
+}
+.info-row__value--hl {
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* ---- 安全提示 ---- */
+.tips {
+  margin: 20rpx 24rpx 0;
+  padding: 22rpx 24rpx;
+  background: #FFF9EC;
+  border-radius: 12rpx;
+}
+.tips__title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--c-warning);
+  margin-bottom: 10rpx;
+}
+.tips__item {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #8A5B00;
+}
+
+/* ---- 底部操作栏 ---- */
+.footer-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  padding: 14rpx 24rpx;
+  padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  border-top: 1rpx solid var(--c-border);
+}
+.footer-bar__icon {
+  width: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer-bar__glyph { font-size: 36rpx; color: var(--c-text-2); line-height: 1.1; }
+.footer-bar__icon.on .footer-bar__glyph { color: var(--c-danger); }
+.footer-bar__label { margin-top: 2rpx; font-size: 20rpx; color: var(--c-text-3); }
+.footer-bar__main {
+  flex: 1;
+  margin-left: 16rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 42rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 31rpx;
+  font-weight: 600;
+}
+.footer-bar__main--done { background: #EDF0F5; color: var(--c-text-3); }
+.footer-bar__main--ghost {
+  background: #FFFFFF;
+  color: var(--c-primary);
+  border: 2rpx solid var(--c-primary);
+}
+.footer-bar__main--disabled { background: #C6D4E8; }
+
+/* ---- 底部弹层 ---- */
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 200;
+  background: rgba(16, 24, 40, .5);
+  display: flex;
+  align-items: flex-end;
+}
+.sheet {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 28rpx 28rpx 0 0;
+  padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  animation: dslideUp .24s ease-out;
+}
+@keyframes dslideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+.sheet__title { font-size: 32rpx; font-weight: 600; color: var(--c-text-1); }
+.sheet__close {
+  width: 56rpx; height: 56rpx; line-height: 52rpx;
+  text-align: center; font-size: 40rpx; color: var(--c-text-3);
+}
+.sheet__textarea {
+  width: 100%;
+  height: 220rpx;
+  padding: 22rpx;
+  box-sizing: border-box;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+.sheet__count { margin-top: 8rpx; text-align: right; font-size: 22rpx; color: var(--c-text-3); }
+.sheet__submit {
+  margin-top: 30rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 46rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.sheet__submit--disabled { background: #C6D4E8; }
+.ph { color: #A9B4C4; }

@@ -1,0 +1,139 @@
+<!-- pages/buddy/detail.wxml — 搭子详情 -->
+<view class="page">
+  <nav-bar title="搭子详情" back="{{true}}">
+    <view wx:if="{{isOwner}}" slot="right" class="nav-act" bindtap="onManage">
+      <text class="nav-act-text">管理</text>
+    </view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="内容不存在或已删除"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <block wx:elif="{{post}}">
+    <!-- 头图 -->
+    <view wx:if="{{post.images.length}}" class="hero-img">
+      <swiper class="hero-img__swiper" indicator-dots="{{post.images.length > 1}}" indicator-active-color="#1E6FE8" circular>
+        <swiper-item wx:for="{{post.images}}" wx:key="*this">
+          <image class="hero-img__img" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="onPreviewImage" />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <!-- 主信息 -->
+    <view class="main">
+      <view class="main__tags">
+        <view class="main__type">{{post.typeText}}</view>
+        <view class="main__gender">{{post.genderText}}</view>
+        <view wx:if="{{post.status === 2}}" class="main__closed">已结束</view>
+      </view>
+      <view class="main__title">{{post.title}}</view>
+      <view class="main__content">{{post.content}}</view>
+    </view>
+
+    <!-- 关键信息 -->
+    <view class="info">
+      <view class="info__row">
+        <text class="info__icon">📍</text>
+        <text class="info__label">活动地点</text>
+        <text class="info__value">{{post.place || '校内，面议'}}</text>
+      </view>
+      <view class="info__row">
+        <text class="info__icon">🕐</text>
+        <text class="info__label">时间安排</text>
+        <text class="info__value">{{post.timeDesc || post.schedule || '待协商'}}</text>
+      </view>
+      <view class="info__row">
+        <text class="info__icon">💰</text>
+        <text class="info__label">费用方式</text>
+        <text class="info__value">{{post.feeText}}</text>
+      </view>
+      <view class="info__row">
+        <text class="info__icon">👥</text>
+        <text class="info__label">已加入</text>
+        <text class="info__value info__value--hl">{{post.joined}}/{{post.quota}} 人</text>
+      </view>
+      <view wx:if="{{post.requirement}}" class="info__row">
+        <text class="info__icon">📋</text>
+        <text class="info__label">对搭子要求</text>
+        <text class="info__value">{{post.requirement}}</text>
+      </view>
+    </view>
+
+    <!-- 发起人 -->
+    <view class="author" bindtap="onTapUser">
+      <image class="author__avatar" src="{{post.user.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="author__main">
+        <view class="author__name">{{post.user.nickname || '匿名用户'}}</view>
+        <view class="author__meta">{{post.user.major || '—'}}{{post.user.grade ? ' · ' + post.user.grade : ''}}</view>
+      </view>
+      <view class="author__arrow">›</view>
+    </view>
+
+    <!-- 联系方式（解锁后展示） -->
+    <view class="contact {{contactUnlocked ? 'contact--on' : ''}}">
+      <text class="contact__icon">{{contactUnlocked ? '📞' : '🔒'}}</text>
+      <view class="contact__main">
+        <view class="contact__title">{{contactUnlocked ? '联系方式' : '联系方式未解锁'}}</view>
+        <view class="contact__desc">
+          {{contactUnlocked ? (post.contact || '对方暂未提供') : '对方同意你的申请后即可查看'}}
+        </view>
+      </view>
+      <view wx:if="{{contactUnlocked}}" class="contact__btn" catchtap="onCopyContact">复制</view>
+    </view>
+
+    <view class="tips">
+      <view class="tips__item">· 请在校内公共场所见面，初次约见建议结伴同行</view>
+      <view class="tips__item">· 涉及费用请当面确认，避免提前转账</view>
+    </view>
+
+    <view style="height: 150rpx;"></view>
+
+    <!-- 底部操作 -->
+    <view class="footer-bar">
+      <view class="footer-bar__icon {{favorited ? 'on' : ''}}" bindtap="onToggleFavorite">
+        <text class="footer-bar__glyph">{{favorited ? '★' : '☆'}}</text>
+        <text class="footer-bar__label">收藏</text>
+      </view>
+      <view class="footer-bar__icon" bindtap="onReport">
+        <text class="footer-bar__glyph">⚠</text>
+        <text class="footer-bar__label">举报</text>
+      </view>
+      <view
+        class="footer-bar__main {{isOwner ? 'footer-bar__main--ghost' : (applied ? 'footer-bar__main--done' : '')}}"
+        bindtap="onOpenApply"
+      >
+        {{isOwner ? '我发布的' : (applied ? statusHintText : '申请加入')}}
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 申请弹层 -->
+<view wx:if="{{showApply}}" class="mask" bindtap="onCloseApply">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">申请加入搭子</text>
+      <text class="sheet__close" bindtap="onCloseApply">×</text>
+    </view>
+    <textarea
+      class="sheet__textarea"
+      placeholder="简单介绍一下自己，说明你能投入的时间与相关经验，通过率更高"
+      placeholder-class="ph"
+      maxlength="200"
+      value="{{applyMessage}}"
+      bindinput="onApplyInput"
+    />
+    <view class="sheet__count">{{applyMessage.length}}/200</view>
+    <view class="sheet__submit {{applying ? 'sheet__submit--disabled' : ''}}" bindtap="onSubmitApply">
+      {{applying ? '提交中…' : '提交申请'}}
+    </view>
+  </view>
+</view>

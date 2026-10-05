@@ -1,0 +1,46 @@
+@import "../../styles/setting-common.wxss";
+
+/* pages/me/blacklist.wxss — 黑名单 */
+.list {
+  padding: 20rpx 24rpx 0;
+}
+.user-item {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.user-item__avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--c-primary-light);
+  flex-shrink: 0;
+}
+.user-item__main {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+.user-item__name {
+  font-size: 29rpx;
+  font-weight: 500;
+  color: var(--c-text-1);
+}
+.user-item__meta {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--c-text-3);
+}
+.user-item__btn {
+  flex-shrink: 0;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 30rpx;
+  font-size: 26rpx;
+  border-radius: 999rpx;
+  color: var(--c-text-2);
+  border: 2rpx solid #DCE3EC;
+}

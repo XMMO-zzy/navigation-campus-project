@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  通航校园 · 后端服务（Spring Boot 3.2 模块化单体）
+  结构基线：《11-系统概要设计文档》§1.1 / §2
+  模块依赖规则见《11》§2.1：
+    campus-common  →  被全部模块依赖（Result / ErrorCode / 异常 / 工具）
+    campus-account →  M1 账号与认证
+    campus-content →  M2 内容与信息流
+    campus-message →  M3 消息与协作
+    campus-trade   →  M4 二手交易
+    campus-event   →  M5 活动与竞赛 + M6 找搭子
+    campus-server  →  启动模块（聚合全部业务模块 + M7 支撑）
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.tonghang</groupId>
+  <artifactId>campus-parent</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>campus-parent</name>
+  <description>通航校园 APP 后端 · 模块化单体</description>
+
+  <modules>
+    <module>campus-common</module>
+    <module>campus-account</module>
+    <module>campus-content</module>
+    <module>campus-message</module>
+    <module>campus-trade</module>
+    <module>campus-event</module>
+    <module>campus-server</module>
+  </modules>
+
+  <properties>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <spring-boot.version>3.2.5</spring-boot.version>
+    <mybatis-plus.version>3.5.6</mybatis-plus.version>
+    <jjwt.version>0.12.5</jjwt.version>
+    <flyway.version>10.10.0</flyway.version>
+    <knife4j.version>4.5.0</knife4j.version>
+    <hutool.version>5.8.27</hutool.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- 内部模块 -->
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-account</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-content</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-message</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-trade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tonghang</groupId>
+        <artifactId>campus-event</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- 三方 -->
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        <version>${mybatis-plus.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>${jjwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>${jjwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>cn.hutool</groupId>
+        <artifactId>hutool-core</artifactId>
+        <version>${hutool.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        <version>${knife4j.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>17</source>
+            <target>17</target>
+            <encoding>UTF-8</encoding>
+            <parameters>true</parameters>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

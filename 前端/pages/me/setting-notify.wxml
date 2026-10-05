@@ -1,0 +1,88 @@
+<!-- pages/me/setting-notify.wxml — 消息通知设置 -->
+<view class="page">
+  <nav-bar title="消息通知" back="{{true}}" />
+
+  <view class="group">
+    <view class="group__title">接收哪些消息</view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">商品交易</text>
+        <text class="cell__desc">下单、接单、面交与验收提醒</text>
+      </view>
+      <switch checked="{{settings.trade}}" color="#1E6FE8" data-key="trade" bindchange="onToggle" />
+    </view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">组队协作</text>
+        <text class="cell__desc">申请、邀请与团队公告</text>
+      </view>
+      <switch checked="{{settings.team}}" color="#1E6FE8" data-key="team" bindchange="onToggle" />
+    </view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">内容互动</text>
+        <text class="cell__desc">评论、点赞、收藏与新增关注</text>
+      </view>
+      <switch checked="{{settings.interact}}" color="#1E6FE8" data-key="interact" bindchange="onToggle" />
+    </view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">活动与竞赛</text>
+        <text class="cell__desc">报名开始、即将截止与赛程变更</text>
+      </view>
+      <switch checked="{{settings.event}}" color="#1E6FE8" data-key="event" bindchange="onToggle" />
+    </view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">系统通知</text>
+        <text class="cell__desc">审核结果、举报进度与账号安全</text>
+      </view>
+      <switch checked="{{settings.system}}" color="#1E6FE8" data-key="system" bindchange="onToggle" />
+    </view>
+    <view class="cell cell--last">
+      <view class="cell__main">
+        <text class="cell__label">平台公告</text>
+        <text class="cell__desc">规则更新与平台活动公告</text>
+      </view>
+      <switch checked="{{settings.platform}}" color="#1E6FE8" data-key="platform" bindchange="onToggle" />
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group__title">免打扰</view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">开启免打扰</text>
+        <text class="cell__desc">时段内不推送微信模板消息</text>
+      </view>
+      <switch checked="{{settings.dndEnabled}}" color="#1E6FE8" data-key="dndEnabled" bindchange="onToggle" />
+    </view>
+    <block wx:if="{{settings.dndEnabled}}">
+      <view class="cell">
+        <text class="cell__label">开始时间</text>
+        <picker mode="time" value="{{settings.dndStart}}" data-field="dndStart" bindchange="onTimeChange">
+          <view class="cell__time">{{settings.dndStart}} ›</view>
+        </picker>
+      </view>
+      <view class="cell cell--last">
+        <text class="cell__label">结束时间</text>
+        <picker mode="time" value="{{settings.dndEnd}}" data-field="dndEnd" bindchange="onTimeChange">
+          <view class="cell__time">{{settings.dndEnd}} ›</view>
+        </picker>
+      </view>
+    </block>
+  </view>
+
+  <view class="group">
+    <view class="cell cell--last">
+      <view class="cell__main">
+        <text class="cell__label">微信服务通知</text>
+        <text class="cell__desc">关键提醒通过微信推送兜底</text>
+      </view>
+      <switch checked="{{settings.templateMsg}}" color="#1E6FE8" data-key="templateMsg" bindchange="onToggle" />
+    </view>
+  </view>
+
+  <view class="note" bindtap="onNote">关闭后站内消息仍会保留，只是不再提示 ›</view>
+  <view class="safe-bottom"></view>
+</view>

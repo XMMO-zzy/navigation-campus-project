@@ -1,0 +1,207 @@
+<!-- pages/order/detail.wxml — 订单详情 -->
+<view class="page">
+  <nav-bar title="订单详情" back="{{true}}" />
+
+  <block wx:if="{{loaded && order}}">
+    <!-- 状态横幅 -->
+    <view class="banner banner--{{order.statusTag}}">
+      <view class="banner__status">{{order.statusText}}</view>
+      <view class="banner__desc">
+        <block wx:if="{{order.status === 10}}">{{isBuyer ? '已提交订单，等待卖家确认接单' : '有新的订单，请尽快确认是否接单'}}</block>
+        <block wx:elif="{{order.status === 20}}">{{isBuyer ? '卖家已接单，请尽快完成付款' : '已接单，等待买家付款'}}</block>
+        <block wx:elif="{{order.status === 30}}">{{isBuyer ? '已确认付款，请与卖家约定见面时间地点' : '买家已确认付款，请与买家约定见面时间地点'}}</block>
+        <block wx:elif="{{order.status === 40}}">{{isBuyer ? '你已确认，等待卖家确认面交' : '你已确认，等待买家确认面交'}}</block>
+        <block wx:elif="{{order.status === 50}}">交易已完成，感谢使用通航校园</block>
+        <block wx:elif="{{order.status === 60}}">订单已被取消</block>
+        <block wx:elif="{{order.status === 70}}">订单超时自动关闭</block>
+      </view>
+      <view wx:if="{{order.deadlineText}}" class="banner__deadline">{{order.deadlineText}}</view>
+    </view>
+
+    <!-- 商品信息 -->
+    <view class="card" bindtap="onTapGoods">
+      <view class="goods">
+        <image
+          class="goods__img"
+          src="{{order.goodsImage || '/static/placeholder.png'}}"
+          mode="aspectFill"
+        />
+        <view class="goods__info">
+          <view class="goods__title">{{order.goodsTitle}}</view>
+          <view class="goods__meta">{{order.condition || ''}}{{order.category ? ' · ' + order.category : ''}}</view>
+          <view class="goods__price">¥{{order.priceText}}</view>
+        </view>
+        <view class="goods__arrow">›</view>
+      </view>
+    </view>
+
+    <!-- 联系方式（按状态解锁） -->
+    <view class="card">
+      <view class="card__title">交易联系</view>
+      <view class="contact-row">
+        <view class="contact-row__icon">📞</view>
+        <view class="contact-row__main">
+          <view class="contact-row__label">{{isBuyer ? '卖家联系方式' : '买家联系方式'}}</view>
+          <view wx:if="{{contactVisible}}" class="contact-row__value">{{order.contact || '对方未填写'}}</view>
+          <view wx:else class="contact-row__masked">•••••••••••</view>
+        </view>
+        <view
+          wx:if="{{!contactVisible}}"
+          class="contact-row__btn"
+          bindtap="onToggleContact"
+        >查看</view>
+        <view wx:else class="contact-row__btn contact-row__btn--ghost" bindtap="onCopyContact">复制</view>
+      </view>
+      <view class="contact-row__hint">为保障交易安全，请在校内公共场所当面交易并核实物品。</view>
+    </view>
+
+    <!-- 订单信息 -->
+    <view class="card">
+      <view class="card__title">订单信息</view>
+      <view class="row-line">
+        <text class="row-line__label">订单编号</text>
+        <text class="row-line__value">{{order.orderNo}}</text>
+        <text class="row-line__copy" catchtap="onCopyOrderNo">复制</text>
+      </view>
+      <view class="row-line">
+        <text class="row-line__label">下单时间</text>
+        <text class="row-line__value">{{order.createdAtText}}</text>
+      </view>
+      <view class="row-line">
+        <text class="row-line__label">{{isBuyer ? '卖家' : '买家'}}</text>
+        <text class="row-line__value">{{isBuyer ? (order.sellerName || '—') : (order.buyerName || '—')}}</text>
+      </view>
+      <view class="row-line">
+        <text class="row-line__label">交易地点</text>
+        <text class="row-line__value">{{order.tradePlace || '面议'}}</text>
+      </view>
+      <view class="row-line">
+        <text class="row-line__label">交易方式</text>
+        <text class="row-line__value">校内当面交易</text>
+      </view>
+    </view>
+
+    <!-- 时间轴 -->
+    <view class="card">
+      <view class="card__title">交易进度</view>
+      <view class="timeline">
+        <view
+          class="timeline__node timeline__node--{{item.state}}"
+          wx:for="{{timeline}}"
+          wx:key="key"
+        >
+          <view class="timeline__dot"></view>
+          <view class="timeline__body">
+            <view class="timeline__text">{{item.text}}</view>
+            <view wx:if="{{item.timeText}}" class="timeline__time">{{item.timeText}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 金额 -->
+    <view class="card">
+      <view class="row-line">
+        <text class="row-line__label">商品金额</text>
+        <text class="row-line__value">¥{{order.goodsPriceText}}</text>
+      </view>
+      <view class="row-line row-line--total">
+        <text class="row-line__label">实付金额</text>
+        <text class="row-line__total">¥{{order.priceText}}</text>
+      </view>
+    </view>
+
+    <view style="height: 160rpx;"></view>
+  </block>
+
+  <block wx:elif="{{error}}">
+    <empty
+      state="error"
+      text="订单不存在或加载失败"
+      desc="请检查网络后重试"
+      actionText="重新加载"
+      bind:action="onRetry"
+    />
+  </block>
+  <skeleton wx:else type="detail" />
+
+  <!-- 底部操作 -->
+  <view wx:if="{{loaded && order && actions.length}}" class="footer-bar">
+    <view
+      wx:for="{{actions}}"
+      wx:key="type"
+      class="footer-bar__btn {{item.primary ? 'footer-bar__btn--primary' : ''}} {{item.ghost ? 'footer-bar__btn--ghost' : ''}} {{item.disabled ? 'footer-bar__btn--disabled' : ''}}"
+      data-type="{{item.type}}"
+      bindtap="onTapAction"
+    >{{item.text}}</view>
+  </view>
+</view>
+
+<!-- 付款弹层 -->
+<view wx:if="{{showPaySheet}}" class="mask" bindtap="onClosePaySheet">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">确认付款</text>
+      <text class="sheet__close" bindtap="onClosePaySheet">×</text>
+    </view>
+    <view class="sheet__amount">¥{{order.priceText}}</view>
+    <view class="sheet__sub">校内当面交易 · 付款后请联系卖家约定见面</view>
+
+    <view class="pay-list">
+      <view
+        class="pay-item {{payMethod === 'wechat' || !payMethod ? 'pay-item--on' : ''}}"
+        data-method="wechat"
+        bindtap="onPayMethod"
+      >
+        <view class="pay-item__icon">💳</view>
+        <view class="pay-item__name">微信支付</view>
+        <view class="pay-item__check">✓</view>
+      </view>
+      <view
+        class="pay-item {{payMethod === 'offline' ? 'pay-item--on' : ''}}"
+        data-method="offline"
+        bindtap="onPayMethod"
+      >
+        <view class="pay-item__icon">🤝</view>
+        <view class="pay-item__name">线下当面支付</view>
+        <view class="pay-item__check">✓</view>
+      </view>
+    </view>
+
+    <view
+      class="sheet__submit {{paying ? 'sheet__submit--disabled' : ''}}"
+      bindtap="onConfirmPay"
+    >{{paying ? '处理中…' : '确认已付款'}}</view>
+    <view class="sheet__safe">点击「确认已付款」即表示你已按约定方式完成支付</view>
+  </view>
+</view>
+
+<!-- 评价弹层 -->
+<view wx:if="{{showCommentSheet}}" class="mask" bindtap="onCloseCommentSheet">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">评价本次交易</text>
+      <text class="sheet__close" bindtap="onCloseCommentSheet">×</text>
+    </view>
+    <view class="score">
+      <view
+        wx:for="{{[1,2,3,4,5]}}"
+        wx:key="*this"
+        class="score__star {{commentScore >= item ? 'score__star--on' : ''}}"
+        data-score="{{item}}"
+        bindtap="onTapScore"
+      >★</view>
+      <text class="score__text">{{commentScore}} 分</text>
+    </view>
+    <textarea
+      class="sheet__textarea"
+      placeholder="说说这次交易的体验吧（物品描述是否属实、沟通是否顺畅等）"
+      placeholder-class="ph"
+      maxlength="200"
+      value="{{commentContent}}"
+      bindinput="onCommentInput"
+    />
+    <view class="sheet__count">{{commentContent.length}}/200</view>
+    <view class="sheet__submit" bindtap="onSubmitComment">提交评价</view>
+  </view>
+</view>

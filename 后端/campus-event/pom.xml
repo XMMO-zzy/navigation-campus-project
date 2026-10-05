@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  campus-event —— M5 活动与竞赛 + M6 找搭子
+  来源：《11-系统概要设计文档》§1.1 模块划分
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tonghang</groupId>
+    <artifactId>campus-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>campus-event</artifactId>
+  <name>campus-event</name>
+  <description>M5 活动与竞赛 + M6 找搭子：发布 / 报名 / 审核 / 日程 / 申请解锁</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-account</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-content</artifactId>
+    </dependency>
+    <!--
+      注意：不依赖 campus-message。
+      竞赛团队报名所需的 TeamQueryFacade 已下沉到 campus-common（campus-common/team），
+      由 campus-message 提供实现，避免 event ↔ message 循环依赖（《11》§2.1）。
+    -->
+  </dependencies>
+</project>

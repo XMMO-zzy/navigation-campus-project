@@ -1,0 +1,112 @@
+<!-- pages/team/apply-center.wxml — 组队申请中心 -->
+<view class="page-wrap">
+  <nav-bar title="申请中心" back="{{true}}" />
+
+  <!-- 方向页签 -->
+  <view class="view-tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="view-tab {{direction === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onSwitchTab"
+    >{{item.label}}</view>
+  </view>
+
+  <view class="list">
+    <skeleton wx:if="{{loading}}" type="list" rows="{{5}}" />
+
+    <block wx:elif="{{error}}">
+      <empty state="error" icon="⚠️" text="加载失败" desc="请检查网络后重试" action-text="重新加载" bind:action="onRetry" />
+    </block>
+
+    <block wx:elif="{{!loaded && !list.length}}">
+      <empty icon="🔐" text="登录后查看" desc="申请中心需要登录后查看" action-text="立即登录" bind:action="onLogin" />
+    </block>
+
+    <block wx:elif="{{!list.length}}">
+      <empty
+        icon="📨"
+        text="{{direction === 'received' ? '暂无收到的申请' : (direction === 'sent' ? '暂无我的申请' : '暂无收到的邀请')}}"
+        desc="组队申请会在这里统一汇总"
+      />
+    </block>
+
+    <block wx:else>
+      <view class="apply-card" wx:for="{{list}}" wx:key="id">
+        <!-- 申请/被申请人 -->
+        <view class="apply-card__head" data-uid="{{item.applicant.id || item.applicantId}}" bindtap="onTapUser">
+          <image class="apply-card__avatar" src="{{item.applicant.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+          <view class="apply-card__person">
+            <view class="apply-card__name">{{item.applicant.nickname || item.applicantName || '用户'}}</view>
+            <view class="apply-card__meta">
+              {{item.applicant.major || ''}}{{item.applicant.grade ? (item.applicant.major ? ' · ' : '') + item.applicant.grade : ''}}
+            </view>
+          </view>
+          <view class="tag tag--{{item.statusTag}}">{{item.statusText}}</view>
+        </view>
+
+        <!-- 队伍信息 -->
+        <view class="apply-card__team" data-teamid="{{item.teamId}}" bindtap="onTapTeam">
+          <text class="apply-card__team-ico">👥</text>
+          <text class="apply-card__team-name">{{item.teamName}}</text>
+          <text class="apply-card__team-role">·
+            {{direction === 'sent' ? '我的申请' : (direction === 'invited' ? '邀请我加入' : '申请加入')}}
+          </text>
+          <text class="apply-card__arrow">›</text>
+        </view>
+
+        <!-- 申请说明 -->
+        <view wx:if="{{item.message}}" class="apply-card__msg">{{item.message}}</view>
+        <view wx:if="{{item.status === 4 && item.replyMessage}}" class="apply-card__ask">
+          <text class="apply-card__ask-label">追问：</text>{{item.replyMessage}}
+        </view>
+
+        <view class="apply-card__foot">
+          <text class="apply-card__time">{{item.timeText}}</text>
+          <view class="apply-card__acts">
+            <!-- 收到的申请/邀请：待处理时可操作 -->
+            <block wx:if="{{direction !== 'sent' && item.status === 0}}">
+              <view class="ap-btn ap-btn--ghost" data-id="{{item.id}}" bindtap="onReject">拒绝</view>
+              <view class="ap-btn ap-btn--ghost" data-id="{{item.id}}" bindtap="onOpenAsk">追问</view>
+              <view class="ap-btn ap-btn--primary" data-id="{{item.id}}" bindtap="onAgree">同意</view>
+            </block>
+            <!-- 我的申请：待处理/补充询问时可撤回 -->
+            <block wx:elif="{{direction === 'sent' && (item.status === 0 || item.status === 4)}}">
+              <view class="ap-btn ap-btn--ghost" data-id="{{item.id}}" bindtap="onWithdraw">撤回申请</view>
+            </block>
+            <block wx:else>
+              <view class="ap-btn ap-btn--disabled">已{{item.statusText}}</view>
+            </block>
+          </view>
+        </view>
+      </view>
+
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>
+
+<!-- 补充询问弹层 -->
+<view wx:if="{{showAsk}}" class="mask" bindtap="onCloseAsk">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">补充询问</text>
+      <text class="sheet__close" bindtap="onCloseAsk">×</text>
+    </view>
+    <textarea
+      class="sheet__textarea"
+      placeholder="向申请人进一步了解情况，例如可投入时间、相关经验等"
+      placeholder-class="ph"
+      maxlength="200"
+      value="{{askMessage}}"
+      bindinput="onAskInput"
+    />
+    <view class="sheet__count">{{askMessage.length}}/200</view>
+    <view class="sheet__submit {{sending ? 'sheet__submit--disabled' : ''}}" bindtap="onSubmitAsk">
+      {{sending ? '发送中…' : '发送询问'}}
+    </view>
+  </view>
+</view>

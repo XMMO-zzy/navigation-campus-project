@@ -1,0 +1,169 @@
+/* pages/me/setting.wxss — 设置中心 */
+page {
+  background: var(--c-bg-page);
+}
+
+/* 页签 */
+.tabs {
+  display: flex;
+  background: #FFFFFF;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.tabs__item {
+  flex: 1;
+  text-align: center;
+  padding: 26rpx 0;
+  font-size: 29rpx;
+  color: var(--c-text-2);
+  position: relative;
+}
+.tabs__item--on {
+  color: var(--c-primary);
+  font-weight: 600;
+}
+.tabs__item--on::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 48rpx;
+  height: 6rpx;
+  border-radius: 4rpx;
+  background: var(--c-primary);
+}
+
+/* 分组 */
+.group {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 0 26rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.cell--last {
+  border-bottom: none;
+}
+.cell__label {
+  flex: 1;
+  font-size: 29rpx;
+  color: var(--c-text-1);
+}
+.cell__value {
+  font-size: 26rpx;
+  color: var(--c-text-3);
+  margin-right: 10rpx;
+}
+.cell__arrow {
+  font-size: 34rpx;
+  color: #C0CAD8;
+}
+.cell--danger .cell__label {
+  color: var(--c-danger);
+}
+
+/* 退出登录 */
+.logout {
+  margin: 36rpx 24rpx 0;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  background: #FFFFFF;
+  font-size: 31rpx;
+  font-weight: 600;
+  color: var(--c-danger);
+}
+.version {
+  margin-top: 40rpx;
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--c-text-3);
+}
+
+/* 反馈表单 */
+.form {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx 26rpx;
+}
+.form__title {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+  margin-bottom: 20rpx;
+}
+.form__row {
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.form__label {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--c-text-1);
+}
+.form__picker {
+  flex-shrink: 0;
+}
+.form__picker-value {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  color: var(--c-text-2);
+}
+.form__picker-arrow {
+  margin-left: 10rpx;
+  font-size: 32rpx;
+  color: #C0CAD8;
+}
+.form__field {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.form__field:last-child {
+  border-bottom: none;
+}
+.form__textarea {
+  width: 100%;
+  height: 220rpx;
+  font-size: 29rpx;
+  line-height: 1.65;
+  color: var(--c-text-1);
+}
+.form__input {
+  width: 100%;
+  height: 60rpx;
+  font-size: 29rpx;
+  color: var(--c-text-1);
+}
+.form__count {
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--c-text-3);
+}
+.form__submit {
+  margin-top: 30rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  text-align: center;
+  border-radius: 45rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 31rpx;
+  font-weight: 600;
+}
+.form__submit--disabled {
+  background: #C6D4E8;
+}
+.ph {
+  color: #A9B4C4;
+}

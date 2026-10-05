@@ -1,0 +1,39 @@
+<!-- pages/me/blacklist.wxml — 黑名单管理 -->
+<view class="page">
+  <nav-bar title="黑名单" back="{{true}}" />
+
+  <skeleton wx:if="{{!loaded}}" type="list" rows="{{3}}" />
+
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="加载失败"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <empty
+    wx:elif="{{!list.length}}"
+    icon="🚫"
+    text="黑名单是空的"
+    desc="屏蔽的用户会显示在这里，你们的动态将互相不可见"
+    action-text="去看看内容"
+    bind:action="onGoDiscover"
+  />
+
+  <view wx:else class="list">
+    <view class="user-item" wx:for="{{list}}" wx:key="id">
+      <image class="user-item__avatar" src="{{item.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="user-item__main">
+        <view class="user-item__name">{{item.nickname || '匿名用户'}}</view>
+        <view class="user-item__meta">{{item.timeText ? item.timeText + ' 屏蔽' : ''}}</view>
+      </view>
+      <view class="user-item__btn" data-id="{{item.id}}" data-name="{{item.nickname}}" bindtap="onUnblock">解除</view>
+    </view>
+  </view>
+
+  <view class="note">被屏蔽的用户无法查看你的动态、商品与资料，也无法向你发起申请或私信。</view>
+  <view class="safe-bottom"></view>
+</view>

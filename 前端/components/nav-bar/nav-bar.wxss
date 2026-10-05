@@ -1,0 +1,67 @@
+/* 自定义导航栏 —— 白底黑字（默认，与蓝主色页面统一） */
+.nb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+.nb-white { background-color: #FFFFFF; }
+.nb-primary { background-color: #1E6FE8; }
+.nb-border { border-bottom: 1rpx solid #EEF1F5; }
+.nb-primary.nb-border { border-bottom-color: rgba(255, 255, 255, 0.12); }
+
+.nb-inner {
+  height: 44px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  padding: 0 24rpx;
+}
+.nb-left {
+  width: 120rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 2;
+}
+.nb-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -12rpx;
+  border-radius: 50%;
+}
+.nb-back:active { background-color: rgba(0, 0, 0, 0.05); }
+.nb-back-icon {
+  font-size: 48rpx;
+  line-height: 1;
+  font-weight: 300;
+  color: #1A2233;
+  margin-top: -6rpx;
+}
+.nb-primary .nb-back-icon { color: #FFFFFF; }
+
+.nb-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1A2233;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.nb-primary .nb-title { color: #FFFFFF; }
+
+.nb-right {
+  min-width: 120rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 2;
+}

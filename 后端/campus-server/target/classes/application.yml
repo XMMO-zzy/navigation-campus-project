@@ -1,0 +1,108 @@
+# ==========================================================================
+# 通航校园 · 后端服务配置
+# 契约基线：《13-API接口文档》§1（Base URL = https://<domain>/api/v1）
+# ==========================================================================
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  application:
+    name: campus-server
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ssXXX
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:campus}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: zzy230719006
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DB:0}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    encoding: UTF-8
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.tonghang.campus.*.entity
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      logic-delete-field: deletedAt
+      logic-delete-value: "NOW()"
+      logic-not-delete-value: "NULL"
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 业务自定义配置
+campus:
+  jwt:
+    # 生产环境务必通过环境变量注入，切勿使用默认值
+    secret: ${JWT_SECRET:tonghang-campus-dev-secret-key-please-change-in-production}
+    access-token-ttl: 7200        # 2 小时（《13》§1）
+    refresh-token-ttl: 604800     # 7 天
+  wx:
+    app-id: ${WX_APP_ID:}
+    app-secret: ${WX_APP_SECRET:}
+  cos:
+    secret-id: ${COS_SECRET_ID:}
+    secret-key: ${COS_SECRET_KEY:}
+    region: ap-guangzhou
+    bucket: ${COS_BUCKET:}
+  im:
+    sdk-app-id: ${IM_SDK_APP_ID:}
+    secret-key: ${IM_SECRET_KEY:}
+  # 订单超时（《12》§2.4 order）
+  order:
+    pay-timeout-minutes: 30       # 待付款 30 分钟超时
+    confirm-deadline-hours: 72    # 待确认 72 小时截止
+    # P0 决策：支付通道尚未接入 → false，卖家确认后直接流转到 30 待面交；
+    # P1 接入微信支付后置为 true，则回到 20 待付款（《13》§3.4 决策②保留该状态）
+    pay-channel-ready: false
+  # 文件上传（M7）：对象存储未接入时 cos-enabled=false，走本地占位 URL（不伪造云地址）
+  file:
+    cos-enabled: false
+    local-prefix: /static/upload/
+
+springdoc:
+  swagger-ui:
+    path: /doc.html
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    root: info
+    com.tonghang.campus: debug
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,141 @@
+<!-- pages/publish/index.wxml — 发布中心（动态发布主体） -->
+<view class="page">
+  <nav-bar title="{{isEdit ? '编辑动态' : '发布'}}" back="{{true}}">
+    <view slot="right" class="nav-set" bindtap="onOpenSetting">设置</view>
+  </nav-bar>
+
+  <!-- 发布类型切换 -->
+  <scroll-view class="entries" scroll-x enable-flex wx:if="{{!isEdit}}">
+    <view
+      wx:for="{{entries}}"
+      wx:key="key"
+      class="entry {{item.key === 'post' ? 'entry--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onSwitchEntry"
+    >
+      <view class="entry__icon" style="background: {{item.color}}1A; color: {{item.color}};">{{item.glyph}}</view>
+      <view class="entry__label">{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 正文输入 -->
+  <view class="editor">
+    <textarea
+      class="editor__textarea"
+      placeholder="分享你的校园生活、学习经验或组队需求…"
+      placeholder-class="ph"
+      maxlength="1000"
+      value="{{content}}"
+      bindinput="onContentInput"
+      auto-height
+      show-confirm-bar="{{false}}"
+    />
+    <view class="editor__count">{{content.length}}/1000</view>
+  </view>
+
+  <!-- 图片网格 -->
+  <view class="media">
+    <view class="media__item" wx:for="{{images}}" wx:key="*this">
+      <image class="media__img" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="onPreviewImage" />
+      <view class="media__del" data-index="{{index}}" catchtap="onDeleteImage">×</view>
+      <view class="media__index">{{index === 0 ? '封面' : index + 1}}</view>
+      <view wx:if="{{index > 0}}" class="media__move" data-index="{{index}}" catchtap="onMoveImage">前移</view>
+    </view>
+    <view wx:if="{{images.length < 9}}" class="media__add" bindtap="onChooseImage">
+      <view class="media__add-icon">＋</view>
+      <view class="media__add-text">{{images.length}}/9</view>
+    </view>
+  </view>
+
+  <!-- 话题 -->
+  <view class="block">
+    <view class="block__head">
+      <text class="block__title">话题</text>
+      <text class="block__hint">最多 5 个</text>
+    </view>
+    <view class="topics">
+      <view class="topic" wx:for="{{topics}}" wx:key="name">
+        <text>#{{item.name}}</text>
+        <text class="topic__close" data-name="{{item.name}}" catchtap="onRemoveTopic">×</text>
+      </view>
+      <view class="topic-input">
+        <text class="topic-input__hash">#</text>
+        <input
+          class="topic-input__field"
+          placeholder="添加话题"
+          placeholder-class="ph"
+          value="{{topicInput}}"
+          bindinput="onTopicInput"
+          confirm-type="done"
+          bindconfirm="onAddTopic"
+        />
+        <view class="topic-input__add" bindtap="onAddTopic">添加</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关联内容（预留入口：《10》FR-M2-04 关联活动/竞赛/商品/技能/校园话题） -->
+  <view class="block" bindtap="onPickLink">
+    <view class="row" wx:if="{{!link}}">
+      <text class="row__label">🔗 关联内容</text>
+      <text class="row__value row__value--ph">可关联活动、竞赛、商品</text>
+      <text class="row__arrow">›</text>
+    </view>
+    <view class="row" wx:else>
+      <text class="row__label">🔗 关联内容</text>
+      <text class="row__value">{{link.title}}</text>
+      <text class="row__arrow">›</text>
+    </view>
+  </view>
+
+  <view style="height: 180rpx;"></view>
+
+  <!-- 底部提交 -->
+  <view class="footer">
+    <view class="footer__cancel" bindtap="onCancel">取消</view>
+    <view class="footer__submit {{submitting ? 'footer__submit--disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '发布中…' : (isEdit ? '保存修改' : '发布')}}
+    </view>
+  </view>
+</view>
+
+<!-- 发布设置 -->
+<view wx:if="{{showSetting}}" class="mask" bindtap="onCloseSetting">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">发布设置</text>
+      <text class="sheet__close" bindtap="onCloseSetting">×</text>
+    </view>
+
+    <view class="sheet__group-title">谁能看到</view>
+    <view
+      wx:for="{{visibleOptions}}"
+      wx:key="value"
+      class="opt {{visibleScope === item.value ? 'opt--on' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onPickVisibility"
+    >
+      <view class="opt__main">
+        <view class="opt__label">{{item.label}}</view>
+        <view class="opt__desc">{{item.desc}}</view>
+      </view>
+      <view class="opt__check">✓</view>
+    </view>
+
+    <view class="sheet__group-title">评论权限</view>
+    <view
+      wx:for="{{commentOptions}}"
+      wx:key="value"
+      class="opt {{commentPermission === item.value ? 'opt--on' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onPickComment"
+    >
+      <view class="opt__main">
+        <view class="opt__label">{{item.label}}</view>
+      </view>
+      <view class="opt__check">✓</view>
+    </view>
+
+    <view class="sheet__done" bindtap="onCloseSetting">完成</view>
+  </view>
+</view>

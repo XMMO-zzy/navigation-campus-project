@@ -1,0 +1,89 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/feed/index",
+    "pages/message/index",
+    "pages/me/index",
+    "pages/search/index",
+    "pages/goods/list",
+    "pages/goods/detail",
+    "pages/goods/publish",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/buddy/list",
+    "pages/buddy/detail",
+    "pages/buddy/publish",
+    "pages/activity/list",
+    "pages/activity/detail",
+    "pages/activity/publish",
+    "pages/competition/list",
+    "pages/competition/calendar",
+    "pages/competition/detail",
+    "pages/competition/publish",
+    "pages/team/apply-center",
+    "pages/team/detail",
+    "pages/post/detail",
+    "pages/publish/index",
+    "pages/auth/login",
+    "pages/auth/verify",
+    "pages/me/profile-edit",
+    "pages/me/setting",
+    "pages/me/setting-account",
+    "pages/me/setting-notify",
+    "pages/me/setting-privacy",
+    "pages/me/blacklist",
+    "pages/me/records",
+    "pages/me/reports",
+    "pages/notice/index",
+    "pages/webview/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1E6FE8",
+    "navigationBarTitleText": "通航校园",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F7FA",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#8C96A5",
+    "selectedColor": "#1E6FE8",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/feed/index",
+        "text": "动态",
+        "iconPath": "static/tabbar/feed.png",
+        "selectedIconPath": "static/tabbar/feed-active.png"
+      },
+      {
+        "pagePath": "pages/message/index",
+        "text": "消息",
+        "iconPath": "static/tabbar/message.png",
+        "selectedIconPath": "static/tabbar/message-active.png"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的",
+        "iconPath": "static/tabbar/me.png",
+        "selectedIconPath": "static/tabbar/me-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于展示同校活动与搭子的就近信息"
+    }
+  },
+  "requiredPrivateInfos": [],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

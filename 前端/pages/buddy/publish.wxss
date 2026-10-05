@@ -1,0 +1,39 @@
+@import "../../styles/publish-common.wxss";
+
+/* ==========================================================================
+   pages/buddy/publish —— 搭子发布（复用 publish-common）
+   ========================================================================== */
+
+/* ---- 类型选择块改为等宽两列 ---- */
+.chips .chip {
+  min-width: 160rpx;
+  text-align: center;
+}
+
+/* ---- 步进器 ---- */
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 2rpx solid #E2E8F0;
+  border-radius: 40rpx;
+  overflow: hidden;
+}
+.stepper__btn {
+  width: 72rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 34rpx;
+  color: var(--c-primary);
+  background: #F8FAFD;
+}
+.stepper__btn--off { color: #C0CAD8; }
+.stepper__val {
+  width: 88rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+}

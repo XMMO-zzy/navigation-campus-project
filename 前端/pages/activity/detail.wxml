@@ -1,0 +1,178 @@
+<!-- pages/activity/detail.wxml — 活动详情 -->
+<view class="page">
+  <nav-bar title="活动详情" back="{{true}}">
+    <view wx:if="{{isOwner}}" slot="right" class="nav-act" bindtap="onOpenReview">
+      <text class="nav-act-text">报名审核</text>
+    </view>
+  </nav-bar>
+
+  <skeleton wx:if="{{loading}}" type="detail" />
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="活动不存在或已下架"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <block wx:elif="{{act}}">
+    <!-- 封面 -->
+    <view class="cover" bindtap="onPreviewCover">
+      <image class="cover__img" src="{{act.cover}}" mode="aspectFill" />
+      <view class="cover__status tag tag--{{act.statusTag}}">{{act.statusText}}</view>
+    </view>
+
+    <!-- 标题区 -->
+    <view class="head">
+      <view class="head__title">{{act.title}}</view>
+      <view class="head__tags">
+        <view class="tag tag--info">{{act.categoryText}}</view>
+        <view wx:if="{{act.level}}" class="tag tag--purple">{{act.levelText}}</view>
+      </view>
+      <view class="head__stat">
+        <view class="head__stat-item">
+          <view class="head__stat-num">{{act.enrolled}}</view>
+          <view class="head__stat-label">已报名</view>
+        </view>
+        <view class="head__stat-item">
+          <view class="head__stat-num">{{act.quota || '不限'}}</view>
+          <view class="head__stat-label">名额</view>
+        </view>
+        <view class="head__stat-item">
+          <view class="head__stat-num">{{act.leftText ? '剩' + (act.quota - act.enrolled) : '—'}}</view>
+          <view class="head__stat-label">可报名</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 时间地点 -->
+    <view class="card">
+      <view class="card__title">活动信息</view>
+      <view class="info-row">
+        <text class="info-row__label">活动时间</text>
+        <text class="info-row__value">{{act.startText}}{{act.endText ? ' 至 ' + act.endText : ''}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">报名截止</text>
+        <text class="info-row__value info-row__value--hl">{{act.deadlineText || '不设截止'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">活动地点</text>
+        <text class="info-row__value">{{act.place || '待定'}}</text>
+      </view>
+      <view class="info-row" wx:if="{{act.organizer}}">
+        <text class="info-row__label">主办方</text>
+        <text class="info-row__value">{{act.organizer}}</text>
+      </view>
+      <view class="info-row" wx:if="{{act.contact}}">
+        <text class="info-row__label">联系方式</text>
+        <text class="info-row__value">{{act.contact}}</text>
+      </view>
+    </view>
+
+    <!-- 活动介绍 -->
+    <view class="card" wx:if="{{act.content || act.description}}">
+      <view class="card__title">活动介绍</view>
+      <view class="rich">{{act.content || act.description}}</view>
+    </view>
+
+    <!-- 参与要求 -->
+    <view class="card" wx:if="{{act.requirement}}">
+      <view class="card__title">参与要求</view>
+      <view class="rich">{{act.requirement}}</view>
+    </view>
+
+    <!-- 活动规则 -->
+    <view class="card" wx:if="{{act.rule}}">
+      <view class="card__title">活动规则</view>
+      <view class="rich">{{act.rule}}</view>
+    </view>
+
+    <!-- 组织者 -->
+    <view class="author" bindtap="onTapOwner">
+      <image class="author__avatar" src="{{act.creator.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+      <view class="author__main">
+        <view class="author__name">{{act.creator.nickname || act.organizer || '活动组织者'}}</view>
+        <view class="author__meta">{{act.creator.major || '校园活动主办'}}</view>
+      </view>
+      <view class="author__arrow">›</view>
+    </view>
+
+    <view class="tips">
+      <view class="tips__title">安全提示</view>
+      <view class="tips__item">· 报名信息仅用于活动组织者核实身份，请如实填写</view>
+      <view class="tips__item">· 活动相关费用请通过正规渠道缴纳，切勿私下转账</view>
+    </view>
+
+    <view style="height: 160rpx;"></view>
+
+    <!-- 底部操作 -->
+    <view class="footer-bar">
+      <view class="footer-bar__icon" bindtap="onReport">
+        <text class="footer-bar__glyph">⚠</text>
+        <text class="footer-bar__label">举报</text>
+      </view>
+      <view
+        class="footer-bar__main {{isOwner ? 'footer-bar__main--ghost' : (myEnroll ? 'footer-bar__main--done' : '')}}"
+        bindtap="onOpenEnroll"
+      >
+        {{isOwner ? '我发布的 · 报名审核' : (myEnroll ? ('已报名 · ' + enrollStatusText) : '立即报名')}}
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 报名弹层 -->
+<view wx:if="{{showEnroll}}" class="mask" bindtap="onCloseEnroll">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">活动报名</text>
+      <text class="sheet__close" bindtap="onCloseEnroll">×</text>
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">真实姓名<text class="req">*</text></view>
+      <input class="sheet-field__input" placeholder="用于组织者核实身份" placeholder-class="ph"
+             maxlength="20" value="{{enrollForm.name}}" data-field="name" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">手机号<text class="req">*</text></view>
+      <input class="sheet-field__input" type="number" placeholder="用于活动通知" placeholder-class="ph"
+             maxlength="11" value="{{enrollForm.phone}}" data-field="phone" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet-field">
+      <view class="sheet-field__label">备注（选填）</view>
+      <textarea class="sheet-field__textarea" placeholder="如：希望参与的分组、特殊需求等" placeholder-class="ph"
+                maxlength="200" value="{{enrollForm.remark}}" data-field="remark" bindinput="onEnrollInput" />
+    </view>
+    <view class="sheet__submit {{enrolling ? 'sheet__submit--disabled' : ''}}" bindtap="onSubmitEnroll">
+      {{enrolling ? '提交中…' : '确认报名'}}
+    </view>
+  </view>
+</view>
+
+<!-- 报名审核弹层（组织者） -->
+<view wx:if="{{showReview}}" class="mask" bindtap="onCloseReview">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__head">
+      <text class="sheet__title">报名审核</text>
+      <text class="sheet__close" bindtap="onCloseReview">×</text>
+    </view>
+    <scroll-view class="review-list" scroll-y>
+      <view wx:if="{{!enrollList.length}}" class="review-empty">暂无报名记录</view>
+      <view class="review-item" wx:for="{{enrollList}}" wx:key="id">
+        <image class="review-item__avatar" src="{{item.avatar || '/static/default-avatar.png'}}" mode="aspectFill" />
+        <view class="review-item__main">
+          <view class="review-item__name">{{item.name || item.nickname || '报名用户'}}</view>
+          <view class="review-item__meta">{{item.phone || ''}}{{item.createdAt ? ' · ' + item.createdAt : ''}}</view>
+        </view>
+        <view wx:if="{{item.status === 0}}" class="review-item__acts">
+          <view class="review-btn review-btn--ok" data-id="{{item.id}}" data-action="approve" bindtap="onReview">通过</view>
+          <view class="review-btn review-btn--no" data-id="{{item.id}}" data-action="reject" bindtap="onReview">拒绝</view>
+        </view>
+        <view wx:else class="tag tag--{{item.statusTag}}">{{item.statusText}}</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

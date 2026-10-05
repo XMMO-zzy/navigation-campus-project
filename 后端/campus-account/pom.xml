@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  campus-account —— M1 账号与认证 + M7 用户资料/隐私/黑名单
+  来源：《11-系统概要设计文档》§1.1 模块划分
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tonghang</groupId>
+    <artifactId>campus-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>campus-account</artifactId>
+  <name>campus-account</name>
+  <description>M1 账号与认证：微信登录 / 学号认证 / 用户资料</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-common</artifactId>
+    </dependency>
+
+    <!-- MyBatis Plus 注解：TableName、TableId等 -->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+    </dependency>
+
+    <!-- Knife4j OpenAPI3，提供@Operation、@Tag -->
+    <dependency>
+      <groupId>com.github.xiaoymin</groupId>
+      <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+    </dependency>
+
+    <!-- Lombok，实体类@Data等注解 -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</project>

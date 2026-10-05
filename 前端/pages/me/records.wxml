@@ -1,0 +1,72 @@
+<!-- pages/me/records.wxml — 我的记录 -->
+<view class="page">
+  <nav-bar title="我的记录" back="{{true}}" />
+
+  <!-- 一级页签 -->
+  <view class="tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tabs__item {{tab === item.key ? 'tabs__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onSwitchTab"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 二级页签 -->
+  <view class="sub-tabs">
+    <view
+      wx:for="{{subTabs}}"
+      wx:key="key"
+      class="sub-tabs__item {{sub === item.key ? 'sub-tabs__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onSwitchSub"
+    >{{item.label}}</view>
+  </view>
+
+  <skeleton wx:if="{{loading && !list.length}}" type="list" rows="{{3}}" />
+
+  <empty
+    wx:elif="{{error}}"
+    state="error"
+    icon="⚠️"
+    text="加载失败"
+    desc="请检查网络后重试"
+    action-text="重新加载"
+    bind:action="onRetry"
+  />
+
+  <empty
+    wx:elif="{{loaded && !list.length}}"
+    icon="📋"
+    text="暂无记录"
+    desc="参与或发布后会在这里留下记录"
+  />
+
+  <block wx:else>
+    <view class="list">
+      <view
+        class="rec"
+        wx:for="{{list}}"
+        wx:key="index"
+        data-item="{{item}}"
+        bindtap="onTapItem"
+      >
+        <image wx:if="{{item.image}}" class="rec__img" src="{{item.image}}" mode="aspectFill" />
+        <view wx:else class="rec__img rec__img--placeholder">{{tab === 'activity' ? '🎯' : (tab === 'competition' ? '🏆' : '📝')}}</view>
+        <view class="rec__main">
+          <view class="rec__title">{{item.title}}</view>
+          <view class="rec__meta">
+            <text>{{item.timeText}}</text>
+            <text wx:if="{{item.priceText}}" class="rec__price">¥{{item.priceText}}</text>
+          </view>
+          <view wx:if="{{item.resultText}}" class="rec__award">{{item.resultText}}</view>
+        </view>
+        <view wx:if="{{item.statusText}}" class="rec__status tag tag--{{item.statusTag || 'info'}}">{{item.statusText}}</view>
+      </view>
+    </view>
+    <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

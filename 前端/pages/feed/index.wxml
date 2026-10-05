@@ -1,0 +1,61 @@
+<!-- 动态页：顶部分类页签 + 动态信息流（《04》一、2 动态） -->
+<view class="page-wrap">
+
+  <nav-bar title="动态" back="{{false}}" border="{{false}}" theme="white" right-width="90">
+    <view slot="right" class="pub-entry" bindtap="onTapPublish">
+      <text class="pub-icon">＋</text>
+    </view>
+  </nav-bar>
+
+  <!-- ==================== 顶部分类页签（FR-M2-01） ==================== -->
+  <view class="tabs">
+    <view class="tab {{activeTab === item.key ? 'active' : ''}}"
+          wx:for="{{tabs}}" wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onSwitchTab">
+      <text class="tab-text">{{item.label}}</text>
+      <view class="tab-line" wx:if="{{activeTab === item.key}}"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 动态信息流（6 类卡片） ==================== -->
+  <view class="feed-list">
+
+    <!-- 关注页签未登录引导（BS-01） -->
+    <block wx:if="{{activeTab === 'follow' && !list.length && !loading}}">
+      <empty icon="👀" text="登录后查看关注内容"
+             desc="关注的人、组织、队伍发布的动态会出现在这里"
+             action-text="立即登录" bind:action="onFollowLogin" />
+    </block>
+
+    <block wx:else>
+      <skeleton wx:if="{{loading}}" type="list" rows="{{3}}" />
+
+      <block wx:elif="{{error}}">
+        <empty state="error" icon="⚠️" text="加载失败" desc="请检查网络后重试"
+               action-text="重新加载" bind:action="onRetry" />
+      </block>
+
+      <block wx:elif="{{!list.length}}">
+        <empty icon="📝" text="还没有内容" desc="成为第一个发布者，分享你的校园动态"
+               action-text="去发布" bind:action="onTapPublish" />
+      </block>
+
+      <block wx:else>
+        <feed-card wx:for="{{list}}" wx:key="contentId"
+                   item="{{item}}"
+                   bind:tapcard="onTapCard"
+                   bind:action="onCardAction" />
+        <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+        <view class="list-end" wx:if="{{!hasMore}}">已加载全部内容</view>
+      </block>
+    </block>
+  </view>
+
+  <!-- 悬浮发布按钮 -->
+  <view class="fab" bindtap="onTapPublish">
+    <text class="fab-icon">＋</text>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

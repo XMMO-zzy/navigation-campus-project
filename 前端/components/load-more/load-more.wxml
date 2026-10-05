@@ -1,0 +1,16 @@
+<view class="lm">
+  <block wx:if="{{status === 'loading'}}">
+    <view class="lm-loading">
+      <view class="lm-spinner"></view>
+      <text class="lm-text">加载中…</text>
+    </view>
+  </block>
+  <block wx:elif="{{status === 'nomore'}}">
+    <text class="lm-text">{{nomoreText}}</text>
+  </block>
+  <block wx:elif="{{status === 'error'}}">
+    <view class="lm-error" bindtap="onRetry">
+      <text class="lm-error-text">加载失败，点击重试</text>
+    </view>
+  </block>
+</view>

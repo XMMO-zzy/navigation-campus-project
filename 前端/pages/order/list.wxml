@@ -1,0 +1,106 @@
+<!-- pages/order/list.wxml — 我的订单 -->
+<view class="page">
+  <nav-bar title="我的订单" back="{{true}}" />
+
+  <!-- 买卖角色切换 -->
+  <view class="role-tabs">
+    <view
+      wx:for="{{roleTabs}}"
+      wx:key="key"
+      class="role-tabs__item {{role === item.key ? 'role-tabs__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onTapRole"
+    >{{item.text}}</view>
+  </view>
+
+  <!-- 状态筛选 -->
+  <scroll-view class="status-tabs" scroll-x enable-flex>
+    <view
+      wx:for="{{statusTabs}}"
+      wx:key="key"
+      class="status-tabs__item {{status === item.key ? 'status-tabs__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onTapStatus"
+    >{{item.text}}</view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <block wx:if="{{loaded && list.length}}">
+      <view
+        class="order"
+        wx:for="{{list}}"
+        wx:key="orderNo"
+        data-no="{{item.orderNo}}"
+        bindtap="onTapOrder"
+      >
+        <view class="order__head">
+          <view class="order__no">订单号 {{item.orderNo}}</view>
+          <view class="order__status tag tag--{{item.statusTag}}">{{item.statusText}}</view>
+        </view>
+
+        <view class="order__body">
+          <image
+            class="order__img"
+            src="{{item.goodsImage || '/static/placeholder.png'}}"
+            mode="aspectFill"
+          />
+          <view class="order__info">
+            <view class="order__title">{{item.goodsTitle}}</view>
+            <view class="order__meta">{{item.condition || ''}}{{item.category ? ' · ' + item.category : ''}}</view>
+            <view class="order__price-row">
+              <text class="order__price">¥{{item.priceText}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="order__counterparty">
+          <text class="order__cp-label">{{item.isBuyer ? '卖家' : '买家'}}</text>
+          <text class="order__cp-name">{{item.isBuyer ? (item.sellerName || '—') : (item.buyerName || '—')}}</text>
+          <text class="order__time">{{item.createdAtText}}</text>
+        </view>
+
+        <view wx:if="{{item.tipText || item.deadlineText || item.actionText}}" class="order__foot">
+          <view class="order__tip">
+            <text wx:if="{{item.tipText}}">{{item.tipText}}</text>
+            <text wx:if="{{item.deadlineText}}" class="order__deadline">{{item.deadlineText}}</text>
+          </view>
+          <view
+            wx:if="{{item.actionText}}"
+            class="order__btn"
+            data-no="{{item.orderNo}}"
+            data-type="{{item.actionType}}"
+            catchtap="onAction"
+          >{{item.actionText}}</view>
+        </view>
+      </view>
+    </block>
+
+    <empty
+      wx:elif="{{loaded && !list.length && !error}}"
+      icon="📦"
+      text="暂无订单"
+      desc="{{role === 'buy' ? '去二手市场逛逛，找到心仪的物品' : '发布商品后，订单会出现在这里'}}"
+      actionText="{{role === 'buy' ? '去逛二手市场' : '去发布商品'}}"
+      bind:action="onEmptyAction"
+    />
+
+    <empty
+      wx:elif="{{error}}"
+      state="error"
+      text="加载失败"
+      desc="网络异常，请检查网络后重试"
+      actionText="重新加载"
+      bind:action="onRetry"
+    />
+
+    <skeleton wx:elif="{{!loaded}}" type="list" rows="{{3}}" />
+  </view>
+
+  <load-more
+    wx:if="{{loaded && list.length}}"
+    status="{{loading ? 'loading' : (hasMore ? 'more' : 'nomore')}}"
+    bind:retry="onRetry"
+  />
+  <view class="safe-bottom"></view>
+</view>

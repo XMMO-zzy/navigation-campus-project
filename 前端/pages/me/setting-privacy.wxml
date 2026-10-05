@@ -1,0 +1,89 @@
+<!-- pages/me/setting-privacy.wxml — 隐私设置 -->
+<view class="page">
+  <nav-bar title="隐私设置" back="{{true}}" />
+
+  <view class="group">
+    <view class="group__title">个人资料</view>
+    <picker mode="selector" range="{{profileScopeOptions}}" bindchange="onPickProfileScope">
+      <view class="cell">
+        <view class="cell__main">
+          <text class="cell__label">资料可见范围</text>
+          <text class="cell__desc">谁可以看到你的个人主页</text>
+        </view>
+        <text class="cell__value">{{profileScopeText}}</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </picker>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">公开学号</text>
+        <text class="cell__desc">开启后他人可见你的学号（默认关闭）</text>
+      </view>
+      <switch checked="{{privacy.showStudentNo}}" color="#1E6FE8" data-key="showStudentNo" bindchange="onToggle" />
+    </view>
+    <view class="cell cell--last">
+      <view class="cell__main">
+        <text class="cell__label">公开专业年级</text>
+        <text class="cell__desc">用于活动与竞赛的方向匹配</text>
+      </view>
+      <switch checked="{{privacy.showMajor}}" color="#1E6FE8" data-key="showMajor" bindchange="onToggle" />
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group__title">动态与内容</view>
+    <picker mode="selector" range="{{postScopeOptions}}" bindchange="onPickPostScope">
+      <view class="cell cell--last">
+        <view class="cell__main">
+          <text class="cell__label">动态默认可见范围</text>
+          <text class="cell__desc">发布动态时的默认值，可在发布时单独调整</text>
+        </view>
+        <text class="cell__value">{{postScopeText}}</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="group">
+    <view class="group__title">联系与互动</view>
+    <picker mode="selector" range="{{contactScopeOptions}}" bindchange="onPickContactScope">
+      <view class="cell">
+        <view class="cell__main">
+          <text class="cell__label">谁可以私信我</text>
+          <text class="cell__desc">控制私信与联系方式可见性</text>
+        </view>
+        <text class="cell__value">{{contactScopeText}}</text>
+        <text class="cell__arrow">›</text>
+      </view>
+    </picker>
+    <view class="cell cell--last" bindtap="onBlacklist">
+      <view class="cell__main">
+        <text class="cell__label">黑名单管理</text>
+        <text class="cell__desc">查看与解除已屏蔽的用户</text>
+      </view>
+      <text class="cell__arrow">›</text>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group__title">推荐与搜索</view>
+    <view class="cell">
+      <view class="cell__main">
+        <text class="cell__label">个性化推荐</text>
+        <text class="cell__desc">基于专业、兴趣与浏览行为推荐内容</text>
+      </view>
+      <switch checked="{{privacy.allowRecommend}}" color="#1E6FE8" data-key="allowRecommend" bindchange="onToggle" />
+    </view>
+    <view class="cell cell--last">
+      <view class="cell__main">
+        <text class="cell__label">允许被搜索到</text>
+        <text class="cell__desc">关闭后他人无法通过昵称搜到你</text>
+      </view>
+      <switch checked="{{privacy.searchable}}" color="#1E6FE8" data-key="searchable" bindchange="onToggle" />
+    </view>
+  </view>
+
+  <view class="note" bindtap="onNote">了解我们如何保护你的个人信息 ›</view>
+  <view class="note note--link" bindtap="onPolicy">查看《隐私政策》 ›</view>
+  <view class="safe-bottom"></view>
+</view>

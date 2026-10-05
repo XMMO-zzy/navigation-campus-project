@@ -1,0 +1,140 @@
+<!-- pages/activity/publish.wxml — 发布活动 -->
+<view class="page">
+  <nav-bar title="发布活动" back="{{true}}" />
+
+  <!-- 基本信息 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">活动标题<text class="req">*</text></view>
+      <input class="field__input" placeholder="如：2026 春季校园马拉松"
+             placeholder-class="ph" maxlength="60" value="{{form.title}}"
+             data-field="title" bindinput="onInput" />
+      <view class="field__count">{{form.title.length}}/60</view>
+    </view>
+
+    <picker mode="selector" range="{{categoryLabels}}" bindchange="onPickerCategory">
+      <view class="picker-row">
+        <view class="picker-row__label">活动分类<text class="req">*</text></view>
+        <view class="picker-row__value {{categoryText ? '' : 'ph'}}">{{categoryText || '请选择'}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">主办方（选填）</view>
+      <input class="field__input" placeholder="如：通航学院学生会"
+             placeholder-class="ph" maxlength="40" value="{{form.organizer}}"
+             data-field="organizer" bindinput="onInput" />
+    </view>
+  </view>
+
+  <!-- 封面 -->
+  <view class="panel">
+    <view class="panel__title">活动封面<text class="req">*</text></view>
+    <view class="panel__hint">建议尺寸 750×420，图片将在列表与详情页顶部展示</view>
+    <view class="uploader">
+      <view wx:if="{{form.cover}}" class="uploader__item uploader__item--wide">
+        <image class="uploader__img" src="{{form.cover}}" mode="aspectFill" bindtap="onChooseCover" />
+        <view class="uploader__del" catchtap="onRemoveCover">×</view>
+      </view>
+      <view wx:else class="uploader__add uploader__add--wide" bindtap="onChooseCover">
+        <view class="uploader__add-icon">＋</view>
+        <view class="uploader__add-text">上传封面</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动介绍 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">活动介绍<text class="req">*</text></view>
+      <textarea class="field__textarea" placeholder="介绍活动背景、主要内容、参与收获等，不少于 20 字"
+                placeholder-class="ph" maxlength="1000" value="{{form.content}}"
+                data-field="content" bindinput="onInput" />
+      <view class="field__count">{{form.content.length}}/1000</view>
+    </view>
+  </view>
+
+  <!-- 时间地点 -->
+  <view class="panel">
+    <view class="field__label" style="margin-bottom:16rpx;">活动时间<text class="req">*</text></view>
+    <view class="dt-row">
+      <picker mode="date" value="{{form.startDate}}" start="{{minDate}}" data-field="startDate" bindchange="onDateChange">
+        <view class="dt-pick {{form.startDate ? '' : 'ph'}}">{{form.startDate || '开始日期'}}</view>
+      </picker>
+      <picker mode="time" value="{{form.startTime}}" data-field="startTime" bindchange="onTimeChange">
+        <view class="dt-pick {{form.startTime ? '' : 'ph'}}">{{form.startTime || '开始时间'}}</view>
+      </picker>
+    </view>
+    <view class="dt-row">
+      <picker mode="date" value="{{form.endDate}}" start="{{minDate}}" data-field="endDate" bindchange="onDateChange">
+        <view class="dt-pick {{form.endDate ? '' : 'ph'}}">{{form.endDate || '结束日期'}}</view>
+      </picker>
+      <picker mode="time" value="{{form.endTime}}" data-field="endTime" bindchange="onTimeChange">
+        <view class="dt-pick {{form.endTime ? '' : 'ph'}}">{{form.endTime || '结束时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="divider"></view>
+    <picker mode="date" value="{{form.enrollDeadline}}" start="{{minDate}}" data-field="enrollDeadline" bindchange="onDateChange">
+      <view class="picker-row">
+        <view class="picker-row__label">报名截止</view>
+        <view class="picker-row__value {{form.enrollDeadline ? '' : 'ph'}}">{{form.enrollDeadline || '不设截止'}}</view>
+        <view class="picker-row__arrow">›</view>
+      </view>
+    </picker>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">活动地点<text class="req">*</text></view>
+      <input class="field__input" placeholder="如：通航学院体育馆南门集合"
+             placeholder-class="ph" maxlength="60" value="{{form.place}}"
+             data-field="place" bindinput="onInput" />
+    </view>
+
+    <view class="divider"></view>
+    <view class="field">
+      <view class="field__label">报名名额（选填，留空表示不限）</view>
+      <input class="field__input" type="number" placeholder="如：50"
+             placeholder-class="ph" maxlength="5" value="{{form.quota}}"
+             data-field="quota" bindinput="onInput" />
+    </view>
+  </view>
+
+  <!-- 要求与规则 -->
+  <view class="panel">
+    <view class="field">
+      <view class="field__label">参与要求（选填）</view>
+      <textarea class="field__textarea field__textarea--short" placeholder="如：需自备运动装备，有基础体能"
+                placeholder-class="ph" maxlength="300" value="{{form.requirement}}"
+                data-field="requirement" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field__label">活动规则（选填）</view>
+      <textarea class="field__textarea field__textarea--short" placeholder="如：迟到 15 分钟视为弃权"
+                placeholder-class="ph" maxlength="300" value="{{form.rule}}"
+                data-field="rule" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field__label">联系方式<text class="req">*</text></view>
+      <input class="field__input" placeholder="手机号或微信号，报名者可见"
+             placeholder-class="ph" maxlength="40" value="{{form.contact}}"
+             data-field="contact" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="panel panel--plain">
+    <view class="panel__title">发布须知</view>
+    <view class="notice-item">1. 仅认证用户可发布活动，发布后需经过内容审核。</view>
+    <view class="notice-item">2. 请确保活动真实有效，虚假活动将被下架并计入违规记录。</view>
+    <view class="notice-item">3. 平台不代收任何活动费用，请勿在活动信息中诱导转账。</view>
+  </view>
+
+  <view class="footer">
+    <view class="footer__btn {{submitting ? 'footer__btn--disabled' : ''}}" bindtap="onSubmit">
+      {{submitting ? '提交中…' : '发布活动'}}
+    </view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

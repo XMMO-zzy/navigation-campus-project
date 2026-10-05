@@ -1,0 +1,170 @@
+/* ==========================================================================
+   pages/competition/calendar —— 竞赛日程日历
+   ========================================================================== */
+
+page { background: var(--c-bg-page); }
+
+/* ---- 月份切换 ---- */
+.month-bar {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 20rpx 24rpx;
+}
+.month-bar__nav {
+  width: 80rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 44rpx;
+  color: var(--c-text-2);
+}
+.month-bar__label {
+  flex: 1;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--c-text-1);
+}
+.month-bar__today {
+  min-width: 96rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  border-radius: 28rpx;
+  background: #E8F1FE;
+  color: var(--c-primary);
+  font-size: 24rpx;
+}
+
+/* ---- 日历 ---- */
+.cal { background: #FFFFFF; padding: 0 24rpx 24rpx; }
+.cal__week { display: flex; padding: 12rpx 0; }
+.cal__week-item {
+  flex: 1;
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--c-text-3);
+}
+.cal__grid { display: flex; flex-wrap: wrap; }
+.cal__cell {
+  width: 14.285%;
+  height: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.cal__cell--out .cal__day { color: #C6CED9; }
+.cal__day { font-size: 28rpx; color: var(--c-text-1); line-height: 1.1; }
+.cal__cell--today .cal__day { color: var(--c-primary); font-weight: 700; }
+.cal__cell--sel::before {
+  content: '';
+  position: absolute;
+  width: 68rpx;
+  height: 68rpx;
+  top: 4rpx;
+  border-radius: 50%;
+  background: var(--c-primary);
+  z-index: 0;
+}
+.cal__cell--sel .cal__day { color: #FFFFFF; position: relative; z-index: 1; }
+.cal__dots {
+  display: flex;
+  align-items: center;
+  height: 14rpx;
+  margin-top: 6rpx;
+  position: relative;
+  z-index: 1;
+}
+.cal__dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  margin: 0 3rpx;
+}
+.cal__dot--enroll { background: #1E6FE8; }
+.cal__dot--prelim { background: #F79009; }
+.cal__dot--final { background: #F04438; }
+.cal__dot--deadline { background: #7A5AF8; }
+.cal__cell--sel .cal__dot { background: #FFFFFF; }
+
+/* ---- 图例 ---- */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  background: #FFFFFF;
+  padding: 0 24rpx 22rpx;
+  border-radius: 0 0 16rpx 16rpx;
+}
+.legend__item { display: flex; align-items: center; margin-right: 28rpx; }
+.legend__dot { width: 12rpx; height: 12rpx; border-radius: 50%; margin-right: 8rpx; }
+.legend__label { font-size: 22rpx; color: var(--c-text-3); }
+
+/* ---- 当日日程 ---- */
+.day-panel {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+.day-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+.day-panel__title { font-size: 30rpx; font-weight: 600; color: var(--c-text-1); }
+.day-panel__count { font-size: 23rpx; color: var(--c-text-3); }
+.day-loading,
+.day-empty {
+  padding: 60rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--c-text-3);
+}
+
+.day-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.day-item:last-child { border-bottom: none; }
+.day-item__bar {
+  flex-shrink: 0;
+  min-width: 96rpx;
+  height: 52rpx;
+  line-height: 52rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  color: #FFFFFF;
+  font-size: 22rpx;
+  padding: 0 12rpx;
+}
+.day-item__main { flex: 1; margin-left: 18rpx; min-width: 0; }
+.day-item__title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--c-text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-item__meta { margin-top: 6rpx; font-size: 22rpx; color: var(--c-text-3); }
+.day-item__arrow { font-size: 36rpx; color: var(--c-text-3); line-height: 1; }
+
+/* ---- 底部 ---- */
+.calendar-foot { padding: 32rpx 24rpx 0; }
+.calendar-foot__btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 31rpx;
+  font-weight: 600;
+}
+.safe-bottom { height: 60rpx; }

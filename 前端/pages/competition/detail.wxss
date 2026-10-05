@@ -1,0 +1,146 @@
+@import "../../styles/detail-common.wxss";
+
+/* ==========================================================================
+   pages/competition/detail —— 竞赛详情
+   ========================================================================== */
+
+/* ---- 封面 ---- */
+.cover { position: relative; width: 100%; height: 400rpx; background: #EDF1F7; }
+.cover__img { width: 100%; height: 100%; display: block; }
+.cover__status {
+  position: absolute;
+  left: 24rpx;
+  bottom: 24rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  padding: 0 20rpx;
+  border-radius: 8rpx;
+  font-size: 23rpx;
+  color: #FFFFFF;
+  background: rgba(16, 24, 40, .62);
+}
+
+/* ---- 标题区 ---- */
+.head {
+  margin: -30rpx 24rpx 0;
+  position: relative;
+  z-index: 2;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx 24rpx;
+}
+.head__title { font-size: 38rpx; font-weight: 700; line-height: 1.45; color: var(--c-text-1); }
+.head__tags { display: flex; flex-wrap: wrap; margin-top: 16rpx; }
+.head__tags .tag { margin-right: 12rpx; }
+.head__organizer {
+  margin-top: 14rpx;
+  font-size: 25rpx;
+  color: var(--c-text-3);
+}
+
+/* ---- 我的参赛状态 ---- */
+.my-enroll {
+  display: flex;
+  align-items: center;
+  margin: 20rpx 24rpx 0;
+  padding: 24rpx;
+  background: #E8F1FE;
+  border-radius: 16rpx;
+}
+.my-enroll__left { flex: 1; }
+.my-enroll__label { font-size: 23rpx; color: #5B7BA8; }
+.my-enroll__status {
+  margin-top: 8rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+.my-enroll__right { display: flex; align-items: center; }
+.my-enroll__btn {
+  margin-left: 16rpx;
+  height: 62rpx;
+  line-height: 62rpx;
+  padding: 0 28rpx;
+  border-radius: 31rpx;
+  background: #FFFFFF;
+  color: var(--c-primary);
+  font-size: 25rpx;
+  font-weight: 500;
+}
+
+/* ---- 富文本 ---- */
+.rich {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--c-text-2);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ---- 组队入口 ---- */
+.team-entry {
+  display: flex;
+  align-items: center;
+}
+.team-entry__main { flex: 1; }
+.team-entry__title { font-size: 29rpx; font-weight: 600; color: var(--c-text-1); }
+.team-entry__desc { margin-top: 8rpx; font-size: 24rpx; color: var(--c-text-3); }
+.team-entry__arrow { font-size: 40rpx; color: var(--c-text-3); line-height: 1; }
+
+/* ---- 发布者 ---- */
+.author {
+  margin: 20rpx 24rpx 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+}
+.author__avatar { width: 84rpx; height: 84rpx; border-radius: 50%; flex-shrink: 0; background: #EDF1F7; }
+.author__main { flex: 1; margin-left: 20rpx; min-width: 0; }
+.author__name { font-size: 30rpx; font-weight: 600; color: var(--c-text-1); }
+.author__meta { margin-top: 8rpx; font-size: 24rpx; color: var(--c-text-3); }
+.author__arrow { font-size: 40rpx; color: var(--c-text-3); line-height: 1; }
+
+/* ---- 报名表单 ---- */
+.sheet-field { padding: 14rpx 0; }
+.sheet-field__label {
+  font-size: 26rpx;
+  color: var(--c-text-1);
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+.sheet-field__input {
+  width: 100%;
+  height: 84rpx;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: var(--c-text-1);
+}
+.sheet-field__textarea {
+  width: 100%;
+  height: 140rpx;
+  padding: 20rpx 22rpx;
+  box-sizing: border-box;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+.sheet-field__picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84rpx;
+  padding: 0 22rpx;
+  background: #F8FAFD;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: var(--c-text-1);
+}
+.sheet-field__arrow { font-size: 34rpx; color: #C0CAD8; }
+.sheet-field__hint { margin-top: 10rpx; font-size: 22rpx; color: var(--c-text-3); }
+.req { color: var(--c-danger); margin-left: 6rpx; }

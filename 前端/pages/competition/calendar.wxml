@@ -1,0 +1,75 @@
+<!-- pages/competition/calendar.wxml — 竞赛日程日历 -->
+<view class="page">
+  <nav-bar title="竞赛日程" back="{{true}}" />
+
+  <!-- 月份切换 -->
+  <view class="month-bar">
+    <view class="month-bar__nav" bindtap="onPrevMonth">‹</view>
+    <view class="month-bar__label">{{monthLabel}}</view>
+    <view class="month-bar__nav" bindtap="onNextMonth">›</view>
+    <view class="month-bar__today" bindtap="onToday">今天</view>
+  </view>
+
+  <!-- 日历网格 -->
+  <view class="cal">
+    <view class="cal__week">
+      <view class="cal__week-item" wx:for="{{week}}" wx:key="*this">{{item}}</view>
+    </view>
+    <view class="cal__grid">
+      <view
+        wx:for="{{days}}"
+        wx:key="index"
+        class="cal__cell {{item.inMonth ? '' : 'cal__cell--out'}} {{item.isToday ? 'cal__cell--today' : ''}} {{selected === item.date ? 'cal__cell--sel' : ''}}"
+        data-date="{{item.date}}"
+        bindtap="onPickDay"
+      >
+        <view class="cal__day">{{item.day}}</view>
+        <view class="cal__dots">
+          <view wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this"
+                class="cal__dot cal__dot--{{dot}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图例 -->
+  <view class="legend">
+    <view class="legend__item" wx:for="{{legend}}" wx:key="key">
+      <view class="legend__dot" style="background:{{item.color}}"></view>
+      <text class="legend__label">{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- 当日日程 -->
+  <view class="day-panel">
+    <view class="day-panel__head">
+      <text class="day-panel__title">{{selected || '选择日期'}}</text>
+      <text class="day-panel__count">{{selectedList.length}} 项日程</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="day-loading">加载中…</view>
+
+    <view wx:elif="{{!selectedList.length}}" class="day-empty">
+      {{selected ? '当天暂无竞赛日程' : '点击日历中的日期查看当天日程'}}
+    </view>
+
+    <view wx:else class="day-list">
+      <view class="day-item" wx:for="{{selectedList}}" wx:key="index"
+            data-id="{{item.competitionId || item.id}}" bindtap="onTapEvent">
+        <view class="day-item__bar" style="background:{{item.typeColor}}">{{item.typeText}}</view>
+        <view class="day-item__main">
+          <view class="day-item__title">{{item.title || '竞赛日程'}}</view>
+          <view class="day-item__meta">
+            {{item.competitionName || ''}}{{item.time ? (item.competitionName ? ' · ' : '') + item.time : ''}}
+          </view>
+        </view>
+        <view class="day-item__arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="calendar-foot">
+    <view class="calendar-foot__btn" bindtap="onTapPublish">发布竞赛</view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

@@ -1,0 +1,79 @@
+<!-- pages/notice/index.wxml — 通知/公告 -->
+<view class="page">
+  <nav-bar title="{{isDetail ? '公告详情' : '通知公告'}}" back="{{true}}" />
+
+  <!-- 列表模式 -->
+  <block wx:if="{{!isDetail}}">
+    <scroll-view class="tabs" scroll-x enable-flex>
+      <view
+        wx:for="{{typeTabs}}"
+        wx:key="key"
+        class="tabs__item {{activeType === item.key ? 'tabs__item--on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onSwitchType"
+      >{{item.label}}</view>
+    </scroll-view>
+
+    <skeleton wx:if="{{loading}}" type="list" rows="{{4}}" />
+
+    <empty
+      wx:elif="{{error}}"
+      state="error"
+      icon="⚠️"
+      text="加载失败"
+      desc="请检查网络后重试"
+      action-text="重新加载"
+      bind:action="onRetry"
+    />
+
+    <empty
+      wx:elif="{{!list.length}}"
+      icon="📢"
+      text="暂无公告"
+      desc="平台公告、规则更新与系统通知会显示在这里"
+    />
+
+    <block wx:else>
+      <view class="list">
+        <view class="notice-item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapItem">
+          <view class="notice-item__head">
+            <view class="notice-item__tag">{{item.typeText || '公告'}}</view>
+            <view class="notice-item__date">{{item.dateText}}</view>
+          </view>
+          <view class="notice-item__title">{{item.title}}</view>
+          <view class="notice-item__summary">{{item.summary || item.content}}</view>
+        </view>
+      </view>
+      <load-more status="{{loadStatus}}" bind:retry="onRetry" />
+    </block>
+  </block>
+
+  <!-- 详情模式 -->
+  <block wx:else>
+    <skeleton wx:if="{{detailLoading}}" type="detail" />
+    <empty
+      wx:elif="{{detailError}}"
+      state="error"
+      icon="⚠️"
+      text="公告不存在"
+      desc="内容可能已下架"
+      action-text="重新加载"
+      bind:action="onRetry"
+    />
+    <view wx:elif="{{detail}}" class="article">
+      <view class="article__tag">{{detail.typeText || '公告'}}</view>
+      <view class="article__title">{{detail.title}}</view>
+      <view class="article__meta">
+        <text>{{detail.source || '通航校园平台'}}</text>
+        <text> · {{detail.dateText}}</text>
+      </view>
+      <view class="article__content">{{detail.content}}</view>
+      <view wx:if="{{detail.sourceUrl}}" class="article__source" bindtap="onOpenSource">
+        <text>查看官方来源</text>
+        <text class="article__source-arrow">›</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

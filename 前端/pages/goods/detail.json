@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "skeleton": "/components/skeleton/skeleton",
+    "empty": "/components/empty/empty"
+  },
+  "navigationStyle": "custom",
+  "backgroundColor": "#F5F7FA"
+}

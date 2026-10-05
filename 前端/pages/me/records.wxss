@@ -1,0 +1,120 @@
+/* pages/me/records.wxss — 我的记录 */
+page {
+  background: var(--c-bg-page);
+}
+
+/* 一级页签 */
+.tabs {
+  display: flex;
+  background: #FFFFFF;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.tabs__item {
+  flex: 1;
+  text-align: center;
+  padding: 26rpx 0;
+  font-size: 29rpx;
+  color: var(--c-text-2);
+  position: relative;
+}
+.tabs__item--on {
+  color: var(--c-primary);
+  font-weight: 600;
+}
+.tabs__item--on::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 48rpx;
+  height: 6rpx;
+  border-radius: 4rpx;
+  background: var(--c-primary);
+}
+
+/* 二级页签 */
+.sub-tabs {
+  display: flex;
+  padding: 18rpx 24rpx;
+  background: #FFFFFF;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+.sub-tabs__item {
+  padding: 10rpx 30rpx;
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  color: var(--c-text-2);
+  background: #F4F6FA;
+  border-radius: 999rpx;
+}
+.sub-tabs__item--on {
+  background: var(--c-primary-light);
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* 记录卡片 */
+.list {
+  padding: 20rpx 24rpx 0;
+}
+.rec {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.rec__img {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 12rpx;
+  background: #F2F4F7;
+  flex-shrink: 0;
+}
+.rec__img--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 58rpx;
+  background: var(--c-primary-lighter);
+}
+.rec__main {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+.rec__title {
+  font-size: 29rpx;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--c-text-1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rec__meta {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: var(--c-text-3);
+}
+.rec__price {
+  margin-left: 14rpx;
+  color: var(--c-danger);
+  font-weight: 600;
+}
+.rec__award {
+  display: inline-block;
+  margin-top: 12rpx;
+  padding: 4rpx 16rpx;
+  font-size: 21rpx;
+  border-radius: 6rpx;
+  background: #F1EDFE;
+  color: var(--c-dom-competition);
+}
+.rec__status {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}

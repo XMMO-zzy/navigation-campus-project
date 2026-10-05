@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  campus-message —— M3 消息与协作
+  来源：《11-系统概要设计文档》§1.1 模块划分
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tonghang</groupId>
+    <artifactId>campus-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>campus-message</artifactId>
+  <name>campus-message</name>
+  <description>M3 消息与协作：站内通知 / 未读角标 / 组队申请中心 / 队伍</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-account</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tonghang</groupId>
+      <artifactId>campus-content</artifactId>
+    </dependency>
+    <!--
+      注意：不依赖 campus-event。
+      TeamQueryFacade（竞赛团队报名校验）接口已下沉到 campus-common/team，
+      本模块只提供实现，依赖方向仍是本模块 → common（无循环，符合《11》§2.1）。
+    -->
+  </dependencies>
+</project>
