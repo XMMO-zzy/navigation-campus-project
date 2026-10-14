@@ -3,10 +3,8 @@ package com.tonghang.campus.content.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tonghang.campus.account.api.UserFacade;
-import com.tonghang.campus.common.api.ErrorCode;
 import com.tonghang.campus.common.api.PageResult;
 import com.tonghang.campus.common.constant.Enums;
-import com.tonghang.campus.common.exception.BizException;
 import com.tonghang.campus.common.util.PageUtil;
 import com.tonghang.campus.content.dto.FeedItem;
 import com.tonghang.campus.content.entity.Post;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -130,13 +129,186 @@ public class FeedService {
 
     /* ==================== 各页签实现 ==================== */
 
+    /* ==================== 推荐排序（FR-M2-08 / T2.2） ==================== */
+
+    /** 推荐权重：专业 40% + 热度 40% + 新鲜度 20%（《10》FR-M2-08 原文给定） */
+    private static final double W_MAJOR = 0.40d;
+    private static final double W_HOT = 0.40d;
+    private static final double W_FRESH = 0.20d;
+
+    /** 冷启动兜底权重：热门 + 新发（画像未就绪时使用） */
+    private static final double W_HOT_COLD = 0.70d;
+    private static final double W_FRESH_COLD = 0.30d;
+
+    /** 新鲜度衰减窗口（小时）：超过则新鲜度记 0 */
+    private static final double FRESH_WINDOW_HOURS = 72d;
+
+    /** 画像就绪所需浏览次数（《10》FR-M2-08：≥10 次浏览后切换行为驱动） */
+    private static final long PROFILE_READY_BROWSE = 10L;
+
+    /** 候选池 = page*size*该倍率（上限 POOL_MAX），在池内打分排序后再切页 */
+    private static final int POOL_FACTOR = 4;
+    private static final int POOL_MAX = 300;
+
+    /** 命中「不感兴趣」作者时的降权系数（FR-M2-11「减少相似内容推荐」） */
+    private static final double DISLIKE_PENALTY = 0.5d;
+
+    /** 负反馈作者查询上限，避免超大 IN 子句 */
+    private static final int DISLIKE_AUTHOR_CAP = 200;
+
+    /**
+     * 推荐页签（FR-M2-08）。
+     *
+     * <p>排序模型（文档给定权重，本类按此实现）：
+     * <pre>
+     *   画像就绪（已登录 + 有专业 + 浏览数 ≥ {@value #PROFILE_READY_BROWSE}）
+     *        score = 0.40 × 专业匹配 + 0.40 × 热度 + 0.20 × 新鲜度
+     *   冷启动兜底（首登 / 游客 / 浏览不足）
+     *        score = 0.70 × 热度 + 0.30 × 新鲜度   ← 《10》「冷启动兜底（热门 + 新发）」
+     * </pre>
+     *
+     * <p>三处加权项补正：
+     * <ul>
+     *   <li>置顶动态（is_top）直接 +1，保证运营置顶始终靠前；</li>
+     *   <li>命中「不感兴趣」的作者整体 ×0.5（近似实现「减少相似内容推荐」）；</li>
+     *   <li>可见性、屏蔽、不感兴趣内容本身的过滤已由
+     *       {@link PostService#visibleWrapper(Long)} 统一承担。</li>
+     * </ul>
+     *
+     * <p>分页说明：{@code total} 取自数据库真实可见总数；
+     * 但排序在候选池内完成，因此**翻页超过候选池上限（{@value #POOL_MAX} 条）后返回空**——
+     * 推荐流场景下可接受，已在交付说明中登记。
+     */
     private PageResult<FeedItem> recommendFeed(Long viewerId, int page, int size) {
-        Page<Post> p = new Page<>(page, size);
-        postMapper.selectPage(p, postService.visibleWrapper(viewerId)
+        long total = countVisible(viewerId);
+        if (total == 0) {
+            return PageResult.of(Collections.emptyList(), 0L, page, size);
+        }
+
+        int poolSize = Math.min(POOL_MAX, Math.max(size * POOL_FACTOR, page * size * POOL_FACTOR));
+        List<Post> pool = postMapper.selectList(postService.visibleWrapper(viewerId)
                 .orderByDesc(Post::getIsTop)
-                .orderByDesc(Post::getCreatedAt));
-        return PageResult.of(postService.toFeedItems(viewerId, p.getRecords()),
-                p.getTotal(), page, size);
+                .orderByDesc(Post::getCreatedAt)
+                .last("LIMIT " + poolSize));
+        if (pool.isEmpty()) {
+            return PageResult.of(Collections.emptyList(), total, page, size);
+        }
+
+        List<Post> ranked = rank(viewerId, pool);
+
+        int from = (page - 1) * size;
+        if (from >= ranked.size()) {
+            return PageResult.of(Collections.emptyList(), total, page, size);
+        }
+        int to = Math.min(from + size, ranked.size());
+        return PageResult.of(postService.toFeedItems(viewerId, new ArrayList<>(ranked.subList(from, to))),
+                total, page, size);
+    }
+
+    private long countVisible(Long viewerId) {
+        Long c = postMapper.selectCount(postService.visibleWrapper(viewerId));
+        return c == null ? 0L : c;
+    }
+
+    /** 按 40/40/20 打分并降序排序；画像未就绪时自动走冷启动 */
+    private List<Post> rank(Long viewerId, List<Post> pool) {
+        UserFacade.UserBrief me = viewerId == null ? null : userFacade.get(viewerId);
+        String myMajor = me == null ? null : me.getMajor();
+        boolean profileReady = myMajor != null && !myMajor.trim().isEmpty()
+                && postService.browseCount(viewerId) >= PROFILE_READY_BROWSE;
+
+        Set<Long> authorIds = new HashSet<>();
+        for (Post p : pool) {
+            if (p.getUserId() != null) {
+                authorIds.add(p.getUserId());
+            }
+        }
+        Map<Long, UserFacade.UserBrief> authors = userFacade.getBatch(authorIds);
+        Set<Long> dislikedAuthors = dislikedAuthors(viewerId);
+
+        double maxHot = 1d;
+        for (Post p : pool) {
+            maxHot = Math.max(maxHot, hotRaw(p));
+        }
+
+        long now = System.currentTimeMillis();
+        Map<Long, Double> scoreMap = new HashMap<>(pool.size() * 2);
+        for (Post p : pool) {
+            double hot = Math.min(1d, hotRaw(p) / maxHot);
+            double fresh = freshness(p, now);
+            double score;
+            if (profileReady) {
+                score = W_MAJOR * majorMatch(myMajor, authors.get(p.getUserId()))
+                        + W_HOT * hot
+                        + W_FRESH * fresh;
+            } else {
+                score = W_HOT_COLD * hot + W_FRESH_COLD * fresh;
+            }
+            if (p.getUserId() != null && dislikedAuthors.contains(p.getUserId())) {
+                score *= DISLIKE_PENALTY;
+            }
+            if (p.getIsTop() != null && p.getIsTop() == 1) {
+                score += 1d;
+            }
+            scoreMap.put(p.getId(), score);
+        }
+
+        List<Post> ranked = new ArrayList<>(pool);
+        ranked.sort((a, b) -> Double.compare(
+                scoreMap.getOrDefault(b.getId(), 0d),
+                scoreMap.getOrDefault(a.getId(), 0d)));
+        return ranked;
+    }
+
+    /** 热度原值：按互动深度加权（收藏 > 评论 > 点赞），与《12》§2.2 的计数列对应 */
+    private double hotRaw(Post p) {
+        return nvl(p.getLikeCnt()) + nvl(p.getCommentCnt()) * 2d + nvl(p.getFavoriteCnt()) * 3d;
+    }
+
+    /** 新鲜度：{@value #FRESH_WINDOW_HOURS} 小时内从 1 线性衰减到 0 */
+    private double freshness(Post p, long now) {
+        if (p.getCreatedAt() == null) {
+            return 0d;
+        }
+        long ageMs = now - p.getCreatedAt()
+                .atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        if (ageMs <= 0) {
+            return 1d;
+        }
+        double hours = ageMs / 3_600_000d;
+        return Math.max(0d, 1d - hours / FRESH_WINDOW_HOURS);
+    }
+
+    /** 专业匹配：与作者专业相同记 1，否则 0（《10》FR-M2-08 的「专业 40%」） */
+    private double majorMatch(String myMajor, UserFacade.UserBrief author) {
+        if (myMajor == null || author == null || author.getMajor() == null) {
+            return 0d;
+        }
+        return myMajor.trim().equalsIgnoreCase(author.getMajor().trim()) ? 1d : 0d;
+    }
+
+    /** 取「我标记过不感兴趣的动态」的作者集合，用于整体降权 */
+    private Set<Long> dislikedAuthors(Long viewerId) {
+        Set<Long> dislikedPostIds = postService.dislikedPostIds(viewerId);
+        if (dislikedPostIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        List<Long> ids = new ArrayList<>(dislikedPostIds);
+        if (ids.size() > DISLIKE_AUTHOR_CAP) {
+            ids = ids.subList(0, DISLIKE_AUTHOR_CAP);
+        }
+        List<Post> posts = postMapper.selectBatchIds(ids);
+        Set<Long> authorSet = new HashSet<>();
+        for (Post p : posts) {
+            if (p.getUserId() != null) {
+                authorSet.add(p.getUserId());
+            }
+        }
+        return authorSet;
+    }
+
+    private int nvl(Integer v) {
+        return v == null ? 0 : v;
     }
 
     /** 校园页签：命中校园话题（topic.type = 7）的公开动态 */
@@ -175,48 +347,9 @@ public class FeedService {
                 p.getTotal(), page, size);
     }
 
-    /* ==================== 搜索（FR-M2-07） ==================== */
-
-    /**
-     * 全局搜索（《13》§3.2 GET /search?kw=&type=）。
-     *
-     * @param type '' / post / topic / notice / message
-     */
-    public PageResult<Map<String, Object>> search(Long viewerId, String kw, String type,
-                                                  Integer page, Integer size) {
-        int p = PageUtil.normalizePage(page);
-        int s = PageUtil.normalizeSize(size);
-        if (kw == null || kw.trim().isEmpty()) {
-            throw BizException.param("请输入搜索关键词");
-        }
-        String keyword = kw.trim();
-        String t = type == null ? "" : type.trim();
-
-        // 动态检索（FULLTEXT ngram；退化为 LIKE 亦可用）
-        if (t.isEmpty() || "post".equals(t)) {
-            Page<Post> pageObj = new Page<>(p, s);
-            postMapper.selectPage(pageObj, postService.visibleWrapper(viewerId)
-                    .like(Post::getContent, keyword)
-                    .orderByDesc(Post::getCreatedAt));
-            List<Map<String, Object>> list = new ArrayList<>();
-            for (FeedItem item : postService.toFeedItems(viewerId, pageObj.getRecords())) {
-                Map<String, Object> m = new LinkedHashMap<>(6);
-                m.put("contentType", FeedItem.TYPE_POST);
-                m.put("contentId", item.getContentId());
-                m.put("text", item.getText());
-                m.put("images", item.getImages());
-                m.put("user", item.getUser());
-                m.put("createdAt", item.getCreatedAt());
-                list.add(m);
-            }
-            return PageResult.of(list, pageObj.getTotal(), p, s);
-        }
-        // 其它类型（topic / notice / message）由各自模块接口承载
-        return PageResult.empty(p, s);
-    }
-
-    /** 搜索历史（GET /search/history）——暂为空实现，Redis 接入后补 */
-    public List<Map<String, Object>> searchHistory(Long userId) {
-        return Collections.emptyList();
-    }
+    /* ==================== 搜索（FR-M2-07） ====================
+     * 搜索相关的实现已移至同模块的 {@link SearchService}
+     * （全局搜索 + 搜索历史 + 热门搜索 + 埋点，见《13》§3.2），
+     * 本类只负责信息流，避免职责重叠。
+     * ======================================================== */
 }

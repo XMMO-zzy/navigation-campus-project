@@ -8,6 +8,7 @@ import com.tonghang.campus.common.api.ErrorCode;
 import com.tonghang.campus.common.api.PageResult;
 import com.tonghang.campus.common.constant.Enums;
 import com.tonghang.campus.common.exception.BizException;
+import com.tonghang.campus.common.notify.NotifySender;
 import com.tonghang.campus.common.util.PageUtil;
 import com.tonghang.campus.content.api.GoodsQueryFacade;
 import com.tonghang.campus.content.dto.FeedItem;
@@ -26,8 +27,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 二手商品服务（M4）。
@@ -52,17 +55,20 @@ public class GoodsService implements GoodsQueryFacade {
     private final GoodsWantedMapper wantedMapper;
     private final UserFacade userFacade;
     private final SensitiveWordChecker sensitiveWordChecker;
+    private final NotifySender notifySender;
 
     public GoodsService(GoodsMapper goodsMapper,
                         GoodsOrderMapper orderMapper,
                         GoodsWantedMapper wantedMapper,
                         UserFacade userFacade,
-                        SensitiveWordChecker sensitiveWordChecker) {
+                        SensitiveWordChecker sensitiveWordChecker,
+                        NotifySender notifySender) {
         this.goodsMapper = goodsMapper;
         this.orderMapper = orderMapper;
         this.wantedMapper = wantedMapper;
         this.userFacade = userFacade;
         this.sensitiveWordChecker = sensitiveWordChecker;
+        this.notifySender = notifySender;
     }
 
     /* ==================== 发布 / 编辑 / 下架 ==================== */
@@ -197,6 +203,13 @@ public class GoodsService implements GoodsQueryFacade {
 
         LambdaQueryWrapper<Goods> w = new LambdaQueryWrapper<Goods>()
                 .eq(Goods::getStatus, Goods.STATUS_ON_SALE);
+        // 屏蔽双向不可见（FR-M2-11）：登录用户看不到与自己有任一方向拉黑关系的卖家商品
+        if (viewerId != null) {
+            Set<Long> blocked = userFacade.blockedEitherWay(viewerId);
+            if (blocked != null && !blocked.isEmpty()) {
+                w.notIn(Goods::getUserId, blocked);
+            }
+        }
         if (params != null) {
             Long category = longOrNull(params.get("category"));
             if (category != null) {
@@ -320,10 +333,75 @@ public class GoodsService implements GoodsQueryFacade {
         w.setStatus(GoodsWanted.STATUS_VALID);
         wantedMapper.insert(w);
 
-        Map<String, Object> data = new LinkedHashMap<>(2);
+        // FR-M4-06 反向推送：按关键词匹配「发布过相关在售商品的用户」并推站内通知
+        int notified = pushWantedToMatchedSellers(userId, w);
+
+        Map<String, Object> data = new LinkedHashMap<>(3);
         data.put("wantedId", w.getId());
         data.put("status", w.getStatus());
+        data.put("notified", notified);
         return data;
+    }
+
+    /** 单次反向推送的候选商品上限，避免一次求购扫描全表 */
+    private static final int WANTED_MATCH_LIMIT = 200;
+
+    /**
+     * 求购帖反向推送（FR-M4-06 / T2.3）。
+     *
+     * <p>规则（按《10》FR-M4-06「按关键词匹配推送给发布过相关商品的用户」实现）：
+     * <ol>
+     *   <li>取求购帖 keywords，在**在售**商品标题上做 OR LIKE 匹配（排除求购者自己的商品）；</li>
+     *   <li>命中的卖家去重后逐人发站内通知，dedupKey 带 wantedId 保证同一求购帖不重复打扰；</li>
+     *   <li>返回实际通知人数，便于前端/排查观察触达效果。</li>
+     * </ol>
+     *
+     * <p>注意：通知不设跳转目标（linkType=null）。原因是 `Enums.TargetType` 的 7 号位已被
+     * 通知专用域（ORDER，见 notify_message.link_type）占用，而《12》§1.3 的「7 求购帖」
+     * 属于 target_type 另一列的值域——这是已知的域混用问题，已在交付说明中登记，
+     * 此处不臆造新的 linkType 取值。
+     */
+    private int pushWantedToMatchedSellers(Long wantedUserId, GoodsWanted wanted) {
+        List<String> keywords = new ArrayList<>();
+        for (String k : JsonUtil.toStringList(wanted.getKeywords())) {
+            if (k != null && !k.trim().isEmpty()) {
+                keywords.add(k.trim());
+            }
+        }
+        if (keywords.isEmpty()) {
+            return 0;
+        }
+
+        List<Goods> matched = goodsMapper.selectList(new LambdaQueryWrapper<Goods>()
+                .eq(Goods::getStatus, Goods.STATUS_ON_SALE)
+                .ne(Goods::getUserId, wantedUserId)
+                .and(x -> {
+                    for (int i = 0; i < keywords.size(); i++) {
+                        if (i == 0) {
+                            x.like(Goods::getTitle, keywords.get(0));
+                        } else {
+                            x.or().like(Goods::getTitle, keywords.get(i));
+                        }
+                    }
+                })
+                .last("LIMIT " + WANTED_MATCH_LIMIT));
+
+        Set<Long> sellerIds = new LinkedHashSet<>();
+        for (Goods g : matched) {
+            if (g.getUserId() != null) {
+                sellerIds.add(g.getUserId());
+            }
+        }
+
+        int sent = 0;
+        for (Long sellerId : sellerIds) {
+            notifySender.send(sellerId, Enums.NotifyBiz.TRADE,
+                    "有人求购相关商品",
+                    "求购「" + wanted.getTitle() + "」与你的在售商品可能匹配，去看看",
+                    null, null, "wanted-match:" + wanted.getId() + ":" + sellerId);
+            sent++;
+        }
+        return sent;
     }
 
     /* ==================== GoodsQueryFacade（供 M2 首页流） ==================== */

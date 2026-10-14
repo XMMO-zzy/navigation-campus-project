@@ -44,20 +44,25 @@
       </view>
     </view>
 
-    <!-- 数据概览（《04》4.1 资料卡·数据概览） -->
-    <view class="stats-row" wx:if="{{isLogin}}">
-      <view class="stat-item" bindtap="onTapMyActivity">
-        <text class="stat-num">{{stats.activityCount}}</text>
-        <text class="stat-label">参与活动</text>
-      </view>
-      <view class="stat-item" bindtap="onTapMyCompetition">
-        <text class="stat-num">{{stats.competitionCount}}</text>
-        <text class="stat-label">参赛次数</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-num">{{stats.postCount}}</text>
-        <text class="stat-label">发布帖子</text>
-      </view>
+  </view>
+
+  <!-- 数据概览（《04》4.1 资料卡·数据概览）
+       ⚠️ 必须放在 .profile-hero **之外**：
+       stats-row 靠 margin-top:-44rpx 上浮，本意是去压 hero 底部的蓝色留白区（padding-bottom:80rpx）。
+       若留在 hero 内部，它与 profile-card 之间没有间隙可压，负边距会直接吃掉
+       资料卡的底部内边距，把「专业 · 年级」那行文字盖住。 -->
+  <view class="stats-row" wx:if="{{isLogin}}">
+    <view class="stat-item" bindtap="onTapMyActivity">
+      <text class="stat-num">{{stats.activityCount}}</text>
+      <text class="stat-label">参与活动</text>
+    </view>
+    <view class="stat-item" bindtap="onTapMyCompetition">
+      <text class="stat-num">{{stats.competitionCount}}</text>
+      <text class="stat-label">参赛次数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">{{stats.postCount}}</text>
+      <text class="stat-label">发布帖子</text>
     </view>
   </view>
 

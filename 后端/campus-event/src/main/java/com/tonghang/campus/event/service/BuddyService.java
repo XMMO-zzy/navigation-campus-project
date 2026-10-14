@@ -1,7 +1,6 @@
 package com.tonghang.campus.event.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tonghang.campus.account.api.UserFacade;
 import com.tonghang.campus.common.api.ErrorCode;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +133,13 @@ public class BuddyService {
 
         LambdaQueryWrapper<BuddyPost> w = new LambdaQueryWrapper<BuddyPost>()
                 .eq(BuddyPost::getStatus, BuddyPost.STATUS_NORMAL);
+        // 屏蔽双向不可见（FR-M2-11）
+        if (viewerId != null) {
+            java.util.Set<Long> blocked = userFacade.blockedEitherWay(viewerId);
+            if (blocked != null && !blocked.isEmpty()) {
+                w.notIn(BuddyPost::getUserId, blocked);
+            }
+        }
         if (buddyType != null) {
             w.eq(BuddyPost::getBuddyType, buddyType);
         }

@@ -19,6 +19,7 @@ com\tonghang\campus\content\entity\PostTopicRel.class
 com\tonghang\campus\content\mapper\CommentMapper.class
 com\tonghang\campus\content\support\JsonUtil.class
 com\tonghang\campus\content\entity\BrowseHistory.class
+com\tonghang\campus\content\service\SearchService.class
 com\tonghang\campus\content\support\JsonUtil$2.class
 com\tonghang\campus\content\entity\Post.class
 com\tonghang\campus\content\mapper\OfficialNoticeMapper.class
@@ -26,6 +27,7 @@ com\tonghang\campus\content\mapper\LikeRecordMapper.class
 com\tonghang\campus\content\entity\SensitiveWord.class
 com\tonghang\campus\content\mapper\TopicMapper.class
 com\tonghang\campus\content\entity\Favorite.class
+com\tonghang\campus\content\service\FavoriteQueryFacadeImpl.class
 com\tonghang\campus\content\mapper\FavoriteMapper.class
 com\tonghang\campus\content\entity\Topic.class
 com\tonghang\campus\content\controller\FeedController.class

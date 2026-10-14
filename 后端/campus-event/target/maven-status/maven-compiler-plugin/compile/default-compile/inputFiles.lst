@@ -14,6 +14,7 @@ E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\entity\BuddyPost.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\entity\Competition.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\entity\CompetitionEnroll.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\job\EventReminderJob.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\mapper\ActivityEnrollMapper.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\mapper\ActivityMapper.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\mapper\BuddyApplyMapper.java
@@ -23,4 +24,5 @@ E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\service\ActivityService.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\service\BuddyService.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\service\CompetitionService.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\service\EventReminderService.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-event\src\main\java\com\tonghang\campus\event\support\JsonUtil.java

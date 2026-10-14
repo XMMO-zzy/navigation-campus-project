@@ -27,6 +27,13 @@ public class FeedItem {
     public static final int TYPE_POST = 1;
     /** 内容类型：商品 */
     public static final int TYPE_GOODS = 2;
+    /**
+     * 内容类型：官方通知。
+     *
+     * <p>取值 8 与前端 {@code framework/constants.js} 的 {@code CONTENT_TYPE.NOTICE = 8}
+     * 及前端搜索页「公告」跳转逻辑（{@code item.contentType === 8}）保持一致。
+     */
+    public static final int TYPE_NOTICE = 8;
 
     private int contentType;
     private Long contentId;

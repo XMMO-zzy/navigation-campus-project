@@ -179,7 +179,8 @@ public class UserFacadeImpl implements UserFacade, CurrentUserProvider {
         return cnt != null && cnt > 0;
     }
 
-    /** 与给定用户存在任一方向拉黑关系（过滤信息流用） */
+    /** 与给定用户存在任一方向拉黑关系（过滤信息流用）—— {@inheritDoc} */
+    @Override
     public Set<Long> blockedEitherWay(Long viewerId) {
         if (viewerId == null) {
             return Collections.emptySet();

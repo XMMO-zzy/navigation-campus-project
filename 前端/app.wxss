@@ -265,14 +265,28 @@ view, text, scroll-view, navigator, button, input, textarea, image, swiper, swip
 /* --------------------------------------------------------------------------
    7. 表单
    -------------------------------------------------------------------------- */
+/*
+ * ⚠️ .field 只能是中性块容器，**不能是 display:flex**。
+ *
+ * 历史原因：这里原本定义成横向表单行（display:flex + align-items:center +
+ * .field-label 定宽 + .field-input flex:1），但**全项目没有任何页面使用那套
+ * 单横线命名**（field-label / field-input / field-textarea / field-arrow）。
+ * 8 个页面实际用的是双下划线的**纵向体系**：.field__label（靠 margin-bottom 换行）
+ * + .field__input（width:100%）+ 自定义内容（如上传区）。
+ *
+ * 两者都叫 .field，全局的 display:flex 会把纵向表单的每个子项当成 flex 子项，
+ * 导致标签折行、上传区被挤压成窄竖条（pages/auth/verify 校园卡上传就是这个症状）。
+ *
+ * 结论：.field 保持块级，纵向/横向由各页面自己的 wxss 决定。
+ */
 .field {
-  display: flex;
-  align-items: center;
+  display: block;
   min-height: 100rpx;
   padding: var(--sp-sm) 0;
   border-bottom: 1rpx solid var(--c-divider);
 }
 .field:last-child { border-bottom: none; }
+/* 以下 4 条属历史遗留的横向表单辅助类，当前无任何页面引用，保留仅为兼容，勿在新页面使用 */
 .field-label {
   width: 160rpx;
   font-size: var(--fs-base);

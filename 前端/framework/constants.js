@@ -18,7 +18,9 @@ const CONTENT_TYPE = {
   BUDDY: 5,         // 搭子帖
   COMMENT: 6,       // 评论
   WANTED: 7,        // 求购帖
-  NOTICE: 8         // 官方通知
+  NOTICE: 8,        // 官方通知
+  TOPIC: 9,         // 校园话题（搜索结果专用，无独立详情页）
+  MESSAGE: 10       // 站内消息（搜索结果专用，跳消息 Tab）
 };
 
 const CONTENT_TYPE_TEXT = {
@@ -29,7 +31,9 @@ const CONTENT_TYPE_TEXT = {
   5: '搭子',
   6: '评论',
   7: '求购',
-  8: '通知'
+  8: '通知',
+  9: '话题',
+  10: '消息'
 };
 
 /** 卡片 → 跳转路径映射（发布者/卡片点击统一走此表） */
@@ -41,6 +45,8 @@ function contentTypeRoute(type, id) {
     case CONTENT_TYPE.COMPETITION: return `/pages/competition/detail?id=${id}`;
     case CONTENT_TYPE.BUDDY: return `/pages/buddy/detail?id=${id}`;
     case CONTENT_TYPE.NOTICE: return `/pages/notice/index?id=${id}`;
+    // TOPIC(9) / MESSAGE(10) 无独立详情页：前者待话题页交付，后者是 TabBar 页需 switchTab，
+    // 统一由调用方（当前为搜索页）自行处理，这里返回空串
     default: return '';
   }
 }

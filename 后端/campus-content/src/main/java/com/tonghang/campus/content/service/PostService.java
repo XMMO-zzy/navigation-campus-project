@@ -6,14 +6,18 @@ import com.tonghang.campus.account.api.UserFacade;
 import com.tonghang.campus.common.api.PageResult;
 import com.tonghang.campus.common.constant.Enums;
 import com.tonghang.campus.common.exception.BizException;
+import com.tonghang.campus.common.redis.RedisKeys;
+import com.tonghang.campus.common.redis.RedisSupport;
 import com.tonghang.campus.common.util.PageUtil;
 import com.tonghang.campus.content.dto.FeedItem;
+import com.tonghang.campus.content.entity.BrowseHistory;
 import com.tonghang.campus.content.entity.Comment;
 import com.tonghang.campus.content.entity.Favorite;
 import com.tonghang.campus.content.entity.LikeRecord;
 import com.tonghang.campus.content.entity.Post;
 import com.tonghang.campus.content.entity.PostTopicRel;
 import com.tonghang.campus.content.entity.Topic;
+import com.tonghang.campus.content.mapper.BrowseHistoryMapper;
 import com.tonghang.campus.content.mapper.CommentMapper;
 import com.tonghang.campus.content.mapper.FavoriteMapper;
 import com.tonghang.campus.content.mapper.LikeRecordMapper;
@@ -22,9 +26,12 @@ import com.tonghang.campus.content.mapper.PostTopicRelMapper;
 import com.tonghang.campus.content.mapper.TopicMapper;
 import com.tonghang.campus.content.support.JsonUtil;
 import com.tonghang.campus.content.support.SensitiveWordChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +58,8 @@ import java.util.Set;
 @Service
 public class PostService {
 
+    private static final Logger log = LoggerFactory.getLogger(PostService.class);
+
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
     private final LikeRecordMapper likeMapper;
@@ -59,6 +68,8 @@ public class PostService {
     private final PostTopicRelMapper postTopicRelMapper;
     private final UserFacade userFacade;
     private final SensitiveWordChecker sensitiveWordChecker;
+    private final RedisSupport redis;
+    private final BrowseHistoryMapper browseHistoryMapper;
 
     public PostService(PostMapper postMapper,
                        CommentMapper commentMapper,
@@ -67,7 +78,9 @@ public class PostService {
                        TopicMapper topicMapper,
                        PostTopicRelMapper postTopicRelMapper,
                        UserFacade userFacade,
-                       SensitiveWordChecker sensitiveWordChecker) {
+                       SensitiveWordChecker sensitiveWordChecker,
+                       RedisSupport redis,
+                       BrowseHistoryMapper browseHistoryMapper) {
         this.postMapper = postMapper;
         this.commentMapper = commentMapper;
         this.likeMapper = likeMapper;
@@ -76,6 +89,8 @@ public class PostService {
         this.postTopicRelMapper = postTopicRelMapper;
         this.userFacade = userFacade;
         this.sensitiveWordChecker = sensitiveWordChecker;
+        this.redis = redis;
+        this.browseHistoryMapper = browseHistoryMapper;
     }
 
     /* ==================== 发布 / 编辑 / 删除 ==================== */
@@ -142,6 +157,11 @@ public class PostService {
         Post post = requirePost(id);
         checkVisible(viewerId, post);
         incrementView(post);
+        // 登录用户的浏览行为：① Redis 计数（FR-M2-08 画像就绪判定）② browse_history 落库（推荐画像数据源）
+        if (viewerId != null) {
+            redis.run(t -> t.opsForValue().increment(RedisKeys.browseCounter(viewerId)));
+            recordBrowse(viewerId, id);
+        }
         FeedItem item = new FeedItem();
         item.setContentType(FeedItem.TYPE_POST);
         item.setContentId(post.getId());
@@ -300,11 +320,21 @@ public class PostService {
      *
      * <p>负反馈入画像；画像服务（Redis 行为流）未接入前仅记录浏览负向标记。
      */
+    /**
+     * 不感兴趣（负反馈）— FR-M2-11 / PUT /posts/{id}/dislike。
+     *
+     * <p>落库方式：Redis Set（《12》无对应表，已确认不改表结构）。
+     * 记入后该动态会从本人所有信息流中消失，并在推荐排序中对同作者内容降权。
+     * Redis 不可用时该操作静默降级，响应中的 {@code recorded} 会返回 false 供前端/排查识别。
+     */
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> dislike(Long userId, Long id) {
         requirePost(id);
-        Map<String, Object> data = new LinkedHashMap<>(2);
+        redis.run(t -> t.opsForSet().add(RedisKeys.dislikedPosts(userId), String.valueOf(id)));
+        Map<String, Object> data = new LinkedHashMap<>(3);
         data.put("postId", id);
         data.put("disliked", true);
+        data.put("recorded", redis.isAvailable());
         return data;
     }
 
@@ -318,10 +348,18 @@ public class PostService {
             return PageResult.empty(PageUtil.normalizePage(page), PageUtil.normalizeSize(size));
         }
         Page<Comment> p = new Page<>(PageUtil.normalizePage(page), PageUtil.normalizeSize(size));
-        commentMapper.selectPage(p, new LambdaQueryWrapper<Comment>()
+        LambdaQueryWrapper<Comment> cw = new LambdaQueryWrapper<Comment>()
                 .eq(Comment::getPostId, postId)
-                .eq(Comment::getStatus, Comment.STATUS_NORMAL)
-                .orderByDesc(Comment::getId));
+                .eq(Comment::getStatus, Comment.STATUS_NORMAL);
+        // 屏蔽双向不可见（FR-M2-11）：被拉黑者的评论不出现在列表里
+        if (viewerId != null) {
+            Set<Long> blocked = userFacade.blockedEitherWay(viewerId);
+            if (blocked != null && !blocked.isEmpty()) {
+                cw.notIn(Comment::getUserId, blocked);
+            }
+        }
+        cw.orderByDesc(Comment::getId);
+        commentMapper.selectPage(p, cw);
 
         List<Map<String, Object>> list = new ArrayList<>(p.getRecords().size());
         for (Comment c : p.getRecords()) {
@@ -478,16 +516,114 @@ public class PostService {
     }
 
     /** 可见范围过滤条件（信息流用）：公开 或 自己发布 */
+    /**
+     * 动态可见性统一条件（所有动态查询都必须套用）。
+     *
+     * <p>来源：《10》FR-M2-05（可见范围）、FR-M2-11（屏蔽双向不可见 + 不感兴趣）。
+     * 过滤三层：
+     * <ol>
+     *   <li>审核通过（status=1）；</li>
+     *   <li>可见范围：游客只看公开；登录用户看公开 + 自己的；</li>
+     *   <li>屏蔽关系双向过滤 + 剔除自己标记过「不感兴趣」的内容。</li>
+     * </ol>
+     */
     public LambdaQueryWrapper<Post> visibleWrapper(Long viewerId) {
         LambdaQueryWrapper<Post> w = new LambdaQueryWrapper<>();
         w.eq(Post::getStatus, Post.STATUS_PASSED);
         if (viewerId == null) {
             w.eq(Post::getVisibleScope, Enums.VisibleScope.PUBLIC);
-        } else {
-            w.and(x -> x.eq(Post::getVisibleScope, Enums.VisibleScope.PUBLIC)
-                    .or().eq(Post::getUserId, viewerId));
+            return w;
+        }
+        w.and(x -> x.eq(Post::getVisibleScope, Enums.VisibleScope.PUBLIC)
+                .or().eq(Post::getUserId, viewerId));
+
+        // 屏蔽双向不可见（FR-M2-11）
+        Set<Long> blocked = userFacade.blockedEitherWay(viewerId);
+        if (blocked != null && !blocked.isEmpty()) {
+            w.notIn(Post::getUserId, blocked);
+        }
+        // 已标记「不感兴趣」的动态不再出现
+        Set<Long> disliked = dislikedPostIds(viewerId);
+        if (!disliked.isEmpty()) {
+            w.notIn(Post::getId, disliked);
         }
         return w;
+    }
+
+    /**
+     * 我标记为「不感兴趣」的动态 id 集合。
+     *
+     * <p>存储：Redis Set（《12》无对应表；已确认不改表结构）。
+     * Redis 不可用时返回空集合 → 该功能静默降级（不影响信息流可用性）。
+     */
+    public Set<Long> dislikedPostIds(Long userId) {
+        if (userId == null) {
+            return Collections.emptySet();
+        }
+        Set<String> raw = redis.call(
+                t -> t.opsForSet().members(RedisKeys.dislikedPosts(userId)),
+                Collections.<String>emptySet());
+        Set<Long> ids = new HashSet<>(raw.size());
+        for (String s : raw) {
+            try {
+                ids.add(Long.valueOf(s));
+            } catch (NumberFormatException ignore) {
+                // 脏数据跳过，不影响主流程
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * 当前用户的累计浏览数（Redis）。
+     *
+     * <p>用于 FR-M2-08「≥10 次浏览后切换行为驱动」的画像就绪判定。
+     * Redis 不可用时返回 0 → 推荐自动退化为冷启动策略（热门 + 新发），不影响可用性。
+     */
+    public long browseCount(Long userId) {
+        if (userId == null) {
+            return 0L;
+        }
+        String v = redis.call(t -> t.opsForValue().get(RedisKeys.browseCounter(userId)), null);
+        if (v == null) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(v.trim());
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
+    }
+
+    /**
+     * 写入浏览历史（《12》§2.2 browse_history：「推荐画像数据源」）。
+     *
+     * <p>同一用户对同一内容只保留一条，重复浏览只刷新 viewed_at，
+     * 避免历史表随浏览次数无限膨胀（《12》未设唯一键，此处由应用层保证）。
+     * 该数据属画像辅助，写入失败不影响详情返回。
+     */
+    private void recordBrowse(Long userId, Long postId) {
+        try {
+            BrowseHistory exist = browseHistoryMapper.selectOne(new LambdaQueryWrapper<BrowseHistory>()
+                    .eq(BrowseHistory::getUserId, userId)
+                    .eq(BrowseHistory::getTargetType, Enums.TargetType.POST)
+                    .eq(BrowseHistory::getTargetId, postId)
+                    .last("LIMIT 1"));
+            LocalDateTime now = LocalDateTime.now();
+            if (exist != null) {
+                exist.setViewedAt(now);
+                browseHistoryMapper.updateById(exist);
+                return;
+            }
+            BrowseHistory h = new BrowseHistory();
+            h.setUserId(userId);
+            h.setTargetType(Enums.TargetType.POST);
+            h.setTargetId(postId);
+            h.setViewedAt(now);
+            browseHistoryMapper.insert(h);
+        } catch (Exception e) {
+            log.debug("[M2] 写入浏览历史失败 uid={} postId={}：{}", userId, postId, e.getMessage());
+        }
     }
 
     private void incrementView(Post post) {

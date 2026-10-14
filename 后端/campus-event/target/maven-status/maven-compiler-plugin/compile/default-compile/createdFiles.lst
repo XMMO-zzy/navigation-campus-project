@@ -6,12 +6,14 @@ com\tonghang\campus\event\mapper\ActivityEnrollMapper.class
 com\tonghang\campus\event\service\BuddyService.class
 com\tonghang\campus\event\support\JsonUtil$2.class
 com\tonghang\campus\event\mapper\CompetitionEnrollMapper.class
+com\tonghang\campus\event\service\EventReminderService.class
 com\tonghang\campus\event\service\ActivityService.class
 com\tonghang\campus\event\controller\CompetitionEnrollController.class
 com\tonghang\campus\event\mapper\CompetitionMapper.class
 com\tonghang\campus\event\controller\EnrollController.class
 com\tonghang\campus\event\mapper\BuddyApplyMapper.class
 com\tonghang\campus\event\mapper\ActivityMapper.class
+com\tonghang\campus\event\job\EventReminderJob.class
 com\tonghang\campus\event\entity\Competition.class
 com\tonghang\campus\event\support\JsonUtil$1.class
 com\tonghang\campus\event\dto\CalendarItem.class

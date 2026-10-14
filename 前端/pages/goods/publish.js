@@ -3,6 +3,7 @@ const api = require('../../framework/api');
 const util = require('../../framework/util');
 const auth = require('../../framework/auth');
 const C = require('../../framework/constants');
+const drafts = require('../../framework/draft');
 
 // 品类 / 成色取自《12》§2.4 字典（TINYINT），真值可由 GET /configs 覆盖
 const CATEGORIES = C.GOODS_CATEGORY;
@@ -43,8 +44,8 @@ Page({
     }
     // 恢复草稿
     if (!options || !options.id) {
-      const draft = wx.getStorageSync('goods_publish_draft');
-      if (draft && draft.savedAt && Date.now() - draft.savedAt < 7 * 24 * 3600 * 1000) {
+      const draft = drafts.load(drafts.TYPE.GOODS);
+      if (draft && draft.form) {
         this.setData({ form: Object.assign(emptyForm(), draft.form) });
       }
     }
@@ -57,9 +58,9 @@ Page({
   saveDraft() {
     const f = this.data.form;
     if (!f.title && !f.description && !f.images.length) return;
-    wx.setStorageSync('goods_publish_draft', { form: f, savedAt: Date.now() });
+    // 统一草稿层：本地立即写 + 服务端同步（FR-M2-10 / T2.6）
+    drafts.save(drafts.TYPE.GOODS, { form: f }, true);
   },
-
   loadDetail(id) {
     wx.showLoading({ title: '加载中' });
     api.goods.detail(id).then((data) => {
@@ -268,7 +269,7 @@ Page({
     }).then((res) => {
       this.setData({ submitting: false });
       wx.hideToast();
-      wx.removeStorageSync('goods_publish_draft');
+      drafts.clear(drafts.TYPE.GOODS);
       util.toast(this.goodsId ? '修改成功' : '发布成功', 'success');
       const id = this.goodsId || (res && (res.id || (res.data && res.data.id)));
       setTimeout(() => {

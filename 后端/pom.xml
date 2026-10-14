@@ -42,7 +42,12 @@
     <spring-boot.version>3.2.5</spring-boot.version>
     <mybatis-plus.version>3.5.6</mybatis-plus.version>
     <jjwt.version>0.12.5</jjwt.version>
-    <flyway.version>10.10.0</flyway.version>
+    <!--
+      注意：Flyway 的版本由 spring-boot-dependencies BOM（3.2.5）托管，实际解析为 9.22.3，
+      并非此处曾经写的 10.10.0。BOM import 进来的版本占位符按 BOM 自身属性解析，
+      在本 pom 里覆盖同名属性**不会生效**，因此该属性已删除，避免误导。
+      如确需 Flyway 10.x，必须在各模块显式声明 <version>。
+    -->
     <knife4j.version>4.5.0</knife4j.version>
     <hutool.version>5.8.27</hutool.version>
   </properties>

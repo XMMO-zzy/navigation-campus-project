@@ -6,8 +6,12 @@ E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\constant\Enums.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\exception\BizException.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\exception\GlobalExceptionHandler.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\favorite\FavoriteQueryFacade.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\notify\NoopNotifySender.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\notify\NotifySender.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\redis\RedisKeys.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\redis\RedisSupport.java
+E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\search\MessageSearchFacade.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\security\AuthInterceptor.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\security\CurrentUserProvider.java
 E:\通航校园APP项目设计\通航校园项目开发\后端\campus-common\src\main\java\com\tonghang\campus\common\security\JwtTokenProvider.java

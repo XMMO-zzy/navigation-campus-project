@@ -1,3 +1,4 @@
+com\tonghang\campus\common\redis\RedisSupport.class
 com\tonghang\campus\common\constant\Enums$DraftType.class
 com\tonghang\campus\common\config\MybatisPlusConfig$AutoFillHandler.class
 com\tonghang\campus\common\config\MybatisPlusConfig.class
@@ -24,6 +25,7 @@ com\tonghang\campus\common\constant\Enums$CreditAction.class
 com\tonghang\campus\common\exception\GlobalExceptionHandler.class
 com\tonghang\campus\common\constant\Enums$BuddyType.class
 com\tonghang\campus\common\constant\Enums$UserType.class
+com\tonghang\campus\common\favorite\FavoriteQueryFacade.class
 com\tonghang\campus\common\constant\Enums$ActivityStatus.class
 com\tonghang\campus\common\constant\Enums$FileBiz.class
 com\tonghang\campus\common\constant\Enums$NotifyBiz.class
@@ -32,8 +34,10 @@ com\tonghang\campus\common\notify\NotifySender.class
 com\tonghang\campus\common\constant\Enums$ApplyStatus.class
 com\tonghang\campus\common\constant\Enums$BuddyFeeMode.class
 com\tonghang\campus\common\constant\Enums$OrderStatus.class
+com\tonghang\campus\common\redis\RedisKeys.class
 com\tonghang\campus\common\constant\Enums$CommentPermission.class
 com\tonghang\campus\common\notify\NoopNotifySender.class
+com\tonghang\campus\common\search\MessageSearchFacade.class
 com\tonghang\campus\common\security\RequireRoleAspect.class
 com\tonghang\campus\common\api\ErrorCode.class
 com\tonghang\campus\common\api\PageResult.class

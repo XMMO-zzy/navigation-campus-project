@@ -11,6 +11,7 @@ const api = require('../../framework/api');
 const util = require('../../framework/util');
 const auth = require('../../framework/auth');
 const C = require('../../framework/constants');
+const drafts = require('../../framework/draft');
 
 const TYPES = C.BUDDY_TYPE;
 const FEES = C.BUDDY_FEE_MODE;
@@ -72,16 +73,13 @@ Page({
     if (this.data.isEdit) return;
     const f = this.data.form;
     if (!f.title && !f.content) return;
-    wx.setStorageSync('buddy_publish_draft', { form: f, savedAt: Date.now() });
+    // 统一草稿层：本地立即写 + 服务端同步（FR-M2-10 / T2.6）
+    drafts.save(drafts.TYPE.BUDDY, { form: f }, true);
   },
 
   restoreDraft() {
-    const d = wx.getStorageSync('buddy_publish_draft');
-    if (!d || !d.savedAt) return;
-    if (Date.now() - d.savedAt > 7 * 24 * 3600 * 1000) {
-      wx.removeStorageSync('buddy_publish_draft');
-      return;
-    }
+    const d = drafts.load(drafts.TYPE.BUDDY);
+    if (!d || !d.form) return;
     const form = Object.assign(emptyForm(), d.form);
     this.setData({
       form,
@@ -259,7 +257,7 @@ Page({
     }).then((res) => {
       this.setData({ submitting: false });
       wx.hideToast();
-      wx.removeStorageSync('buddy_publish_draft');
+      drafts.clear(drafts.TYPE.BUDDY);
       util.toast(this.data.isEdit ? '修改成功' : '发布成功', 'success');
       const id = this.buddyId || (res && (res.id || (res.data && res.data.id)));
       setTimeout(() => {

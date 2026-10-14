@@ -16,5 +16,6 @@ com\tonghang\campus\message\entity\NotifyMessage.class
 com\tonghang\campus\message\controller\TodoController.class
 com\tonghang\campus\message\mapper\NotifyMessageMapper.class
 com\tonghang\campus\message\controller\MessageController.class
+com\tonghang\campus\message\service\MessageSearchFacadeImpl.class
 com\tonghang\campus\message\service\TeamService.class
 com\tonghang\campus\message\support\JsonUtil$2.class

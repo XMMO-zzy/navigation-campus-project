@@ -23,10 +23,17 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    <!--
+      ⚠️ 这里必须是非 optional：
+      common 的 RedisSupport 把 StringRedisTemplate 写在**公开方法签名**里
+      （call(Function<StringRedisTemplate,T>) / run(Consumer<StringRedisTemplate>)），
+      属于对外 API 的一部分，所有依赖 common 的模块都要能在编译期看到该类型。
+      之前标成 optional 导致 campus-content / campus-message 编译报
+      「无法访问 org.springframework.data.redis.core.StringRedisTemplate」。
+    -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

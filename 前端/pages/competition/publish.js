@@ -11,6 +11,7 @@ const api = require('../../framework/api');
 const util = require('../../framework/util');
 const auth = require('../../framework/auth');
 const C = require('../../framework/constants');
+const drafts = require('../../framework/draft');
 
 const LEVELS = C.COMPETITION_LEVEL;
 
@@ -57,8 +58,8 @@ Page({
       setTimeout(() => wx.navigateBack(), 800);
       return;
     }
-    const draft = wx.getStorageSync('competition_publish_draft');
-    if (draft && draft.savedAt && Date.now() - draft.savedAt < 7 * 24 * 3600 * 1000) {
+    const draft = drafts.load(drafts.TYPE.COMPETITION);
+    if (draft && draft.form) {
       this.setData({
         form: Object.assign(emptyForm(), draft.form),
         levelText: C.labelOf(LEVELS, draft.form.level, '')
@@ -71,7 +72,8 @@ Page({
   saveDraft() {
     const f = this.data.form;
     if (!f.title && !f.content) return;
-    wx.setStorageSync('competition_publish_draft', { form: f, savedAt: Date.now() });
+    // 统一草稿层：本地立即写 + 服务端同步（FR-M2-10 / T2.6）
+    drafts.save(drafts.TYPE.COMPETITION, { form: f }, true);
   },
 
   /* ------------------------------------------------------------------ */
@@ -173,7 +175,7 @@ Page({
     }).then((res) => {
       this.setData({ submitting: false });
       wx.hideToast();
-      wx.removeStorageSync('competition_publish_draft');
+      drafts.clear(drafts.TYPE.COMPETITION);
       util.toast('发布成功，等待内容审核', 'success');
       const id = res && (res.id || (res.data && res.data.id));
       setTimeout(() => wx.redirectTo({ url: `/pages/competition/detail?id=${id}` }), 900);

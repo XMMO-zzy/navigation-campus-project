@@ -2,13 +2,15 @@ package com.tonghang.campus.message.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tonghang.campus.common.api.ErrorCode;
 import com.tonghang.campus.common.api.PageResult;
 import com.tonghang.campus.common.constant.Enums;
 import com.tonghang.campus.common.exception.BizException;
+import com.tonghang.campus.common.redis.RedisKeys;
+import com.tonghang.campus.common.redis.RedisSupport;
 import com.tonghang.campus.common.util.PageUtil;
 import com.tonghang.campus.message.entity.NotifyMessage;
 import com.tonghang.campus.message.mapper.NotifyMessageMapper;
+import com.tonghang.campus.message.support.JsonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +31,19 @@ import java.util.Map;
  *   <li>GET/PUT /messages/settings 消息分类开关 + 免打扰 — FR-M3-02</li>
  * </ul>
  *
- * <p>设置项持久化说明：《12》未设计消息设置表；骨架阶段以用户为粒度内存/暂无落库，
- * 返回文档定义的字段结构（默认全开），待《12》补表后接库。
+ * <p>设置项持久化说明：已与用户确认「不改《12》表结构，用 Redis + 本地存储」，
+ * 故消息设置以用户为粒度落 Redis（JSON 字符串，键见 {@link RedisKeys#notifySetting}），
+ * 不再随进程重启丢失。Redis 不可用时自动退回默认值（全开 / 免打扰关闭）。
  */
 @Service
 public class MessageService {
 
     private final NotifyMessageMapper mapper;
+    private final RedisSupport redis;
 
-    public MessageService(NotifyMessageMapper mapper) {
+    public MessageService(NotifyMessageMapper mapper, RedisSupport redis) {
         this.mapper = mapper;
+        this.redis = redis;
     }
 
     /**
@@ -149,7 +154,26 @@ public class MessageService {
      * 落库待《12》补表（draft 之外需新增 user_message_setting）。
      */
     public Map<String, Object> getSettings(Long userId) {
-        Map<String, Object> m = new LinkedHashMap<>(8);
+        Map<String, Object> m = defaultSettings();
+        if (userId == null) {
+            return m;
+        }
+        String json = redis.call(t -> t.opsForValue().get(RedisKeys.notifySetting(userId)), null);
+        if (json == null || json.trim().isEmpty()) {
+            return m;
+        }
+        Map<String, Object> saved = JsonUtil.toMap(json);
+        if (saved == null || saved.isEmpty()) {
+            return m;
+        }
+        // 以默认值为底、已保存值为准：后续新增设置项也能自动获得默认值
+        m.putAll(saved);
+        return m;
+    }
+
+    /** 设置默认值（FR-M3-02：分类开关 + 免打扰时段） */
+    private Map<String, Object> defaultSettings() {
+        Map<String, Object> m = new LinkedHashMap<>(10);
         m.put("tradeEnabled", true);
         m.put("teamEnabled", true);
         m.put("interactEnabled", true);
@@ -172,14 +196,59 @@ public class MessageService {
                 }
             }
             if (body.get("dndStart") != null) {
-                m.put("dndStart", String.valueOf(body.get("dndStart")));
+                m.put("dndStart", normalizeClock(String.valueOf(body.get("dndStart"))));
             }
             if (body.get("dndEnd") != null) {
-                m.put("dndEnd", String.valueOf(body.get("dndEnd")));
+                m.put("dndEnd", normalizeClock(String.valueOf(body.get("dndEnd"))));
             }
         }
         m.put("updatedAt", LocalDateTime.now());
+
+        // 落 Redis（剔除 LocalDateTime 字段，避免默认 ObjectMapper 无法序列化 java.time 导致整串丢失）
+        Map<String, Object> persist = new LinkedHashMap<>(m);
+        persist.remove("updatedAt");
+        redis.run(t -> t.opsForValue().set(RedisKeys.notifySetting(userId), JsonUtil.toJson(persist)));
         return m;
+    }
+
+    /**
+     * 当前是否处于免打扰时段（FR-M3-02）。
+     *
+     * <p>支持跨零点区间（如 22:00–08:00）。Redis 不可用或未开启免打扰时返回 false。
+     * <p>说明：当前站内通知无独立推送通道，此方法供后续「微信模板消息兜底」（FR-M3-09）
+     * 接入后做抑制判断；现阶段仅落库与查询，不做假的拦截行为。
+     */
+    public boolean isInDnd(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        Map<String, Object> s = getSettings(userId);
+        if (!Boolean.parseBoolean(String.valueOf(s.get("dndEnabled")))) {
+            return false;
+        }
+        int now = LocalDateTime.now().getHour() * 60 + LocalDateTime.now().getMinute();
+        int start = toMinutes(String.valueOf(s.get("dndStart")), 22 * 60);
+        int end = toMinutes(String.valueOf(s.get("dndEnd")), 8 * 60);
+        if (start == end) {
+            return false;
+        }
+        return start < end ? (now >= start && now < end) : (now >= start || now < end);
+    }
+
+    /** 校验并归一化 "HH:mm" */
+    private String normalizeClock(String v) {
+        if (v == null || !v.trim().matches("^([01]\\d|2[0-3]):[0-5]\\d$")) {
+            throw BizException.param("免打扰时间格式需为 HH:mm（24 小时制）");
+        }
+        return v.trim();
+    }
+
+    private int toMinutes(String hhmm, int fallback) {
+        if (hhmm == null || !hhmm.matches("^([01]\\d|2[0-3]):[0-5]\\d$")) {
+            return fallback;
+        }
+        String[] parts = hhmm.split(":");
+        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
 
     /* ==================== 供其它模块使用 ==================== */

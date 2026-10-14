@@ -97,6 +97,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <!-- 显式pin版本：父 pom 只 import 了 spring-boot-dependencies BOM，
+             插件版本不受 BOM 管理，不写版本 Maven/IDEA 会报「plugin version is missing」 -->
+        <version>${spring-boot.version}</version>
         <configuration>
           <mainClass>com.tonghang.campus.CampusApplication</mainClass>
           <excludes>

@@ -12,6 +12,7 @@ const api = require('../../framework/api');
 const auth = require('../../framework/auth');
 const util = require('../../framework/util');
 const C = require('../../framework/constants');
+const drafts = require('../../framework/draft');
 
 const MAX_IMAGES = 9;
 const MAX_CONTENT = 1000;
@@ -76,8 +77,9 @@ Page({
   /* 草稿                                                                */
   /* ------------------------------------------------------------------ */
   restoreDraft() {
-    const d = wx.getStorageSync('draft_post');
-    if (d && d.savedAt && Date.now() - d.savedAt < 7 * 24 * 3600 * 1000 && (d.content || (d.images || []).length)) {
+    // 统一草稿层（本地 7 天有效期由 store.draft 统一管理）
+    const d = drafts.load(drafts.TYPE.POST);
+    if (d && (d.content || (d.images || []).length)) {
       this.setData({
         content: d.content || '',
         images: d.images || [],
@@ -92,9 +94,8 @@ Page({
   saveDraft() {
     const { content, images, topics, visibleScope, commentPermission } = this.data;
     if (!content && !images.length) return;
-    wx.setStorageSync('draft_post', {
-      content, images, topics, visibleScope, commentPermission, savedAt: Date.now()
-    });
+    // 统一草稿层：本地立即写 + 服务端同步（FR-M2-10 / T2.6）
+    drafts.save(drafts.TYPE.POST, { content, images, topics, visibleScope, commentPermission }, true);
   },
 
   loadForEdit(id) {
@@ -271,7 +272,7 @@ Page({
       this.setData({ submitting: false });
       wx.hideToast();
       // 发布成功清本地草稿（同时尝试清服务端草稿，失败静默）
-      wx.removeStorageSync('draft_post');
+      drafts.clear(drafts.TYPE.POST);
       api.draft.remove('post').catch(() => {});
       util.toast(this.data.isEdit ? '修改成功' : '发布成功', 'success');
       setTimeout(() => {

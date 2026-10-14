@@ -33,6 +33,18 @@ public interface UserFacade {
     /** 认证用户判定（user_type=2，见《10》FR-M1-06 四态之 2） */
     boolean isVerified(Long userId);
 
+    /**
+     * 与给定用户存在**任一方向**拉黑关系的用户 id 集合。
+     *
+     * <p>来源：《10》FR-M2-11「屏蔽用户双向不可见」。
+     * 信息流 / 商品列表 / 搭子列表 / 评论列表等所有"他人内容"的查询都应带上此过滤，
+     * 保证 A 拉黑 B 后，双方在任何列表里都看不到对方的内容。
+     *
+     * @param userId 当前访问者（游客传 null）
+     * @return 需要过滤掉的用户 id；无拉黑关系返回空集合（不返回 null）
+     */
+    java.util.Set<Long> blockedEitherWay(Long userId);
+
     /** 用户昵称，用于通知文案 */
     String nicknameOf(Long userId);
 
